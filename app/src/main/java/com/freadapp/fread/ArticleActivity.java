@@ -37,6 +37,7 @@ public class ArticleActivity extends SingleFragmentActivity {
         //here is where the Article Fragment will be created
         Fragment articleFragment = ArticleFragment.newInstance();
 
+        //set action bar title. this will change eventually
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(mTitle);
 

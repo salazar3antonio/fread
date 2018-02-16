@@ -11,16 +11,22 @@
             android:orientation="vertical"
             android:gravity="center_horizontal|center_vertical">
 
+            <Button
+                android:id="@+id/signin_page_launch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign In Page" />
+
             <TextView
-                android:id="@+id/pubdate_view"
+                android:id="@+id/main_activity_text"
                 style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Main Activity"
+                android:text="@string/main_activity_place_holder"
                 tools:text="Main Activity" />
 
+
+
         </LinearLayout>
-
-
 
 </android.support.constraint.ConstraintLayout>

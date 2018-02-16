@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "744600230162",
+    "firebase_url": "https://fread-a1c50.firebaseio.com",
+    "project_id": "fread-a1c50",
+    "storage_bucket": "fread-a1c50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744600230162:android:38bb922537e25ee7",
+        "android_client_info": {
+          "package_name": "com.freadapp.fread"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "744600230162-ju460pdnk5q09qvgpmir7to5s7jn3r10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0x9lKuCOy5IcDtmxlO03UtW_uT1vX39w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
