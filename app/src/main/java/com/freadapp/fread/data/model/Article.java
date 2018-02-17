@@ -1,6 +1,8 @@
 package com.freadapp.fread.data.model;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This is the model for the Article object. It has the properties that match the query parameters of the Article
@@ -16,9 +18,22 @@ public class Article {
     private List<Object> videos = null;
     private String title;
     private String publishDate;
-    private List<Object> feeds = null;
 
-    public Article(String author, String image, List<Object> tags, String article, List<Object> videos, String title, String publishDate, List<Object> feeds) {
+    private UUID id;
+    private Date date;
+
+    //create a random UUID to track which article is which
+    public Article() {
+        this(UUID.randomUUID());
+    }
+
+
+    public Article(UUID id) {
+        this.id = id;
+        date = new Date();
+    }
+
+    public Article(String author, String image, List<Object> tags, String article, List<Object> videos, String title, String publishDate) {
         this.author = author;
         this.image = image;
         this.tags = tags;
@@ -26,7 +41,6 @@ public class Article {
         this.videos = videos;
         this.title = title;
         this.publishDate = publishDate;
-        this.feeds = feeds;
     }
 
     public String getAuthor() {
@@ -85,12 +99,19 @@ public class Article {
         this.publishDate = publishDate;
     }
 
-    public List<Object> getFeeds() {
-        return feeds;
+    public UUID getId() {
+        return id;
     }
 
-    public void setFeeds(List<Object> feeds) {
-        this.feeds = feeds;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

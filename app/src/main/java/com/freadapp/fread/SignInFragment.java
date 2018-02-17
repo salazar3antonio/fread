@@ -163,6 +163,7 @@ public class SignInFragment extends Fragment {
                             Log.d(TAG, "signInWithCredential:success");
 
                             FirebaseUser user = mAuth.getCurrentUser();
+
                             Snackbar.make(getView(), "Authentication Success.", Snackbar.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -176,8 +177,8 @@ public class SignInFragment extends Fragment {
 
     }
 
-
     private void updateUI(String result) {
         mSignInTextView.setText(result);
     }
+
 }
