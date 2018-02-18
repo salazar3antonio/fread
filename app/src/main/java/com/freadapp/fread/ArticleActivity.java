@@ -24,8 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ArticleActivity extends SingleFragmentActivity {
 
-    //this this is the activity that will be started I may have to capture the extra Intent URL from the browser and send it to the fragment through a bundle
-
+    public static final String TAG = ArticleActivity.class.getName();
     public static final String RECEIVED_URL = "received_url";
 
     private String mTitle = "Fread Mode";
@@ -53,7 +52,7 @@ public class ArticleActivity extends SingleFragmentActivity {
         String url_received = intent.getStringExtra(Intent.EXTRA_TEXT);
 
         if (url_received != null) {
-            //store URL as a string in a bundle
+            //store URL as a string in a bundle. ActivityFragment will pick this up
             Bundle bundle = new Bundle();
             bundle.putString(RECEIVED_URL, url_received);
             fragment.setArguments(bundle);

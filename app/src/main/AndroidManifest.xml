@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name=".ArticleActivity"
-            android:label="fRead Mode">
+            android:label="fRead It">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -15,30 +15,23 @@ public class Article {
     private String image;
     private List<Object> tags = null;
     private String article;
-    private List<Object> videos = null;
     private String title;
     private String publishDate;
-
     private UUID id;
-    private Date date;
+    private Date saveDate;
 
-    //create a random UUID to track which article is which
     public Article() {
-        this(UUID.randomUUID());
+        //create new UUID and set it to the article id
+        //this is a unique code that is meant to individualize each article object saved by the user
+        UUID uuid = UUID.randomUUID();
+        setId(uuid);
     }
 
-
-    public Article(UUID id) {
-        this.id = id;
-        date = new Date();
-    }
-
-    public Article(String author, String image, List<Object> tags, String article, List<Object> videos, String title, String publishDate) {
+    public Article(String author, String image, List<Object> tags, String article, String title, String publishDate) {
         this.author = author;
         this.image = image;
         this.tags = tags;
         this.article = article;
-        this.videos = videos;
         this.title = title;
         this.publishDate = publishDate;
     }
@@ -75,14 +68,6 @@ public class Article {
         this.article = article;
     }
 
-    public List<Object> getVideos() {
-        return videos;
-    }
-
-    public void setVideos(List<Object> videos) {
-        this.videos = videos;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -107,11 +92,11 @@ public class Article {
         this.id = id;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getSaveDate() {
+        return saveDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setSaveDate(Date savedate) {
+        this.saveDate = savedate;
     }
 }

@@ -3,6 +3,7 @@ package com.freadapp.fread;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,16 +32,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ArticleFragment extends Fragment {
 
+    public static final String TAG = ArticleFragment.class.getName();
+
     private TextView mTitleView;
     private TextView mAuthorView;
     private TextView mArticleView;
     private TextView mPUBdateView;
     private ImageView mArticleImageView;
-    private String mURLreceived;
+    private String mUrlReceived;
     private Article mArticle;
     private FirebaseUser mUser;
+    private DatabaseReference mDBRef_Article;
 
     private Button mSaveArticleButton;
+    private Button mDeleteArticleButton;
 
     private DatabaseReference mDatabase;
 
@@ -59,13 +64,16 @@ public class ArticleFragment extends Fragment {
 
         //create new Article object.
         mArticle = new Article();
-
         //get auth instance and assign it to the Firebase user
         FirebaseAuth auth = FirebaseAuth.getInstance();
         mUser = auth.getCurrentUser();
+        //reference of the Firebase Database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        //reference to users/userID/articles/articleID
+        mDBRef_Article = mDatabase.child("users").child(mUser.getUid()).child("articles").child(mArticle.getId().toString());
 
         if (getArguments() != null) {
-            mURLreceived = getArguments().getString(ArticleActivity.RECEIVED_URL);
+            mUrlReceived = getArguments().getString(ArticleActivity.RECEIVED_URL);
         }
     }
 
@@ -81,6 +89,7 @@ public class ArticleFragment extends Fragment {
         mPUBdateView = view.findViewById(R.id.pubdate_view);
         mArticleImageView = view.findViewById(R.id.image_article_view);
         mSaveArticleButton = view.findViewById(R.id.write_to_db);
+        mDeleteArticleButton = view.findViewById(R.id.delete_to_db);
 
         //building up the Retrofit object to begin calling the API
         Retrofit retrofit = new Retrofit.Builder()
@@ -93,7 +102,7 @@ public class ArticleFragment extends Fragment {
 
         //using the articleAPI object to call the GET method. Passed in URL.
         //will need to grab the URL from the user's web browser eventually. It's hard coded for now.
-        Call<Article> call = articleAPI.getArticle(mURLreceived, true);
+        Call<Article> call = articleAPI.getArticle(mUrlReceived, true);
         call.enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {
@@ -119,14 +128,23 @@ public class ArticleFragment extends Fragment {
             public void onFailure(Call<Article> call, Throwable t) {
                 //on failure, Toast error code
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "API Failed: " + t.getMessage());
             }
         });
 
         mSaveArticleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeArticleToDB(mUser.getUid(), mArticle);
-                Toast.makeText(getContext(), mUser.getUid(), Toast.LENGTH_SHORT).show();
+                writeArticleToDB(mArticle);
+                Toast.makeText(getContext(), "Saved Article to " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mDeleteArticleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteArticleToDB();
+                Toast.makeText(getContext(), "Removed Article to " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -134,11 +152,14 @@ public class ArticleFragment extends Fragment {
 
     }
 
-    //this method writes the article object to the user that is logged in
-    public void writeArticleToDB(String userID, Article article) {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(userID).child("articles").child(mArticle.getId().toString()).setValue(article);
+    //this method deletes the article that the user has saved
+    private void deleteArticleToDB() {
+        mDBRef_Article.removeValue();
+    }
 
+    //this method writes the article object to the user that is logged in
+    public void writeArticleToDB(Article article) {
+        mDBRef_Article.setValue(article);
     }
 
 }

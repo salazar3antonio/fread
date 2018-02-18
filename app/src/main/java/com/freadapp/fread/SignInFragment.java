@@ -39,10 +39,9 @@ import java.util.concurrent.Executor;
 
 public class SignInFragment extends Fragment {
 
-    public static final String TAG = "SignInFragment";
+    public static final String TAG = SignInFragment.class.getName();
     public static final int RC_SIGN_IN = 1;
 
-    private TextView mSignInTextView;
     private Button mSignOutButton;
     private com.google.android.gms.common.SignInButton mGoogleSignInButton;
     private GoogleSignInClient mGoogleSignInClient;
@@ -71,7 +70,6 @@ public class SignInFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_signin, container, false);
 
-        mSignInTextView = view.findViewById(R.id.signin_status_tv);
         mSignOutButton = view.findViewById(R.id.signout_button);
         mGoogleSignInButton = view.findViewById(R.id.google_signin_button);
         mSignOutButton = view.findViewById(R.id.signout_button);
@@ -105,12 +103,11 @@ public class SignInFragment extends Fragment {
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        // ...
+                        // do something once the user is logged out
                     }
                 });
 
         Toast.makeText(getContext(),  "User Signed Out", Toast.LENGTH_SHORT).show();
-
 
     }
 
@@ -124,61 +121,46 @@ public class SignInFragment extends Fragment {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Toast.makeText(getContext(), account.getEmail() + " has signed in", Toast.LENGTH_SHORT).show();
                 firebaseAuthWithGoogle(account);
+
+                Toast.makeText(getContext(), account.getEmail() + " has signed in", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Google sign in success");
+
             } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                // ...
             }
         }
 
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
-            Toast.makeText(getContext(), account.getEmail() + " Signed In", Toast.LENGTH_SHORT).show();
-            //updateUI(account);
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            Toast.makeText(getContext(), "signInResult:failed code=" + e.getStatusCode(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
+                            //update UI if sign in success
+
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-
-                            FirebaseUser user = mAuth.getCurrentUser();
-
+                            Log.d(TAG, "Firebase user athentication success");
                             Snackbar.make(getView(), "Authentication Success.", Snackbar.LENGTH_SHORT).show();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
 
+                        } else {
+
+                            //update UI if failure
+
+                            // if sign in fails, log and snackbar failure
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Snackbar.make(getView(), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            updateUI(null);
+
                         }
                     }
                 });
 
-    }
-
-    private void updateUI(String result) {
-        mSignInTextView.setText(result);
     }
 
 }
