@@ -1,4 +1,4 @@
-package com.freadapp.fread;
+package com.freadapp.fread.article_classes;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.freadapp.fread.helpers.Constants;
+import com.freadapp.fread.R;
 import com.freadapp.fread.data.api.ArticleAPI;
 import com.freadapp.fread.data.model.Article;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,8 +71,8 @@ public class ArticleFragment extends Fragment {
         mUser = auth.getCurrentUser();
         //reference of the Firebase Database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        //reference to users/userID/articles/articleID
-        mDBRef_Article = mDatabase.child("users").child(mUser.getUid()).child("articles").child(mArticle.getId().toString());
+        //reference to user-articles/<uid-generated-by-fb>
+        mDBRef_Article = mDatabase.child("articles").push();
 
         if (getArguments() != null) {
             mUrlReceived = getArguments().getString(ArticleActivity.RECEIVED_URL);
@@ -81,7 +83,7 @@ public class ArticleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_article, container, false);
+        View view = inflater.inflate(R.layout.article_fragment, container, false);
 
         mTitleView = view.findViewById(R.id.title_view);
         mAuthorView = view.findViewById(R.id.author_view);
@@ -135,6 +137,7 @@ public class ArticleFragment extends Fragment {
         mSaveArticleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mArticle.setUid(mUser.getUid());
                 writeArticleToDB(mArticle);
                 Toast.makeText(getContext(), "Saved Article to " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
             }

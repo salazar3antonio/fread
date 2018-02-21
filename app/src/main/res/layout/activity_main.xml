@@ -12,7 +12,7 @@
             android:gravity="center_horizontal|center_vertical">
 
             <Button
-                android:id="@+id/signin_page_launch"
+                android:id="@+id/signin_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sign In Page" />
@@ -25,7 +25,13 @@
                 android:text="@string/main_activity_place_holder"
                 tools:text="Main Activity" />
 
-
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/article_recycleView"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 

@@ -1,8 +1,6 @@
 package com.freadapp.fread.data.model;
 
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * This is the model for the Article object. It has the properties that match the query parameters of the Article
@@ -12,23 +10,19 @@ import java.util.UUID;
 public class Article {
 
     private String author;
+    private String uid;
     private String image;
     private List<Object> tags = null;
     private String article;
-    private String title;
+    public String title;
     private String publishDate;
-    private UUID id;
-    private Date saveDate;
 
     public Article() {
-        //create new UUID and set it to the article id
-        //this is a unique code that is meant to individualize each article object saved by the user
-        UUID uuid = UUID.randomUUID();
-        setId(uuid);
     }
 
-    public Article(String author, String image, List<Object> tags, String article, String title, String publishDate) {
+    public Article(String author, String uid, String image, List<Object> tags, String article, String title, String publishDate) {
         this.author = author;
+        this.uid = uid;
         this.image = image;
         this.tags = tags;
         this.article = article;
@@ -84,19 +78,11 @@ public class Article {
         this.publishDate = publishDate;
     }
 
-    public UUID getId() {
-        return id;
+    public String getUid() {
+        return uid;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Date getSaveDate() {
-        return saveDate;
-    }
-
-    public void setSaveDate(Date savedate) {
-        this.saveDate = savedate;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

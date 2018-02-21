@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ArticleActivity"
+            android:name=".article_classes.ArticleActivity"
             android:label="fRead It">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignInActivity"
+            android:name=".signin_classes.SignInActivity"
             android:label="Sign In">
         </activity>
     </application>

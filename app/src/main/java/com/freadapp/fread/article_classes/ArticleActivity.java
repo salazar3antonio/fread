@@ -1,4 +1,4 @@
-package com.freadapp.fread;
+package com.freadapp.fread.article_classes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ public class ArticleActivity extends SingleFragmentActivity {
     public static final String TAG = ArticleActivity.class.getName();
     public static final String RECEIVED_URL = "received_url";
 
-    private String mTitle = "Fread Mode";
+    private String mTitle = "fRead It";
 
 
     @Override
