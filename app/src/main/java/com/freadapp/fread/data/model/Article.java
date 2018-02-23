@@ -1,5 +1,9 @@
 package com.freadapp.fread.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,7 +11,7 @@ import java.util.List;
  * Extraction API from Aylien.com.
  */
 
-public class Article {
+public class Article implements Parcelable {
 
     private String author;
     private String uid;
@@ -16,6 +20,7 @@ public class Article {
     private String article;
     public String title;
     private String publishDate;
+
 
     public Article() {
     }
@@ -85,4 +90,44 @@ public class Article {
     public void setUid(String uid) {
         this.uid = uid;
     }
+
+    public Article(Parcel in) {
+
+        author = in.readString();
+        uid = in.readString();
+        image = in.readString();
+        tags = new ArrayList<>();
+        in.readList(tags, null);
+        article = in.readString();
+        title = in.readString();
+        publishDate = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(author);
+        parcel.writeString(uid);
+        parcel.writeString(image);
+        parcel.writeList(tags);
+        parcel.writeString(article);
+        parcel.writeString(title);
+        parcel.writeString(publishDate);
+    }
+
+    public static final Creator<Article> CREATOR = new Creator<Article>() {
+        @Override
+        public Article createFromParcel(Parcel in) {
+            return new Article(in);
+        }
+
+        @Override
+        public Article[] newArray(int size) {
+            return new Article[size];
+        }
+    };
 }

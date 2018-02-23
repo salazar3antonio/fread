@@ -22,6 +22,10 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    /**
+     * Binds the passed in Article properties to the populated view.
+     * @param article Article object to be applied.
+     */
     public void bindToArticle(Article article){
 
         mArticleTile.setText(article.getTitle());

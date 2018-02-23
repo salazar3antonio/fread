@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.freadapp.fread.article_classes.ArticleActivity;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.signin_classes.SignInActivity;
@@ -27,6 +28,7 @@ import com.google.firebase.database.Query;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
+    public static final String FB_ARTICLE = "fb_article";
 
 
     private Button mSignInButton;
@@ -116,8 +118,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
-
-                        Toast.makeText(getApplicationContext(), article.getTitle() , Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
+                        intent.putExtra(FB_ARTICLE, article);
+                        startActivity(intent);
+//                        Toast.makeText(getApplicationContext(), article.getTitle() , Toast.LENGTH_SHORT).show();
                     }
                 });
                 viewHolder.bindToArticle(model);
@@ -127,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mFirebaseAdapter);
-
 
 
     }

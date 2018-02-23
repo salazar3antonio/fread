@@ -161,7 +161,7 @@ public class ArticleFragment extends Fragment {
     }
 
     //this method writes the article object to the user that is logged in
-    public void writeArticleToDB(Article article) {
+    private void writeArticleToDB(Article article) {
         mDBRef_Article.setValue(article);
     }
 

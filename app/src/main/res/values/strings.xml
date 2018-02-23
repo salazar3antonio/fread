@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Fread</string>
-    <string name="main_activity_place_holder">Main Activity</string>
+    <string name="app_name">fRead</string>
     <string name="signout_button_text">Sign Out</string>
 </resources>
