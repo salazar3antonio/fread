@@ -5,7 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -43,17 +47,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.article_toolbar);
+        setSupportActionBar(toolbar);
+
+        //        todo tony Move sign in button to main activity options menu
         mSignInButton = findViewById(R.id.signin_button);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
+        //grab an instance of the database and point it to the logged in user's articles
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase.setPersistenceEnabled(true);
+        mArticlesDBref = firebaseDatabase.getReferenceFromUrl(Constants.ARTICLES_REFERENCE);
+
         mRecyclerView = findViewById(R.id.article_recycleView);
         mRecyclerView.setHasFixedSize(true);
-
-        //grab and instance of the database and point it to the logged in user's articles
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mArticlesDBref = firebaseDatabase.getReferenceFromUrl(Constants.ARTICLES_REFERENCE);
 
         //check to see if user is logged in.
         if (mUser == null) {
@@ -131,6 +140,31 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mFirebaseAdapter);
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //inflate the menu view on the toolbar
+        getMenuInflater().inflate(R.menu.article_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_article_button:
+                return true;
+
+            case R.id.article_overflow_menu:
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+
+        }
 
 
     }

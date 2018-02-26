@@ -3,6 +3,8 @@ package com.freadapp.fread.article_classes;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +52,8 @@ public class ArticleFragment extends Fragment {
     private Button mDeleteArticleButton;
 
     private DatabaseReference mDatabase;
+
+    //todo tony save article state so when user leaves and comes back article is at same scroll location. need to prevent additional calls to the api.
 
     //public constructor
     public ArticleFragment() {
@@ -155,14 +159,23 @@ public class ArticleFragment extends Fragment {
 
     }
 
-    //this method deletes the article that the user has saved
+    /**
+     * Deletes an entire Article object at a specific Database Reference
+      */
     private void deleteArticleToDB() {
         mDBRef_Article.removeValue();
     }
 
-    //this method writes the article object to the user that is logged in
+    /**
+     * Writes an Article object at a specific Database Reference
+      * @param article article object to be written to database
+     */
     private void writeArticleToDB(Article article) {
         mDBRef_Article.setValue(article);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

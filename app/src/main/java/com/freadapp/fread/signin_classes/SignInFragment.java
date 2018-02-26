@@ -91,6 +91,8 @@ public class SignInFragment extends Fragment {
     }
 
     private void signOut() {
+        //        todo tony Refresh DB when user signs out.
+
         FirebaseAuth.getInstance().signOut();
 
         mGoogleSignInClient.signOut()
