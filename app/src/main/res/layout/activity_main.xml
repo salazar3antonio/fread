@@ -6,7 +6,7 @@
     tools:context="com.freadapp.fread.MainActivity">
 
     <include
-        layout="@layout/article_toolbar"
+        layout="@layout/main_toolbar"
         />
 
         <LinearLayout

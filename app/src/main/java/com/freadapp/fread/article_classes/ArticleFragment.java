@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import java.util.UUID;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,6 +55,7 @@ public class ArticleFragment extends Fragment {
 
     private DatabaseReference mDatabase;
 
+    // todo tony take out all Firebase commands and constants and make its own class
     //todo tony save article state so when user leaves and comes back article is at same scroll location. need to prevent additional calls to the api.
 
     //public constructor
@@ -68,8 +71,11 @@ public class ArticleFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //create new Article object.
-        mArticle = new Article();
+        savedInstanceState = getArguments();
+        if (savedInstanceState != null) {
+            mArticle = savedInstanceState.getParcelable(NewArticleActivity.ARTICLE_BUNDLE);
+        }
+
         //get auth instance and assign it to the Firebase user
         FirebaseAuth auth = FirebaseAuth.getInstance();
         mUser = auth.getCurrentUser();
@@ -78,9 +84,6 @@ public class ArticleFragment extends Fragment {
         //reference to user-articles/<uid-generated-by-fb>
         mDBRef_Article = mDatabase.child("articles").push();
 
-        if (getArguments() != null) {
-            mUrlReceived = getArguments().getString(ArticleActivity.RECEIVED_URL);
-        }
     }
 
     @Nullable
@@ -97,52 +100,13 @@ public class ArticleFragment extends Fragment {
         mSaveArticleButton = view.findViewById(R.id.write_to_db);
         mDeleteArticleButton = view.findViewById(R.id.delete_to_db);
 
-        //building up the Retrofit object to begin calling the API
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.AYLIEN_API_ENDPOINT_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        //passing in the ArticleAPI interface class into the retrofit Object
-        ArticleAPI articleAPI = retrofit.create(ArticleAPI.class);
-
-        //using the articleAPI object to call the GET method. Passed in URL.
-        //will need to grab the URL from the user's web browser eventually. It's hard coded for now.
-        Call<Article> call = articleAPI.getArticle(mUrlReceived, true);
-        call.enqueue(new Callback<Article>() {
-            @Override
-            public void onResponse(Call<Article> call, Response<Article> response) {
-                //Assign mArticle to the Response body (JSON object).
-                //since our response is an Article object is must be stored as an Article Object.
-                mArticle = response.body();
-
-                //set article views to hold received text from the response body
-                mTitleView.setText(mArticle.getTitle());
-                mAuthorView.setText(mArticle.getAuthor());
-                mArticleView.setText(mArticle.getArticle());
-                mPUBdateView.setText(mArticle.getPublishDate());
-
-                if (mArticle.getImage() == "") {
-                    Toast.makeText(getContext(), "no image link", Toast.LENGTH_SHORT).show();
-                } else {
-                    Picasso.with(getContext()).load(mArticle.getImage()).into(mArticleImageView);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Article> call, Throwable t) {
-                //on failure, Toast error code
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.w(TAG, "API Failed: " + t.getMessage());
-            }
-        });
+        setTextViews();
 
         mSaveArticleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mArticle.setUid(mUser.getUid());
-                writeArticleToDB(mArticle);
+                writeArticleToDB(mArticle, mDBRef_Article);
                 Toast.makeText(getContext(), "Saved Article to " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -160,18 +124,34 @@ public class ArticleFragment extends Fragment {
     }
 
     /**
-     * Deletes an entire Article object at a specific Database Reference
-      */
-    private void deleteArticleToDB() {
+     * Deletes an entire Article node at a specific Database Reference
+     */
+    public void deleteArticleToDB() {
         mDBRef_Article.removeValue();
     }
 
     /**
-     * Writes an Article object at a specific Database Reference
-      * @param article article object to be written to database
+     * Writes an Article node at a specific Database Reference
+     *
+     * @param article article object to be written to database
+     * @param databaseReference database reference to be written to
      */
-    private void writeArticleToDB(Article article) {
-        mDBRef_Article.setValue(article);
+    public static void writeArticleToDB(Article article, DatabaseReference databaseReference) {
+        databaseReference.setValue(article);
+    }
+
+    private void setTextViews() {
+        mTitleView.setText(mArticle.getTitle());
+        mAuthorView.setText(mArticle.getAuthor());
+        mArticleView.setText(mArticle.getArticle());
+        mPUBdateView.setText(mArticle.getPublishDate());
+
+        if (mArticle.getImage() == "") {
+            Toast.makeText(getContext(), "no image link", Toast.LENGTH_SHORT).show();
+        } else {
+            Picasso.with(getContext()).load(mArticle.getImage()).into(mArticleImageView);
+        }
+
     }
 
     @Override

@@ -8,14 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.freadapp.fread.article_classes.ArticleActivity;
+import com.freadapp.fread.article_classes.NewArticleActivity;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.signin_classes.SignInActivity;
@@ -35,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String FB_ARTICLE = "fb_article";
 
 
-    private Button mSignInButton;
     private FirebaseUser mUser;
     private DatabaseReference mArticlesDBref;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
@@ -47,17 +45,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.article_toolbar);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-
-        //        todo tony Move sign in button to main activity options menu
-        mSignInButton = findViewById(R.id.signin_button);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
         //grab an instance of the database and point it to the logged in user's articles
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        //todo tony fix persistence error when back pressed and app restarts
         firebaseDatabase.setPersistenceEnabled(true);
         mArticlesDBref = firebaseDatabase.getReferenceFromUrl(Constants.ARTICLES_REFERENCE);
 
@@ -103,61 +99,21 @@ public class MainActivity extends AppCompatActivity {
             setFirebaseAdapter();
         }
 
-        mSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
-
-    private void setFirebaseAdapter() {
-
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
-                ArticleViewHolder.class, mQueryByUserArticles) {
-
-            @Override
-            protected void populateViewHolder(ArticleViewHolder viewHolder, Article model, int position) {
-
-                final Article article = model;
-
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //launch a new detailed article activity passing the article at the clicked position through an intent
-                        Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
-                        intent.putExtra(FB_ARTICLE, article);
-                        startActivity(intent);
-//                        Toast.makeText(getApplicationContext(), article.getTitle() , Toast.LENGTH_SHORT).show();
-                    }
-                });
-                viewHolder.bindToArticle(model);
-            }
-        };
-
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mFirebaseAdapter);
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //inflate the menu view on the toolbar
-        getMenuInflater().inflate(R.menu.article_menu, menu);
+        getMenuInflater().inflate(R.menu.main_menus, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save_article_button:
-                return true;
-
-            case R.id.article_overflow_menu:
+            case R.id.sign_in_item:
+                Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                startActivity(intent);
                 return true;
 
             default:
@@ -165,6 +121,36 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+
+
+    }
+
+    private void setFirebaseAdapter() {
+
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
+                ArticleViewHolder.class, mQueryByUserArticles) {
+
+            @Override
+            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article model, int position) {
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //launch a new detailed article activity passing the article at the clicked position through an intent
+                        Intent intent = new Intent(getApplicationContext(), NewArticleActivity.class);
+                        intent.putExtra(FB_ARTICLE, model);
+                        startActivity(intent);
+                    }
+                });
+
+                viewHolder.bindToArticle(model);
+
+            }
+        };
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(mFirebaseAdapter);
 
 
     }

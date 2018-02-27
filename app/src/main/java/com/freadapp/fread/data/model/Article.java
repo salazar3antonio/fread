@@ -20,6 +20,7 @@ public class Article implements Parcelable {
     private String article;
     public String title;
     private String publishDate;
+    private String url;
 
 
     public Article() {
@@ -91,6 +92,14 @@ public class Article implements Parcelable {
         this.uid = uid;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public Article(Parcel in) {
 
         author = in.readString();
@@ -101,6 +110,7 @@ public class Article implements Parcelable {
         article = in.readString();
         title = in.readString();
         publishDate = in.readString();
+        url = in.readString();
     }
 
     @Override
@@ -117,6 +127,7 @@ public class Article implements Parcelable {
         parcel.writeString(article);
         parcel.writeString(title);
         parcel.writeString(publishDate);
+        parcel.writeString(url);
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {

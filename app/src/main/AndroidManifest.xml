@@ -23,15 +23,24 @@
             android:name=".article_classes.ArticleActivity"
             android:label="fRead It"
             >
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.SEND" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<data android:mimeType="text/plain" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name=".signin_classes.SignInActivity"
+            android:label="Sign In">
+        </activity>
+        <activity
+            android:name=".article_classes.NewArticleActivity"
+            android:label="New Article Activity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".signin_classes.SignInActivity"
-            android:label="Sign In">
         </activity>
     </application>
 
