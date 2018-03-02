@@ -6,12 +6,12 @@
         android:id="@+id/save_article_button"
         android:checkable="true"
         android:icon="@drawable/ic_add_black_24dp"
-        android:title="Item"
+        android:title="Save Article"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/article_overflow_menu"
-        android:title="Item"
+        android:title="Remove Article"
         app:showAsAction="never" />
 
 

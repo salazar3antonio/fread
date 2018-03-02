@@ -16,12 +16,6 @@
             android:orientation="vertical"
             android:gravity="center_horizontal|center_vertical">
 
-            <Button
-                android:id="@+id/signin_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sign In Page" />
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/article_recycleView"
                 xmlns:android="http://schemas.android.com/apk/res/android"

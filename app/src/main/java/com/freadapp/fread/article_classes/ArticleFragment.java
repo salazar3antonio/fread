@@ -3,34 +3,16 @@ package com.freadapp.fread.article_classes;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.R;
-import com.freadapp.fread.data.api.ArticleAPI;
 import com.freadapp.fread.data.model.Article;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
-
-import java.util.UUID;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by salaz on 2/11/2018.
@@ -45,17 +27,8 @@ public class ArticleFragment extends Fragment {
     private TextView mArticleView;
     private TextView mPUBdateView;
     private ImageView mArticleImageView;
-    private String mUrlReceived;
     private Article mArticle;
-    private FirebaseUser mUser;
-    private DatabaseReference mDBRef_Article;
 
-    private Button mSaveArticleButton;
-    private Button mDeleteArticleButton;
-
-    private DatabaseReference mDatabase;
-
-    // todo tony take out all Firebase commands and constants and make its own class
     //todo tony save article state so when user leaves and comes back article is at same scroll location. need to prevent additional calls to the api.
 
     //public constructor
@@ -73,16 +46,8 @@ public class ArticleFragment extends Fragment {
 
         savedInstanceState = getArguments();
         if (savedInstanceState != null) {
-            mArticle = savedInstanceState.getParcelable(NewArticleActivity.ARTICLE_BUNDLE);
+            mArticle = savedInstanceState.getParcelable(ArticleActivity.ARTICLE_BUNDLE);
         }
-
-        //get auth instance and assign it to the Firebase user
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        mUser = auth.getCurrentUser();
-        //reference of the Firebase Database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        //reference to user-articles/<uid-generated-by-fb>
-        mDBRef_Article = mDatabase.child("articles").push();
 
     }
 
@@ -97,50 +62,15 @@ public class ArticleFragment extends Fragment {
         mArticleView = view.findViewById(R.id.article_view);
         mPUBdateView = view.findViewById(R.id.pubdate_view);
         mArticleImageView = view.findViewById(R.id.image_article_view);
-        mSaveArticleButton = view.findViewById(R.id.write_to_db);
-        mDeleteArticleButton = view.findViewById(R.id.delete_to_db);
 
         setTextViews();
-
-        mSaveArticleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mArticle.setUid(mUser.getUid());
-                writeArticleToDB(mArticle, mDBRef_Article);
-                Toast.makeText(getContext(), "Saved Article to " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        mDeleteArticleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteArticleToDB();
-                Toast.makeText(getContext(), "Removed Article to " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
         return view;
 
     }
 
-    /**
-     * Deletes an entire Article node at a specific Database Reference
-     */
-    public void deleteArticleToDB() {
-        mDBRef_Article.removeValue();
-    }
-
-    /**
-     * Writes an Article node at a specific Database Reference
-     *
-     * @param article article object to be written to database
-     * @param databaseReference database reference to be written to
-     */
-    public static void writeArticleToDB(Article article, DatabaseReference databaseReference) {
-        databaseReference.setValue(article);
-    }
-
     private void setTextViews() {
+
         mTitleView.setText(mArticle.getTitle());
         mAuthorView.setText(mArticle.getAuthor());
         mArticleView.setText(mArticle.getArticle());
@@ -154,8 +84,4 @@ public class ArticleFragment extends Fragment {
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 }

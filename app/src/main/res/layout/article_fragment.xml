@@ -21,20 +21,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/delete_to_db"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:text="Delete Article" />
-
-            <Button
-                android:id="@+id/write_to_db"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Save Article" />
-
             <ImageView
                 android:id="@+id/image_article_view"
                 android:layout_width="match_parent"

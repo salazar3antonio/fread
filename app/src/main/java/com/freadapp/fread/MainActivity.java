@@ -10,11 +10,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.freadapp.fread.article_classes.NewArticleActivity;
+import com.freadapp.fread.article_classes.ArticleActivity;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.signin_classes.SignInActivity;
@@ -51,12 +50,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
-        //grab an instance of the database and point it to the logged in user's articles
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        //todo tony fix persistence error when back pressed and app restarts
-        firebaseDatabase.setPersistenceEnabled(true);
-        mArticlesDBref = firebaseDatabase.getReferenceFromUrl(Constants.ARTICLES_REFERENCE);
-
         mRecyclerView = findViewById(R.id.article_recycleView);
         mRecyclerView.setHasFixedSize(true);
 
@@ -64,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
         if (mUser == null) {
             Toast.makeText(getApplicationContext(), "No user logged in.", Toast.LENGTH_SHORT).show();
         } else {
+            //grab an instance of the database and point it to the logged in user's articles
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            mArticlesDBref = firebaseDatabase.getReferenceFromUrl(Constants.FB_DATABASE_URL + "/articles");
             //query by articles of the user that is logged in
             mQueryByUserArticles = mArticlesDBref.orderByChild("uid").equalTo(mUser.getUid());
             mArticlesDBref.addChildEventListener(new ChildEventListener() {
@@ -98,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
             });
             setFirebaseAdapter();
         }
-
     }
 
     @Override
@@ -131,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
                 ArticleViewHolder.class, mQueryByUserArticles) {
 
             @Override
-            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article model, int position) {
+            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article model, final int position) {
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
-                        Intent intent = new Intent(getApplicationContext(), NewArticleActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
                         intent.putExtra(FB_ARTICLE, model);
                         startActivity(intent);
                     }
