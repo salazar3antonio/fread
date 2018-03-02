@@ -143,7 +143,7 @@ public class ArticleActivity extends AppCompatActivity {
     }
 
     /**
-     * Queries the DB by the Article's keyid. Then references the query and deletes the value.
+     * Removes the article object found at /articles/$articlekeyid in the DB
      * @param article article object to remove
      * @param articles database reference of the articles
      */
