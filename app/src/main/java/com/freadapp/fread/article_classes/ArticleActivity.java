@@ -128,12 +128,12 @@ public class ArticleActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_article_button:
                 saveArticle(mArticle, mUser.getUid(), mDBrefArticles);
-                Toast.makeText(getApplicationContext(), " Article saved.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Article saved.", Toast.LENGTH_SHORT).show();
                 return true;
 
             case R.id.article_overflow_menu:
                 removeArticle(mArticle, mDBrefArticles);
-                Toast.makeText(getApplicationContext(), " Article removed.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Article removed.", Toast.LENGTH_SHORT).show();
                 return true;
 
             default:
@@ -148,10 +148,8 @@ public class ArticleActivity extends AppCompatActivity {
      * @param articles database reference of the articles
      */
     private void removeArticle(Article article, DatabaseReference articles) {
-        // query the DB by keyID. Reference the query and delete the value.
-        Query query = articles.orderByKey().equalTo(article.getKeyid());
-        DatabaseReference databaseReference = query.getRef();
-        databaseReference.removeValue();
+        //point the DB reference to /articles/$articlekeyid and remove the value
+        articles.child(article.getKeyid()).removeValue();
     }
 
     /**
