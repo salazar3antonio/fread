@@ -22,6 +22,7 @@ public class Article implements Parcelable {
     private String publishDate;
     private String url;
     private String keyid;
+    private boolean saved = false;
 
 
     public Article() {
@@ -109,6 +110,14 @@ public class Article implements Parcelable {
         this.keyid = keyid;
     }
 
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+    }
+
     public Article(Parcel in) {
 
         author = in.readString();
@@ -121,6 +130,7 @@ public class Article implements Parcelable {
         publishDate = in.readString();
         url = in.readString();
         keyid = in.readString();
+        saved = in.readByte() !=0;
     }
 
     @Override
@@ -139,6 +149,7 @@ public class Article implements Parcelable {
         parcel.writeString(publishDate);
         parcel.writeString(url);
         parcel.writeString(keyid);
+        parcel.writeByte((byte) (saved ? 1 : 0));
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {

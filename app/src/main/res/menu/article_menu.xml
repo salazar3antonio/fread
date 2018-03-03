@@ -3,15 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/save_article_button"
+        android:id="@+id/save_article_menu_item"
         android:checkable="true"
-        android:icon="@drawable/ic_add_black_24dp"
+        android:checked="false"
+        android:icon="@drawable/ic_add_box_black_24dp"
         android:title="Save Article"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/article_overflow_menu"
-        android:title="Remove Article"
+        android:title="Item"
         app:showAsAction="never" />
 
 
