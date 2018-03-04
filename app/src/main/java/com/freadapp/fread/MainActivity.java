@@ -66,10 +66,9 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Article article = dataSnapshot.getValue(Article.class);
-                    Log.i(TAG, "Article Titles: " + article.getTitle());
+                    Log.i(TAG, "Article Title: " + article.getTitle());
                     Log.i(TAG, "User UID: " + article.getUid());
                     setFirebaseAdapter();
-
                 }
 
                 @Override
@@ -92,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
+
             setFirebaseAdapter();
+
         }
     }
 
@@ -146,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mFirebaseAdapter);
-
 
     }
 

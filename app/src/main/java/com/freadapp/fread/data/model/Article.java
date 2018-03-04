@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the model for the Article object. It has the properties that match the query parameters of the Article
- * Extraction API from Aylien.com.
+ * This is the model for the Article object.
+ * Artile Extraction API from Aylien.com.
  */
 
 public class Article implements Parcelable {
@@ -23,6 +23,8 @@ public class Article implements Parcelable {
     private String url;
     private String keyid;
     private boolean saved = false;
+    private List<Object> videos = null;
+    private List<Object> feeds = null;
 
 
     public Article() {
@@ -118,6 +120,22 @@ public class Article implements Parcelable {
         this.saved = saved;
     }
 
+    public List<Object> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<Object> videos) {
+        this.videos = videos;
+    }
+
+    public List<Object> getFeeds() {
+        return feeds;
+    }
+
+    public void setFeeds(List<Object> feeds) {
+        this.feeds = feeds;
+    }
+
     public Article(Parcel in) {
 
         author = in.readString();
@@ -131,6 +149,10 @@ public class Article implements Parcelable {
         url = in.readString();
         keyid = in.readString();
         saved = in.readByte() !=0;
+        videos = new ArrayList<>();
+        in.readList(videos, null);
+        feeds = new ArrayList<>();
+        in.readList(feeds, null);
     }
 
     @Override
@@ -150,6 +172,8 @@ public class Article implements Parcelable {
         parcel.writeString(url);
         parcel.writeString(keyid);
         parcel.writeByte((byte) (saved ? 1 : 0));
+        parcel.writeList(videos);
+        parcel.writeList(feeds);
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {

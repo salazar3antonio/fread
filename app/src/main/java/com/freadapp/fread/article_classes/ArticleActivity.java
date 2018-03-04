@@ -41,10 +41,8 @@ public class ArticleActivity extends AppCompatActivity {
 
     private Article mArticle;
     private String mURLreceived;
-    private DatabaseReference mDBrefArticles;
+    private DatabaseReference mArticlesDB;
     private FirebaseUser mUser;
-    private boolean mArticleIsSaved = false;
-    private Menu mMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,6 +51,8 @@ public class ArticleActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -66,7 +66,7 @@ public class ArticleActivity extends AppCompatActivity {
         mUser = firebaseAuth.getCurrentUser();
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mDBrefArticles = firebaseDatabase.getReference().child("articles");
+        mArticlesDB = firebaseDatabase.getReference().child("articles");
 
         if (findViewById(R.id.fragment_container) != null) {
             //placing in the loading screen for when quiz api is being called
@@ -99,7 +99,7 @@ public class ArticleActivity extends AppCompatActivity {
                         mArticle.setUrl(mURLreceived);
                         showArticleFragment();
                     } else {
-                        Log.i(TAG, "API Response Failed: " + response.message());
+                        Log.e(TAG, "API Response Failed: " + response.message());
                     }
                 }
 
@@ -107,7 +107,7 @@ public class ArticleActivity extends AppCompatActivity {
                 public void onFailure(Call<Article> call, Throwable t) {
                     //on failure, Toast error code
                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "API Failed: " + t.getMessage());
+                    Log.e(TAG, "API Failed: " + t.getMessage());
                 }
             });
         } else {
@@ -138,14 +138,13 @@ public class ArticleActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save_article_button:
             case R.id.save_article_menu_item:
                 if (item.isChecked()) {
-                    removeArticle(mArticle, mDBrefArticles);
+                    removeArticle(mArticle, mArticlesDB);
                     item.setIcon(R.drawable.ic_add_box_black_24dp);
                     item.setChecked(false);
                 } else {
-                    saveArticle(mArticle, mUser.getUid(), mDBrefArticles);
+                    saveArticle(mArticle, mUser.getUid(), mArticlesDB);
                     item.setIcon(R.drawable.ic_check_circle_black_24dp);
                     item.setChecked(true);
                 }
