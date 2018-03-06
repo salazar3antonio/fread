@@ -6,16 +6,19 @@
         android:id="@+id/save_article_menu_item"
         android:checkable="true"
         android:checked="false"
-        android:icon="@drawable/ic_add_box_black_24dp"
+        android:icon="@drawable/ic_add_box_white_24dp"
         android:title="Save Article"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/article_overflow_menu"
+        android:id="@+id/add_tags_menu_item"
+        android:icon="@drawable/ic_local_offer_white_24dp"
+        android:title="Add Tags"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/article_overflow_menu_item"
         android:title="Item"
         app:showAsAction="never" />
-
-
 
 
 </menu>

@@ -30,7 +30,9 @@ public class Article implements Parcelable {
     public Article() {
     }
 
-    public Article(String author, String uid, String image, List<Object> tags, String article, String title, String publishDate) {
+    public Article(String author, String uid, String image, List<Object> tags,
+                   String article, String title, String publishDate, String url,
+                   String keyid, boolean saved, List<Object> videos, List<Object> feeds) {
         this.author = author;
         this.uid = uid;
         this.image = image;
@@ -38,6 +40,11 @@ public class Article implements Parcelable {
         this.article = article;
         this.title = title;
         this.publishDate = publishDate;
+        this.url = url;
+        this.keyid = keyid;
+        this.saved = saved;
+        this.videos = videos;
+        this.feeds = feeds;
     }
 
     public String getAuthor() {

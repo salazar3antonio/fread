@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             //grab an instance of the database and point it to the logged in user's articles
             FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            mArticlesDBref = firebaseDatabase.getReferenceFromUrl(Constants.FB_DATABASE_URL + "/articles");
+            mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
             //query by articles of the user that is logged in
             mQueryByUserArticles = mArticlesDBref.orderByChild("uid").equalTo(mUser.getUid());
             mArticlesDBref.addChildEventListener(new ChildEventListener() {

@@ -2,6 +2,7 @@ package com.freadapp.fread.article_classes;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -15,13 +16,19 @@ import com.freadapp.fread.MainActivity;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.api.ArticleAPI;
 import com.freadapp.fread.data.model.Article;
+import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.helpers.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -42,6 +49,7 @@ public class ArticleActivity extends AppCompatActivity {
     private Article mArticle;
     private String mURLreceived;
     private DatabaseReference mArticlesDB;
+    private DatabaseReference mTagsDB;
     private FirebaseUser mUser;
 
     @Override
@@ -66,7 +74,8 @@ public class ArticleActivity extends AppCompatActivity {
         mUser = firebaseAuth.getCurrentUser();
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mArticlesDB = firebaseDatabase.getReference().child("articles");
+        mArticlesDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
+        mTagsDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("tags");
 
         if (findViewById(R.id.fragment_container) != null) {
             //placing in the loading screen for when quiz api is being called
@@ -129,7 +138,7 @@ public class ArticleActivity extends AppCompatActivity {
         //change save article menu item to be checked if article has been saved.
         if (mArticle != null && mArticle.isSaved()) {
             MenuItem saveArticleMenuItem = menu.findItem(R.id.save_article_menu_item);
-            saveArticleMenuItem.setIcon(R.drawable.ic_check_circle_black_24dp);
+            saveArticleMenuItem.setIcon(R.drawable.ic_check_circle_white_24dp);
             saveArticleMenuItem.setChecked(true);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -140,17 +149,20 @@ public class ArticleActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_article_menu_item:
                 if (item.isChecked()) {
-                    removeArticle(mArticle, mArticlesDB);
-                    item.setIcon(R.drawable.ic_add_box_black_24dp);
+                    removeArticle(mArticle, mArticlesDB);item.setIcon(R.drawable.ic_add_box_white_24dp);
                     item.setChecked(false);
                 } else {
                     saveArticle(mArticle, mUser.getUid(), mArticlesDB);
-                    item.setIcon(R.drawable.ic_check_circle_black_24dp);
+                    item.setIcon(R.drawable.ic_check_circle_white_24dp);
                     item.setChecked(true);
                 }
                 return true;
 
-            case R.id.article_overflow_menu:
+            case R.id.add_tags_menu_item:
+                tagArticle();
+                return true;
+
+            case R.id.article_overflow_menu_item:
                 return true;
 
             default:
@@ -183,20 +195,33 @@ public class ArticleActivity extends AppCompatActivity {
 
         //check if article is already saved
         //if mURLreceived is equal to the article's url or is not null then user has already saved the article
-        //create a unique keyid for the Articlle
+        //create a unique keyid for the Article
         String key = articles.push().getKey();
         //store the keyid and userid into the Article object. This helps for retrieval later.
         article.setKeyid(key);
         article.setUid(uid);
         article.setSaved(true);
 
-        //a hash map to store the key (keyid) and value (article object) pair to be save to the DB
+        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
         Map<String, Object> writeMap = new HashMap<>();
         writeMap.put(key, article);
         //update the children of "articles" in the DB with the passed in Hash Map
         articles.updateChildren(writeMap);
 
         Toast.makeText(getApplicationContext(), "Article saved.", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void tagArticle() {
+
+        List<Object> arrayList = new ArrayList<>();
+        arrayList.add("1234");
+        arrayList.add("3344");
+
+        Tag tag = new Tag("1234", "sports", arrayList);
+        String key = mTagsDB.push().getKey();
+        tag.setKeyid(key);
+        mTagsDB.setValue(tag);
 
     }
 

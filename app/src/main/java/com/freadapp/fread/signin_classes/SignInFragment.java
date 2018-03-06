@@ -140,15 +140,11 @@ public class SignInFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            //update UI if sign in success
-
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Firebase user athentication success");
                             Snackbar.make(getView(), "Authentication Success.", Snackbar.LENGTH_SHORT).show();
 
                         } else {
-
-                            //update UI if failure
 
                             // if sign in fails, log and snackbar failure
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
