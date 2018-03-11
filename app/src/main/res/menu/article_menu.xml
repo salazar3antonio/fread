@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/save_article_menu_item"
         android:checkable="true"
         android:checked="false"
-        android:icon="@drawable/ic_add_box_white_24dp"
-        android:title="Save Article"
+        android:icon="@drawable/ic_save_outline_white"
+        android:title="@string/save_article_menu_text"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/add_tags_menu_item"
-        android:icon="@drawable/ic_local_offer_white_24dp"
-        android:title="Add Tags"
+        android:id="@+id/share_menu_item"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share_article_menu_text"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/add_label_menu_item"
+        android:icon="@drawable/ic_label_white_24dp"
+        android:title="@string/label_menu_text"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/article_overflow_menu_item"
         android:title="Item"

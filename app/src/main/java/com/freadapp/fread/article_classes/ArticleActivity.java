@@ -2,7 +2,6 @@ package com.freadapp.fread.article_classes;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +15,7 @@ import com.freadapp.fread.MainActivity;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.api.ArticleAPI;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.data.model.Tag;
+import com.freadapp.fread.data.model.Label;
 import com.freadapp.fread.helpers.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,11 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -49,7 +45,7 @@ public class ArticleActivity extends AppCompatActivity {
     private Article mArticle;
     private String mURLreceived;
     private DatabaseReference mArticlesDB;
-    private DatabaseReference mTagsDB;
+    private DatabaseReference mLabelsDB;
     private FirebaseUser mUser;
 
     @Override
@@ -65,7 +61,7 @@ public class ArticleActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             //article extra from FB database
-            mArticle = bundle.getParcelable(MainActivity.FB_ARTICLE);
+            mArticle = bundle.getParcelable(ArticleFeedFragment.FB_ARTICLE);
             //URL extra from web browser
             mURLreceived = bundle.getString(Intent.EXTRA_TEXT);
         }
@@ -75,7 +71,7 @@ public class ArticleActivity extends AppCompatActivity {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         mArticlesDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-        mTagsDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("tags");
+        mLabelsDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("labels");
 
         if (findViewById(R.id.fragment_container) != null) {
             //placing in the loading screen for when quiz api is being called
@@ -138,7 +134,7 @@ public class ArticleActivity extends AppCompatActivity {
         //change save article menu item to be checked if article has been saved.
         if (mArticle != null && mArticle.isSaved()) {
             MenuItem saveArticleMenuItem = menu.findItem(R.id.save_article_menu_item);
-            saveArticleMenuItem.setIcon(R.drawable.ic_check_circle_white_24dp);
+            saveArticleMenuItem.setIcon(R.drawable.ic_save_white_24dp);
             saveArticleMenuItem.setChecked(true);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -149,17 +145,21 @@ public class ArticleActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_article_menu_item:
                 if (item.isChecked()) {
-                    removeArticle(mArticle, mArticlesDB);item.setIcon(R.drawable.ic_add_box_white_24dp);
+                    removeArticle(mArticle, mArticlesDB);
+                    item.setIcon(R.drawable.ic_save_outline_white);
                     item.setChecked(false);
                 } else {
                     saveArticle(mArticle, mUser.getUid(), mArticlesDB);
-                    item.setIcon(R.drawable.ic_check_circle_white_24dp);
+                    item.setIcon(R.drawable.ic_save_white_24dp);
                     item.setChecked(true);
                 }
                 return true;
 
-            case R.id.add_tags_menu_item:
-                tagArticle();
+            case R.id.share_menu_item:
+                return true;
+
+            case R.id.add_label_menu_item:
+                labelArticle(mLabelsDB);
                 return true;
 
             case R.id.article_overflow_menu_item:
@@ -193,8 +193,6 @@ public class ArticleActivity extends AppCompatActivity {
      */
     private void saveArticle(Article article, String uid, DatabaseReference articles) {
 
-        //check if article is already saved
-        //if mURLreceived is equal to the article's url or is not null then user has already saved the article
         //create a unique keyid for the Article
         String key = articles.push().getKey();
         //store the keyid and userid into the Article object. This helps for retrieval later.
@@ -212,16 +210,23 @@ public class ArticleActivity extends AppCompatActivity {
 
     }
 
-    private void tagArticle() {
+    private void labelArticle(DatabaseReference labels) {
+
+        //todo tony launch new label activity so user can add and edit the article's labels
 
         List<Object> arrayList = new ArrayList<>();
-        arrayList.add("1234");
-        arrayList.add("3344");
+        arrayList.add(mArticle.getKeyid());
 
-        Tag tag = new Tag("1234", "sports", arrayList);
-        String key = mTagsDB.push().getKey();
-        tag.setKeyid(key);
-        mTagsDB.setValue(tag);
+        Label label = new Label();
+        String key = mLabelsDB.push().getKey();
+        label.setKeyid(key);
+        label.setLabel("sports");
+        label.setLabeledArticles(arrayList);
+
+        Map<String, Object> writeMap = new HashMap<>();
+        writeMap.put(key, label);
+        labels.updateChildren(writeMap);
+
 
     }
 

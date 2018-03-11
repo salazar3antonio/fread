@@ -14,11 +14,13 @@ import com.freadapp.fread.data.model.Article;
 public class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     private TextView mArticleTile;
+    private TextView mArticleURL;
 
     public ArticleViewHolder(View itemView) {
         super(itemView);
 
-        mArticleTile = itemView.findViewById(R.id.article_title_list_item);
+        mArticleTile = itemView.findViewById(R.id.title_list_item);
+        mArticleURL = itemView.findViewById(R.id.url_list_item);
 
     }
 
@@ -29,6 +31,7 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     public void bindToArticle(Article article){
 
         mArticleTile.setText(article.getTitle());
+        mArticleURL.setText(article.getUrl());
 
     }
 
