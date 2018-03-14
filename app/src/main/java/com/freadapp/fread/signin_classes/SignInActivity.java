@@ -15,12 +15,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 public class SignInActivity extends SingleFragmentActivity {
 
-    public static final String TAG = ArticleActivity.class.getName();
+    public static final String TAG = SignInActivity.class.getName();
 
     @Override
     protected Fragment createFragment() {
 
-        return new SignInFragment();
+        return SignInFragment.newInstance();
 
     }
 

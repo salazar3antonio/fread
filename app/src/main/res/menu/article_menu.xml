@@ -23,8 +23,8 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/article_overflow_menu_item"
-        android:title="Item"
+        android:id="@+id/web_view_menu_item"
+        android:title="@string/web_view_menu_text"
         app:showAsAction="never" />
 
 

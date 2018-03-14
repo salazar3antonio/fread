@@ -42,6 +42,10 @@ public class SignInFragment extends Fragment {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
 
+    public static SignInFragment newInstance() {
+        return new SignInFragment();
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

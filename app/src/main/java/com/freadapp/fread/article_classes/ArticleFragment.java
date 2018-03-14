@@ -31,7 +31,7 @@ public class ArticleFragment extends Fragment {
     private ImageView mArticleImageView;
     private Article mArticle;
 
-    //todo tony save article state so when user leaves and comes back article is at same scroll location. need to prevent additional calls to the api.
+    //todo tony save article state during rotation. need to prevent additional calls to the api.
 
     //public constructor
     public ArticleFragment() {
@@ -69,6 +69,13 @@ public class ArticleFragment extends Fragment {
 
         return view;
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(ArticleActivity.ARTICLE_BUNDLE, mArticle);
     }
 
     private void setTextViews() {

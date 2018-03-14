@@ -144,8 +144,6 @@ public class ArticleFeedFragment extends Fragment {
 
     }
 
-
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

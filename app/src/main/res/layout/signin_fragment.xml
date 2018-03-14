@@ -4,16 +4,9 @@
     android:id="@+id/lin_lay_signin"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
-    android:padding="15dp">
-
-    <TextView
-        android:id="@+id/signin_status_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="15dp"
-        android:textSize="20sp"
-        tools:text="Sign In Status" />
+    android:padding="30dp">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_signin_button"

@@ -1,6 +1,7 @@
 package com.freadapp.fread.article_classes;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -9,9 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-import com.freadapp.fread.MainActivity;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.api.ArticleAPI;
 import com.freadapp.fread.data.model.Article;
@@ -162,7 +163,8 @@ public class ArticleActivity extends AppCompatActivity {
                 labelArticle(mLabelsDB);
                 return true;
 
-            case R.id.article_overflow_menu_item:
+            case R.id.web_view_menu_item:
+                openWebView();
                 return true;
 
             default:
@@ -244,6 +246,14 @@ public class ArticleActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, articleFragment, ARTICLE_FRAGMENT_TAG);
         fragmentTransaction.commit();
+
+    }
+
+    private void openWebView() {
+
+        Uri webpage = Uri.parse(mArticle.getUrl());
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+        startActivity(intent);
 
     }
 
