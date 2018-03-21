@@ -1,5 +1,6 @@
 package com.freadapp.fread.article_classes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -133,7 +134,8 @@ public class ArticleFeedFragment extends Fragment {
                     }
                 });
 
-                viewHolder.bindToArticle(model);
+                Context context = getContext();
+                viewHolder.bindToArticle(model, context);
 
             }
         };

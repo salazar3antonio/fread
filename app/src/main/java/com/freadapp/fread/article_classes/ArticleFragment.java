@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
 import com.squareup.picasso.Picasso;
@@ -88,7 +89,7 @@ public class ArticleFragment extends Fragment {
         if (mArticle.getImage() == "") {
             Toast.makeText(getContext(), "no image link", Toast.LENGTH_SHORT).show();
         } else {
-            Picasso.with(getContext()).load(mArticle.getImage()).into(mArticleImageView);
+            Glide.with(getContext()).load(mArticle.getImage()).into(mArticleImageView);
         }
 
 

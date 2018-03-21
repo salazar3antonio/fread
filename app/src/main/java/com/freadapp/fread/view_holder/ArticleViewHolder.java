@@ -1,9 +1,13 @@
 package com.freadapp.fread.view_holder;
 
+import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
 
@@ -15,12 +19,17 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     private TextView mArticleTile;
     private TextView mArticleURL;
+    private ImageView mArticleImage;
+    private CardView mCardView;
 
     public ArticleViewHolder(View itemView) {
         super(itemView);
 
         mArticleTile = itemView.findViewById(R.id.title_list_item);
         mArticleURL = itemView.findViewById(R.id.url_list_item);
+        mArticleImage = itemView.findViewById(R.id.image_list_item);
+        mCardView = itemView.findViewById(R.id.articlce_cardview);
+        mCardView.setPreventCornerOverlap(false);
 
     }
 
@@ -28,10 +37,11 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
      * Binds the passed in Article properties to the populated view.
      * @param article Article object to be applied.
      */
-    public void bindToArticle(Article article){
+    public void bindToArticle(Article article, Context context){
 
         mArticleTile.setText(article.getTitle());
         mArticleURL.setText(article.getUrl());
+        Glide.with(context).load(article.getImage()).into(mArticleImage);
 
     }
 
