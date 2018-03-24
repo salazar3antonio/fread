@@ -16,35 +16,36 @@ public class Article implements Parcelable {
     private String author;
     private String uid;
     private String image;
-    private List<Object> tags = null;
     private String article;
+    private List<Object> articleTags = null;
     public String title;
     private String publishDate;
     private String url;
     private String keyid;
     private boolean saved = false;
     private List<Object> videos = null;
-    private List<Object> feeds = null;
 
 
     public Article() {
     }
 
-    public Article(String author, String uid, String image, List<Object> tags,
-                   String article, String title, String publishDate, String url,
-                   String keyid, boolean saved, List<Object> videos, List<Object> feeds) {
+    public Article(String author, String uid,
+                   String image, String article,
+                   List<Object> articleTags, String title,
+                   String publishDate, String url,
+                   String keyid, boolean saved,
+                   List<Object> videos) {
         this.author = author;
         this.uid = uid;
         this.image = image;
-        this.tags = tags;
         this.article = article;
+        this.articleTags = articleTags;
         this.title = title;
         this.publishDate = publishDate;
         this.url = url;
         this.keyid = keyid;
         this.saved = saved;
         this.videos = videos;
-        this.feeds = feeds;
     }
 
     public String getAuthor() {
@@ -61,14 +62,6 @@ public class Article implements Parcelable {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public List<Object> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Object> tags) {
-        this.tags = tags;
     }
 
     public String getArticle() {
@@ -135,12 +128,12 @@ public class Article implements Parcelable {
         this.videos = videos;
     }
 
-    public List<Object> getFeeds() {
-        return feeds;
+    public List<Object> getArticleTags() {
+        return articleTags;
     }
 
-    public void setFeeds(List<Object> feeds) {
-        this.feeds = feeds;
+    public void setArticleTags(List<Object> articleTags) {
+        this.articleTags = articleTags;
     }
 
     public Article(Parcel in) {
@@ -148,8 +141,8 @@ public class Article implements Parcelable {
         author = in.readString();
         uid = in.readString();
         image = in.readString();
-        tags = new ArrayList<>();
-        in.readList(tags, null);
+        articleTags = new ArrayList<>();
+        in.readList(articleTags, null);
         article = in.readString();
         title = in.readString();
         publishDate = in.readString();
@@ -158,8 +151,6 @@ public class Article implements Parcelable {
         saved = in.readByte() !=0;
         videos = new ArrayList<>();
         in.readList(videos, null);
-        feeds = new ArrayList<>();
-        in.readList(feeds, null);
     }
 
     @Override
@@ -172,7 +163,7 @@ public class Article implements Parcelable {
         parcel.writeString(author);
         parcel.writeString(uid);
         parcel.writeString(image);
-        parcel.writeList(tags);
+        parcel.writeList(articleTags);
         parcel.writeString(article);
         parcel.writeString(title);
         parcel.writeString(publishDate);
@@ -180,7 +171,6 @@ public class Article implements Parcelable {
         parcel.writeString(keyid);
         parcel.writeByte((byte) (saved ? 1 : 0));
         parcel.writeList(videos);
-        parcel.writeList(feeds);
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {

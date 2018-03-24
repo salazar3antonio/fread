@@ -35,7 +35,7 @@ import com.google.firebase.database.Query;
 public class ArticleFeedFragment extends Fragment {
 
     public static final String TAG = ArticleFeedFragment.class.getName();
-    public static final String FB_ARTICLE = "fb_article";
+    public static final String FB_ARTICLE_KEY_ID = "fb_key_id";
 
 
     private FirebaseUser mUser;
@@ -44,17 +44,10 @@ public class ArticleFeedFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Query mQueryByUserArticles;
 
+    //todo tony move this class to List folder. This class in not an article. It populates all User Articles
+
     public static ArticleFeedFragment newInstance() {
         return new ArticleFeedFragment();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-
-
     }
 
     @Nullable
@@ -129,7 +122,7 @@ public class ArticleFeedFragment extends Fragment {
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
                         Intent intent = new Intent(getContext(), ArticleActivity.class);
-                        intent.putExtra(FB_ARTICLE, model);
+                        intent.putExtra(FB_ARTICLE_KEY_ID, model.getKeyid());
                         startActivity(intent);
                     }
                 });

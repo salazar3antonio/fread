@@ -11,7 +11,7 @@
 
     <!-- Layout holds main pages. User this FrameLayout to inflate Fragments -->
     <FrameLayout
-        android:id="@+id/main_content_frame"
+        android:id="@+id/main_content_framelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav"

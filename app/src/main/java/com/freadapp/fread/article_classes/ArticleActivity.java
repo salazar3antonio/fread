@@ -10,18 +10,22 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.api.ArticleAPI;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.data.model.Label;
+import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.helpers.Constants;
+import com.freadapp.fread.tag_classes.AddTagActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,43 +46,63 @@ public class ArticleActivity extends AppCompatActivity {
     public static final String TAG = ArticleActivity.class.getName();
     public static final String ARTICLE_BUNDLE = "article_bundle";
     public static final String ARTICLE_FRAGMENT_TAG = "article_fragment_tag";
+    public static final String ARTICLE_KEY_ID = "article_key_id";
+    public static final int ADD_TAG_REQUEST_CODE = 1;
 
-    private Article mArticle;
+    private Article mArticle = new Article();
     private String mURLreceived;
-    private DatabaseReference mArticlesDB;
-    private DatabaseReference mLabelsDB;
+    private String mArticleKeyID;
+    private DatabaseReference mArticleDBref;
+    private DatabaseReference mTagsDB;
     private FirebaseUser mUser;
+    private Query mQueryArticle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment);
+        setContentView(R.layout.article_fragment_container);
 
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            //article extra from FB database
-            mArticle = bundle.getParcelable(ArticleFeedFragment.FB_ARTICLE);
-            //URL extra from web browser
-            mURLreceived = bundle.getString(Intent.EXTRA_TEXT);
-        }
-
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mArticlesDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-        mLabelsDB = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("labels");
+        //we don't need to pass an object anymore from ArticleFeedFragment. We only need the Article KeyId.
+        //we then pass that id into the specified location and assign mArticle to the Article obeject found at that location
 
-        if (findViewById(R.id.fragment_container) != null) {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            //Article KeyID extra from the Intent that started this activity
+            mArticleKeyID = bundle.getString(ArticleFeedFragment.FB_ARTICLE_KEY_ID);
+            //assign URL Extra Text from Intent that the Web Browser started.
+            mURLreceived = bundle.getString(Intent.EXTRA_TEXT);
+
+            //get FB Database and navigate to the specified article passed in from the intent.
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            mArticleDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles").child(mArticleKeyID);
+            //add listener to mArticleDB at the specified KeyID location
+            mArticleDBref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    mArticle = dataSnapshot.getValue(Article.class);
+                    showArticleFragment();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        if (findViewById(R.id.article_container) != null) {
             //placing in the loading screen for when quiz api is being called
             ArticleLoadingFragment articleLoadingFragmentLoadingFragment = ArticleLoadingFragment.newInstance();
             articleLoadingFragmentLoadingFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, articleLoadingFragmentLoadingFragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.article_container, articleLoadingFragmentLoadingFragment).commit();
         }
 
         //building up the Retrofit object to begin calling the API
@@ -146,11 +170,11 @@ public class ArticleActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_article_menu_item:
                 if (item.isChecked()) {
-                    removeArticle(mArticle, mArticlesDB);
+                    removeArticle(mArticle, mArticleDBref);
                     item.setIcon(R.drawable.ic_save_outline_white);
                     item.setChecked(false);
                 } else {
-                    saveArticle(mArticle, mUser.getUid(), mArticlesDB);
+                    saveArticle(mArticle, mUser.getUid(), mArticleDBref);
                     item.setIcon(R.drawable.ic_save_white_24dp);
                     item.setChecked(true);
                 }
@@ -159,8 +183,12 @@ public class ArticleActivity extends AppCompatActivity {
             case R.id.share_menu_item:
                 return true;
 
-            case R.id.add_label_menu_item:
-                labelArticle(mLabelsDB);
+            case R.id.add_tags_menu_item:
+                //tagArticle(mTagsDB);
+                //launch AddTag Activity and pass on article keyid
+                Intent intent = new Intent(getApplicationContext(), AddTagActivity.class);
+                intent.putExtra(ARTICLE_KEY_ID, mArticle.getKeyid());
+                startActivity(intent);
                 return true;
 
             case R.id.web_view_menu_item:
@@ -212,23 +240,28 @@ public class ArticleActivity extends AppCompatActivity {
 
     }
 
-    private void labelArticle(DatabaseReference labels) {
+    private void tagArticle(DatabaseReference tags) {
 
         //todo tony launch new label activity so user can add and edit the article's labels
 
         List<Object> arrayList = new ArrayList<>();
         arrayList.add(mArticle.getKeyid());
 
-        Label label = new Label();
-        String key = mLabelsDB.push().getKey();
-        label.setKeyid(key);
-        label.setLabel("sports");
-        label.setLabeledArticles(arrayList);
+        //Create new Tag Object
+        Tag tag = new Tag();
+        //Store the key FB creates for this push
+        String key = mTagsDB.push().getKey();
+        //Set the KeyID and Tag
+        tag.setKeyid(key);
+        tag.setTagName("sports");
+        //Set the ArrayList to the TaggedArticles of the Tag Object
+        tag.setTaggedArticles(arrayList);
 
+        //Create HashMap to put to the TagDB. Notice we put with key and tag.
         Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(key, label);
-        labels.updateChildren(writeMap);
-
+        writeMap.put(key, tag);
+        //Write the key value pair to the TagDB as a child of "tags"
+        tags.updateChildren(writeMap);
 
     }
 
@@ -244,8 +277,20 @@ public class ArticleActivity extends AppCompatActivity {
         articleFragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, articleFragment, ARTICLE_FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.article_container, articleFragment, ARTICLE_FRAGMENT_TAG);
         fragmentTransaction.commit();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ADD_TAG_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                mArticleKeyID = data.getStringExtra(AddTagActivity.ARTICLE_KEY_ID_REPLY);
+            }
+        }
 
     }
 

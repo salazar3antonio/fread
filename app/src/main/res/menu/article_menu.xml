@@ -17,9 +17,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/add_label_menu_item"
+        android:id="@+id/add_tags_menu_item"
         android:icon="@drawable/ic_label_white_24dp"
-        android:title="@string/label_menu_text"
+        android:title="@string/add_tag_menu_text"
         app:showAsAction="ifRoom" />
 
     <item

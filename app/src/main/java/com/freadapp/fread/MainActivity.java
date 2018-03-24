@@ -84,15 +84,15 @@ public class MainActivity extends AppCompatActivity {
         item.setChecked(true);
 
         switch (item.getItemId()) {
-            case R.id.navigation_freads:
+            case R.id.main_nav_list:
                 // Action to perform when Home Menu item is selected.
                 pushFragment(ArticleFeedFragment.newInstance());
                 break;
-            case R.id.navigation_search:
+            case R.id.main_nav_search:
                 // Action to perform when Bag Menu item is selected.
                 pushFragment(null);
                 break;
-            case R.id.navigation_profile:
+            case R.id.main_nav_profile:
                 // Action to perform when Account Menu item is selected.
                 pushFragment(null);
                 break;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction ft = fragmentManager.beginTransaction();
 
             if (ft != null) {
-                ft.replace(R.id.main_content_frame, fragment);
+                ft.replace(R.id.main_content_framelayout, fragment);
                 ft.commit();
             }
         }

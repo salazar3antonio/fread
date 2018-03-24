@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.freadapp.fread.article_classes.ArticleActivity;
 import com.freadapp.fread.helpers.SingleFragmentActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

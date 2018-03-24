@@ -1,23 +1,14 @@
 package com.freadapp.fread.helpers;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.freadapp.fread.R;
-import com.freadapp.fread.signin_classes.SignInActivity;
 
 /**
  * Created by salaz on 2/11/2018.
@@ -31,7 +22,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     @LayoutRes
     protected int getLayoutResId() {
         //this captures the id of the layout resource file. It is NOT the ID name of a view that lives inside of a layout resource file.
-        return R.layout.activity_fragment;
+        return R.layout.article_fragment_container;
     }
 
     @Override
@@ -45,10 +36,10 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         //find the fragment id (fragment_container) from the FragmentManager and commit a new Fragment object
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+        Fragment fragment = fragmentManager.findFragmentById(R.id.article_container);
         if (fragment == null) {
             fragment = createFragment();
-            fragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit();
+            fragmentManager.beginTransaction().add(R.id.article_container, fragment).commit();
         }
     }
 
