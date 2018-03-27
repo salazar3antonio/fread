@@ -8,27 +8,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.freadapp.fread.R;
+import com.freadapp.fread.article_classes.ArticleActivity;
 
 /**
  * Created by salaz on 3/22/2018.
  */
 
-public class AddTagFragment extends Fragment {
+public class AddTagToArticleFragment extends Fragment {
 
     private Button mAddTagButton;
     private EditText mTagNameEdit;
+    private String mArticleKeyID;
 
-    public static AddTagFragment newInstance() {
-        return new AddTagFragment();
+    public static AddTagToArticleFragment newInstance() {
+        return new AddTagToArticleFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        //inflate teh add_tag_fragment. hold edit text and add tag button.
+        //inflate the add_tag_fragment. hold edit text and add tag button.
         View view = inflater.inflate(R.layout.add_tag_fragment, container, false);
 
         mAddTagButton = view.findViewById(R.id.add_tag_button);

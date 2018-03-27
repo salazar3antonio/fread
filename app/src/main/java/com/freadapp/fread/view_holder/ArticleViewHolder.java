@@ -20,7 +20,6 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     private TextView mArticleTile;
     private TextView mArticleURL;
     private ImageView mArticleImage;
-    private CardView mCardView;
 
     public ArticleViewHolder(View itemView) {
         super(itemView);
@@ -28,8 +27,6 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
         mArticleTile = itemView.findViewById(R.id.title_list_item);
         mArticleURL = itemView.findViewById(R.id.url_list_item);
         mArticleImage = itemView.findViewById(R.id.image_list_item);
-        mCardView = itemView.findViewById(R.id.articlce_cardview);
-        mCardView.setPreventCornerOverlap(false);
 
     }
 

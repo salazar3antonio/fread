@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name=".signin_classes.SignInActivity"
-            android:label="Sign In"/>
+            android:label="Sign In" />
         <activity
             android:name=".article_classes.ArticleActivity"
             android:label="fRead It"
@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".tag_classes.AddTagActivity"
+            android:name=".tag_classes.AddTagToArticleActivity"
             android:label="Add Tags"
             android:parentActivityName=".article_classes.ArticleActivity"/>
     </application>
