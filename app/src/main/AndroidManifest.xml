@@ -23,21 +23,25 @@
             android:name=".signin_classes.SignInActivity"
             android:label="Sign In" />
         <activity
-            android:name=".article_classes.ArticleActivity"
+            android:name=".article_classes.ArticleDetailActivity"
             android:label="fRead It"
             android:parentActivityName=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".tag_classes.AddTagToArticleActivity"
             android:label="Add Tags"
-            android:parentActivityName=".article_classes.ArticleActivity"/>
+            android:parentActivityName=".article_classes.ArticleDetailActivity" />
+        <activity
+            android:name=".article_classes.ArticleFetchActivity"
+            android:label="fRead It 2"
+            android:parentActivityName=".article_classes.ArticleDetailActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

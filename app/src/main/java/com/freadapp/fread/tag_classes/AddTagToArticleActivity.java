@@ -1,13 +1,11 @@
 package com.freadapp.fread.tag_classes;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.freadapp.fread.R;
-import com.freadapp.fread.article_classes.ArticleActivity;
 
 /**
  * Created by salaz on 3/22/2018.

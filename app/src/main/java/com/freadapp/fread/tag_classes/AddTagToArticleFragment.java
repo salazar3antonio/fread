@@ -8,10 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.freadapp.fread.R;
-import com.freadapp.fread.article_classes.ArticleActivity;
 
 /**
  * Created by salaz on 3/22/2018.

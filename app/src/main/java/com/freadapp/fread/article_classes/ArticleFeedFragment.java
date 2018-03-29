@@ -36,6 +36,7 @@ public class ArticleFeedFragment extends Fragment {
 
     public static final String TAG = ArticleFeedFragment.class.getName();
     public static final String FB_ARTICLE_KEY_ID = "fb_key_id";
+    public static final String ARTICLE_MODEL = "article_model";
 
 
     private FirebaseUser mUser;
@@ -121,8 +122,9 @@ public class ArticleFeedFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
-                        Intent intent = new Intent(getContext(), ArticleActivity.class);
+                        Intent intent = new Intent(getContext(), ArticleDetailActivity.class);
                         intent.putExtra(FB_ARTICLE_KEY_ID, model.getKeyid());
+                        intent.putExtra(ARTICLE_MODEL, model);
                         startActivity(intent);
                     }
                 });
