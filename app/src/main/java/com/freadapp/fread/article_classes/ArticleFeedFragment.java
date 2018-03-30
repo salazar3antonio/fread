@@ -43,7 +43,6 @@ public class ArticleFeedFragment extends Fragment {
     private DatabaseReference mArticlesDBref;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mRecyclerView;
-    private Query mQueryByUserArticles;
 
     //todo tony move this class to List folder. This class in not an article. It populates all User Articles
 
@@ -71,8 +70,6 @@ public class ArticleFeedFragment extends Fragment {
             //grab an instance of the database and point it to the logged in user's articles
             FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
             mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-            //query by articles of the user that is logged in
-            mQueryByUserArticles = mArticlesDBref.orderByChild("uid").equalTo(mUser.getUid());
             mArticlesDBref.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -113,7 +110,7 @@ public class ArticleFeedFragment extends Fragment {
     private void setFirebaseAdapter() {
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
-                ArticleViewHolder.class, mQueryByUserArticles) {
+                ArticleViewHolder.class, mArticlesDBref) {
 
             @Override
             protected void populateViewHolder(ArticleViewHolder viewHolder, final Article model, final int position) {

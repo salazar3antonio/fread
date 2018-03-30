@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by salaz on 2/11/2018.
@@ -32,8 +29,6 @@ public class ArticleFragment extends Fragment {
     private ImageView mArticleImageView;
     private Article mArticle;
 
-    //todo tony save article state during rotation. need to prevent additional calls to the api.
-
     //public constructor
     public ArticleFragment() {
     }
@@ -49,7 +44,7 @@ public class ArticleFragment extends Fragment {
 
         savedInstanceState = getArguments();
         if (savedInstanceState != null) {
-            mArticle = savedInstanceState.getParcelable(ArticleActivity.ARTICLE_BUNDLE);
+            mArticle = savedInstanceState.getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
         }
 
     }
@@ -58,7 +53,7 @@ public class ArticleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.article_fragment, container, false);
+        View view = inflater.inflate(R.layout.article_detail_fragment, container, false);
 
         mTitleView = view.findViewById(R.id.title_view);
         mAuthorView = view.findViewById(R.id.author_view);
@@ -76,7 +71,7 @@ public class ArticleFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(ArticleActivity.ARTICLE_BUNDLE, mArticle);
+        outState.putParcelable(ArticleDetailActivity.ARTICLE_BUNDLE, mArticle);
     }
 
     private void setTextViews() {
