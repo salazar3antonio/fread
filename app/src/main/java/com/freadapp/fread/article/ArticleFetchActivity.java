@@ -1,7 +1,6 @@
-package com.freadapp.fread.article_classes;
+package com.freadapp.fread.article;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -13,25 +12,21 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.freadapp.fread.R;
-import com.freadapp.fread.data.api.ArticleAPI;
+import com.freadapp.fread.data.api.FetchArticleAPI;
+import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
-import com.freadapp.fread.tag_classes.AddTagToArticleActivity;
-import com.google.firebase.auth.FirebaseAuth;
+import com.freadapp.fread.tag.AddTagToArticleActivity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.freadapp.fread.article_classes.ArticleDetailActivity.ARTICLE_BUNDLE;
-import static com.freadapp.fread.article_classes.ArticleDetailActivity.ARTICLE_FRAGMENT_TAG;
+import static com.freadapp.fread.article.ArticleDetailActivity.ARTICLE_BUNDLE;
+import static com.freadapp.fread.article.ArticleDetailActivity.ARTICLE_FRAGMENT_TAG;
 
 /**
  * Created by salaz on 3/27/2018.
@@ -44,8 +39,9 @@ public class ArticleFetchActivity extends AppCompatActivity {
 
     private String mURLreceived;
     private Article mArticle;
-    private DatabaseReference mArticlesDBref;
     private FirebaseUser mUser;
+    private String mUserUid;
+    private DatabaseReference mUserArticles;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,12 +67,9 @@ public class ArticleFetchActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.article_container, articleLoadingFragmentLoadingFragment).commit();
         }
 
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        mUser = firebaseAuth.getCurrentUser();
-
-        //get FB Database and navigate to the specified article passed in from the intent.
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
+        mUser = FbDatabase.getAuthUser(mUser);
+        mUserUid = mUser.getUid();
+        mUserArticles = FbDatabase.getUserArticles(mUserUid);
 
         //building up the Retrofit object to begin calling the API
         retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
@@ -85,25 +78,23 @@ public class ArticleFetchActivity extends AppCompatActivity {
                 .build();
 
         //passing in the ArticleAPI interface class into the retrofit Object
-        ArticleAPI articleAPI = retrofit.create(ArticleAPI.class);
+        FetchArticleAPI fetchArticleAPI = retrofit.create(FetchArticleAPI.class);
         if (mURLreceived != null) {
             //using the articleAPI object to call the GET method of the API. Passes in the URL received from the Intent.
-            Call<Article> call = articleAPI.getArticle(mURLreceived, true);
+            Call<Article> call = fetchArticleAPI.getArticle(mURLreceived, true);
             call.enqueue(new Callback<Article>() {
                 @Override
                 public void onResponse(Call<Article> call, Response<Article> response) {
 
                     if (response.isSuccessful()) {
-                        //Assign mArticle to the Response body (JSON object).
-                        //since our response is an Article is must be stored as an Article Object.
+                        //Assign mArticle to the API Response Body (JSON object).
                         mArticle = response.body();
-                        //save new article to the database
-                        storeNewArticle(mArticle, mUser.getUid(), mArticlesDBref);
-                        //show the article fragment in the container
+                        //show the Article in the Fragment
                         showArticleFragment();
                     } else {
                         Log.e(TAG, "API Response Failed: " + response.message());
                     }
+
                 }
 
                 @Override
@@ -140,11 +131,12 @@ public class ArticleFetchActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_article_menu_item:
                 if (item.isChecked()) {
-                    unSaveArticle(mArticle, mArticlesDBref);
+                    //unSaveArticle(mArticle, mArticlesDBref);
+                    FbDatabase.unSaveArticle(getApplicationContext(), mArticle, mUserArticles);
                     item.setIcon(R.drawable.ic_save_outline_white);
                     item.setChecked(false);
                 } else {
-                    saveArticle(mArticle, mArticlesDBref);
+                    FbDatabase.saveArticle(getApplicationContext(), mArticle, mUserArticles, mURLreceived, mUser.getUid());
                     item.setIcon(R.drawable.ic_save_white_24dp);
                     item.setChecked(true);
                 }
@@ -154,15 +146,14 @@ public class ArticleFetchActivity extends AppCompatActivity {
                 return true;
 
             case R.id.add_tags_menu_item:
-                //tagArticle(mTagsDB);
-                //launch AddTag Activity and pass on article keyid
+                //launch AddTagActivity and pass the Article KeyID
                 Intent intent = new Intent(getApplicationContext(), AddTagToArticleActivity.class);
-                //intent.putExtra(ARTICLE_KEY_ID, mArticle.getKeyid());
+                intent.putExtra(ArticleDetailActivity.ARTICLE_KEY_ID, mArticle.getKeyid());
                 startActivity(intent);
                 return true;
 
             case R.id.web_view_menu_item:
-                openWebView();
+                FbDatabase.openArticleWebView(getParent(), mArticle.getUrl());
                 return true;
 
             default:
@@ -172,97 +163,20 @@ public class ArticleFetchActivity extends AppCompatActivity {
     }
 
     /**
-     * Removes the article object found at /articles/$articlekeyid in the DB
-     *
-     * @param articles database reference of the article
-     */
-    private void unSaveArticle(Article article, DatabaseReference articles) {
-
-        article.setSaved(false);
-
-        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
-        Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(article.getKeyid(), article);
-        //unSave the specified article
-        articles.updateChildren(writeMap);
-
-        Toast.makeText(getApplicationContext(), "Article Unsaved.", Toast.LENGTH_SHORT).show();
-    }
-
-    private void saveArticle(Article article, DatabaseReference articles) {
-
-        article.setSaved(true);
-
-        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
-        Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(article.getKeyid(), article);
-        //unSave the specified article
-        articles.updateChildren(writeMap);
-
-        Toast.makeText(getApplicationContext(), "Article saved.", Toast.LENGTH_SHORT).show();
-
-    }
-
-    /**
-     * Saves an Article node and user id into the Articles database reference.
-     * A keyid is created and stored in the Article object as well.
-     *
-     * @param article  article to be written to database
-     * @param uid      user id of the user that is currently logged in
-     * @param articles database reference of Articles
-     */
-    private void storeNewArticle(Article article, String uid, DatabaseReference articles) {
-
-        //create a unique keyid for the Article
-        String key = articles.push().getKey();
-        //store the keyid and userid into the Article object. This helps for retrieval later.
-        article.setKeyid(key);
-        article.setUid(uid);
-        article.setUrl(mURLreceived);
-
-        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
-        Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(key, article);
-        //update the children of "articles" in the DB with the passed in Hash Map
-        articles.updateChildren(writeMap);
-
-    }
-
-    /**
      * Creates new ArticleFragment, bundles the Article object and commits a FragmentTransaction to display the completed ArticleFragment
      */
     public void showArticleFragment() {
 
-        ArticleFragment articleFragment = ArticleFragment.newInstance();
+        ArticleDetailFragment articleDetailFragment = ArticleDetailFragment.newInstance();
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(ARTICLE_BUNDLE, mArticle);
-        articleFragment.setArguments(bundle);
+        articleDetailFragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.article_container, articleFragment, ARTICLE_FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.article_container, articleDetailFragment, ARTICLE_FRAGMENT_TAG);
         fragmentTransaction.commit();
 
     }
 
-    public void openWebView() {
-
-        Uri webpage = Uri.parse(mArticle.getUrl());
-        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-        startActivity(intent);
-
-    }
-
-    @Override
-    protected void onDestroy() {
-
-        if (mArticle.isSaved()) {
-            super.onDestroy();
-        } else {
-            //if user does not save the Article, remove it from the DB Ref
-            mArticlesDBref.child(mArticle.getKeyid()).removeValue();
-            super.onDestroy();
-        }
-
-    }
 }

@@ -1,4 +1,4 @@
-package com.freadapp.fread.article_classes;
+package com.freadapp.fread.article;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -20,22 +20,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".signin_classes.SignInActivity"
+            android:name=".signin.SignInActivity"
             android:label="Sign In" />
         <activity
-            android:name=".article_classes.ArticleDetailActivity"
+            android:name=".article.ArticleDetailActivity"
             android:label="fRead It"
             android:parentActivityName=".MainActivity">
 
         </activity>
         <activity
-            android:name=".tag_classes.AddTagToArticleActivity"
+            android:name=".tag.AddTagToArticleActivity"
             android:label="Add Tags"
-            android:parentActivityName=".article_classes.ArticleDetailActivity" />
+            android:parentActivityName=".article.ArticleDetailActivity" />
         <activity
-            android:name=".article_classes.ArticleFetchActivity"
+            android:name=".article.ArticleFetchActivity"
             android:label="fRead It 2"
-            android:parentActivityName=".article_classes.ArticleDetailActivity">
+            android:parentActivityName=".article.ArticleDetailActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

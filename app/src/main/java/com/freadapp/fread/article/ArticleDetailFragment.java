@@ -1,4 +1,4 @@
-package com.freadapp.fread.article_classes;
+package com.freadapp.fread.article;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,9 +18,9 @@ import com.freadapp.fread.data.model.Article;
  * Created by salaz on 2/11/2018.
  */
 
-public class ArticleFragment extends Fragment {
+public class ArticleDetailFragment extends Fragment {
 
-    public static final String TAG = ArticleFragment.class.getName();
+    public static final String TAG = ArticleDetailFragment.class.getName();
 
     private TextView mTitleView;
     private TextView mAuthorView;
@@ -30,12 +30,12 @@ public class ArticleFragment extends Fragment {
     private Article mArticle;
 
     //public constructor
-    public ArticleFragment() {
+    public ArticleDetailFragment() {
     }
 
     //static method that returns a new ArticleFragment object
-    public static ArticleFragment newInstance() {
-        return new ArticleFragment();
+    public static ArticleDetailFragment newInstance() {
+        return new ArticleDetailFragment();
     }
 
     @Override

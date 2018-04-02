@@ -1,34 +1,25 @@
-package com.freadapp.fread.tag_classes;
+package com.freadapp.fread.tag;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
-import com.freadapp.fread.article_classes.ArticleDetailActivity;
-import com.freadapp.fread.data.model.Article;
+import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Tag;
-import com.freadapp.fread.view_holder.ArticleViewHolder;
-import com.freadapp.fread.view_holder.TagViewHolder;
-import com.google.firebase.auth.FirebaseAuth;
+import com.freadapp.fread.view_holders.TagViewHolder;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by salaz on 3/22/2018.
@@ -36,12 +27,14 @@ import java.util.Map;
 
 public class AddTagToArticleFragment extends Fragment {
 
+    private static final String TAG = AddTagToArticleActivity.class.getName();
+
     private Button mAddTagButton;
     private EditText mTagNameEdit;
     private String mArticleKeyID;
-    private Tag mTag;
-    private DatabaseReference mTagsDBref;
+    private DatabaseReference mUserTags;
     private FirebaseUser mUser;
+    private String mUserUid;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mRecyclerView;
 
@@ -58,16 +51,11 @@ public class AddTagToArticleFragment extends Fragment {
             mArticleKeyID = savedInstanceState.getString(AddTagToArticleActivity.ARTICLE_TO_BE_TAGGED);
         }
 
-        mTag = new Tag();
-
         //get the current logged in user
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        mUser = firebaseAuth.getCurrentUser();
-
-        // DB reference of all Tags
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mTagsDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("tags");
-
+        mUser = FbDatabase.getAuthUser(mUser);
+        mUserUid = mUser.getUid();
+        //get all of the user's tags
+        mUserTags = FbDatabase.getUserTags(mUserUid);
 
     }
 
@@ -80,51 +68,30 @@ public class AddTagToArticleFragment extends Fragment {
 
         mAddTagButton = view.findViewById(R.id.add_tag_button);
         mTagNameEdit = view.findViewById(R.id.add_tag_edit_text);
-
         mRecyclerView = view.findViewById(R.id.tag_list_recycleView);
 
         mAddTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //get the text the user inputed for the Tag Name
+                //get the text the user entered for the Tag Name
                 String userEnteredTag = mTagNameEdit.getText().toString();
-                createNewTag(userEnteredTag);
+                //create a new tag with the passed in Tag Name
+                FbDatabase.createNewTag(mUserTags, userEnteredTag);
             }
         });
 
         setFirebaseAdapter();
 
-        Toast.makeText(getContext(), "Tagging Article: " + mArticleKeyID, Toast.LENGTH_LONG).show();
+        Log.i(TAG, "Tagging Article: " + mArticleKeyID);
 
         return view;
     }
 
-    private void createNewTag(String tagName) {
-
-        //create a unique keyid for a new Tag
-        String key = mTagsDBref.push().getKey();
-        //store the keyid and tagName into the Tag object.
-        mTag.setKeyid(key);
-        mTag.setTagName(tagName);
-
-        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
-        Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(key, mTag);
-        //update the children of "tags" in the DB with the passed in Hash Map
-        mTagsDBref.updateChildren(writeMap);
-
-    }
-
-    private void addTagToArticle() {
-
-        //get a reference to the articles DB
-
-    }
 
     private void setFirebaseAdapter() {
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
-                TagViewHolder.class, mTagsDBref) {
+                TagViewHolder.class, mUserTags) {
 
 
             @Override
@@ -132,7 +99,7 @@ public class AddTagToArticleFragment extends Fragment {
 
                 Context context = getContext();
                 viewHolder.bindToTag(model, context);
-                
+
             }
         };
 
@@ -142,4 +109,9 @@ public class AddTagToArticleFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFirebaseAdapter.cleanup();
+    }
 }

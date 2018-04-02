@@ -1,4 +1,4 @@
-package com.freadapp.fread.signin_classes;
+package com.freadapp.fread.signin;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,7 +26,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by salaz on 2/13/2018.

@@ -11,7 +11,7 @@ import retrofit2.http.Query;
  * Created by salaz on 2/8/2018.
  */
 
-public interface ArticleAPI {
+public interface FetchArticleAPI {
 
 
     //These are the headers for the api. Holds app key and id.

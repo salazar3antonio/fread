@@ -1,4 +1,4 @@
-package com.freadapp.fread.signin_classes;
+package com.freadapp.fread.signin;
 
 import android.support.v4.app.Fragment;
 import android.util.Log;

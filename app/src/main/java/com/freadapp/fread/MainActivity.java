@@ -13,8 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.freadapp.fread.article_classes.ArticleFeedFragment;
-import com.freadapp.fread.signin_classes.SignInActivity;
+import com.freadapp.fread.article.ArticleFeedFragment;
+import com.freadapp.fread.signin.SignInActivity;
 
 public class MainActivity extends AppCompatActivity {
 

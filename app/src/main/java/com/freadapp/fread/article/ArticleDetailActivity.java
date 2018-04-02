@@ -1,4 +1,4 @@
-package com.freadapp.fread.article_classes;
+package com.freadapp.fread.article;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,14 +14,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.freadapp.fread.R;
+import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.tag_classes.AddTagToArticleActivity;
-import com.google.firebase.auth.FirebaseAuth;
+import com.freadapp.fread.tag.AddTagToArticleActivity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -29,7 +28,7 @@ import java.util.Map;
 
 /**
  * Created by salaz on 2/26/2018.
- *  * This Activity will handle the Article coming from the User's main list of articles.
+ * * This Activity will handle the Article coming from the User's main list of articles.
  */
 
 public class ArticleDetailActivity extends AppCompatActivity {
@@ -40,9 +39,10 @@ public class ArticleDetailActivity extends AppCompatActivity {
     public static final String ARTICLE_KEY_ID = "article_key_id";
 
     private Article mArticle = new Article();
-    private DatabaseReference mArticleDBref;
-    private DatabaseReference mArticlesDBref;
+    private DatabaseReference mUserArticle;
+    private DatabaseReference mUserArticles;
     private FirebaseUser mUser;
+    private String mUserUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,9 +54,9 @@ public class ArticleDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
-        //get the current logged in user
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        mUser = firebaseAuth.getCurrentUser();
+        mUser = FbDatabase.getAuthUser(mUser);
+        mUserUid = mUser.getUid();
+        mUserArticles = FbDatabase.getUserArticles(mUserUid);
 
         //get the intent that started this activity and get the extras which includes the Article object
         Bundle bundle = getIntent().getExtras();
@@ -79,13 +79,9 @@ public class ArticleDetailActivity extends AppCompatActivity {
         }
 
 
-        // DB reference of all Articles
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-
         //DB reference to the specified Article. Defined by its Article KeyID
-        mArticleDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles").child(mArticle.getKeyid());
-        mArticleDBref.addValueEventListener(new ValueEventListener() {
+        mUserArticle = FbDatabase.getUserArticles(mUser.getUid()).child(mArticle.getKeyid());
+        mUserArticle.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Article article = dataSnapshot.getValue(Article.class);
@@ -128,11 +124,12 @@ public class ArticleDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_article_menu_item:
                 if (item.isChecked()) {
-                    unSaveArticle(mArticle, mArticleDBref);
+                    //unSaveArticle(mArticle, mUserArticle);
+                    FbDatabase.unSaveArticle(getApplicationContext(), mArticle, mUserArticles);
                     item.setIcon(R.drawable.ic_save_outline_white);
                     item.setChecked(false);
                 } else {
-                    saveArticle(mArticle, mArticlesDBref);
+                    FbDatabase.saveArticle(getApplicationContext(), mArticle, mUserArticles, null, mUserUid);
                     item.setIcon(R.drawable.ic_save_white_24dp);
                     item.setChecked(true);
                 }
@@ -149,7 +146,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 return true;
 
             case R.id.web_view_menu_item:
-                openWebView();
+                FbDatabase.openArticleWebView(getParent(), mArticle.getUrl());
                 return true;
 
             default:
@@ -189,15 +186,15 @@ public class ArticleDetailActivity extends AppCompatActivity {
      */
     public void showArticleFragment(Article article) {
 
-        ArticleFragment articleFragment = ArticleFragment.newInstance();
+        ArticleDetailFragment articleDetailFragment = ArticleDetailFragment.newInstance();
         mArticle = article;
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(ARTICLE_BUNDLE, mArticle);
-        articleFragment.setArguments(bundle);
+        articleDetailFragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.article_container, articleFragment, ARTICLE_FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.article_container, articleDetailFragment, ARTICLE_FRAGMENT_TAG);
         fragmentTransaction.commit();
 
     }
