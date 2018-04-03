@@ -6,12 +6,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
@@ -20,6 +23,7 @@ import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.TagViewHolder;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 /**
  * Created by salaz on 3/22/2018.
@@ -27,7 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 
 public class AddTagToArticleFragment extends Fragment {
 
-    private static final String TAG = AddTagToArticleActivity.class.getName();
+    private static final String TAG = AddTagToArticleFragment.class.getName();
 
     private Button mAddTagButton;
     private EditText mTagNameEdit;
@@ -37,6 +41,7 @@ public class AddTagToArticleFragment extends Fragment {
     private String mUserUid;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mRecyclerView;
+    private Query mQuery;
 
     public static AddTagToArticleFragment newInstance() {
         return new AddTagToArticleFragment();
@@ -57,6 +62,7 @@ public class AddTagToArticleFragment extends Fragment {
         //get all of the user's tags
         mUserTags = FbDatabase.getUserTags(mUserUid);
 
+
     }
 
     @Nullable
@@ -69,6 +75,37 @@ public class AddTagToArticleFragment extends Fragment {
         mAddTagButton = view.findViewById(R.id.add_tag_button);
         mTagNameEdit = view.findViewById(R.id.add_tag_edit_text);
         mRecyclerView = view.findViewById(R.id.tag_list_recycleView);
+
+        mTagNameEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                int length = charSequence.length();
+                if (length > 0) {
+                    char c = charSequence.charAt(length - 1);
+                    if (c == ',') {
+                        //call add create new tag method if apostrophe entered and clear text
+                        //trim the comma off the string
+                        String string = charSequence.toString();
+                        String string2 = string.replace(",", "");
+
+                        FbDatabase.createNewTag(mUserTags, lowerCaseTagQuery(string2));
+                        mTagNameEdit.setText("");
+                    }
+                }
+                String queryTag = lowerCaseTagQuery(charSequence);
+                setFirebaseAdapterQuery(queryTag);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         mAddTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +143,37 @@ public class AddTagToArticleFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mFirebaseAdapter);
+
+    }
+
+    private void setFirebaseAdapterQuery(String queryTag) {
+
+        mQuery = mUserTags.orderByChild("tagName").startAt(queryTag).endAt(queryTag + "\uf8ff");
+
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
+                TagViewHolder.class, mQuery) {
+
+
+            @Override
+            protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
+
+                Context context = getContext();
+                viewHolder.bindToTag(model, context);
+
+            }
+        };
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mFirebaseAdapter);
+
+    }
+
+    private String lowerCaseTagQuery(CharSequence charSequence) {
+
+        String string = charSequence.toString();
+        string = string.toLowerCase();
+        return string;
 
     }
 
