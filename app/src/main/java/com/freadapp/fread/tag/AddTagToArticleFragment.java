@@ -117,7 +117,7 @@ public class AddTagToArticleFragment extends Fragment {
             }
         });
 
-        setFirebaseAdapter();
+       setFirebaseAdapter();
 
         Log.i(TAG, "Tagging Article: " + mArticleKeyID);
 
@@ -135,7 +135,7 @@ public class AddTagToArticleFragment extends Fragment {
             protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
 
                 Context context = getContext();
-                viewHolder.bindToTag(model, context);
+                viewHolder.bindToTag(model, context, mArticleKeyID, mUserUid);
 
             }
         };
@@ -158,7 +158,7 @@ public class AddTagToArticleFragment extends Fragment {
             protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
 
                 Context context = getContext();
-                viewHolder.bindToTag(model, context);
+                viewHolder.bindToTag(model, context, mArticleKeyID, mUserUid);
 
             }
         };

@@ -11,10 +11,15 @@ import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.data.model.Tag;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FbDatabase {
@@ -26,6 +31,8 @@ public class FbDatabase {
 
     private static final FirebaseDatabase sFirebaseDatabase = FirebaseDatabase.getInstance();
     private static final FirebaseAuth sFirebaseAuth = FirebaseAuth.getInstance();
+    private Article mArticle;
+    private Tag mTag;
 
     /**
      * Get a reference of the User's Articles from the Firebase Database
@@ -101,8 +108,8 @@ public class FbDatabase {
      * @param context      Application context
      * @param article      Article to be saved
      * @param userArticles Database Reference to the User's Articles
-     * @param url URL received from Intent.EXTRA_TEXT
-     * @param uid User's UID
+     * @param url          URL received from Intent.EXTRA_TEXT
+     * @param uid          User's UID
      */
     public static void saveArticle(Context context, Article article, DatabaseReference userArticles, String url, String uid) {
 
@@ -123,6 +130,79 @@ public class FbDatabase {
         Toast.makeText(context, "Article Saved.", Toast.LENGTH_SHORT).show();
 
     }
+
+    public static void addTagToArticle(final DatabaseReference article, final Tag tag) {
+
+        article.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Article specArticle = dataSnapshot.getValue(Article.class);
+
+                List<Object> articleTags;
+
+                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
+                if (specArticle.getArticleTags() != null) {
+                    articleTags = specArticle.getArticleTags();
+                    articleTags.add(tag.getTagName());
+                } else {
+                    articleTags = new ArrayList<>();
+                    articleTags.add(tag.getTagName());
+                }
+
+                Map<String, Object> writeMap = new HashMap<>();
+                writeMap.put("articleTags", articleTags);
+                article.updateChildren(writeMap);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    public static void removeTagFromArticle(final DatabaseReference article, final Tag tag) {
+
+        article.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Article specArticle = dataSnapshot.getValue(Article.class);
+                List<Object> articleTags;
+
+                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
+                if (specArticle.getArticleTags() != null) {
+
+                    articleTags = specArticle.getArticleTags();
+                    //loop through articleTags and search for a match of the TagName
+                    for (int i = 0; i < articleTags.size(); i++) {
+                        if (tag.getTagName().equals(articleTags.get(i).toString())) {
+
+                            Log.i(TAG, articleTags.get(i).toString() + " was removed");
+                            articleTags.remove(i);
+
+                            Map<String, Object> writeMap = new HashMap<>();
+                            writeMap.put("articleTags", articleTags);
+                            article.updateChildren(writeMap);
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
 
     public static void openArticleWebView(Activity activity, String url) {
 
