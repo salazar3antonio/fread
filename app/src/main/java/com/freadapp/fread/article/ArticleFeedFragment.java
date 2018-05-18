@@ -60,7 +60,6 @@ public class ArticleFeedFragment extends Fragment {
         mUser = firebaseAuth.getCurrentUser();
 
         mRecyclerView = view.findViewById(R.id.article_recycleView);
-        mRecyclerView.setHasFixedSize(true);
 
         //check to see if user is logged in.
         if (mUser == null) {
@@ -99,7 +98,6 @@ public class ArticleFeedFragment extends Fragment {
                 }
             });
 
-            setFirebaseAdapter();
 
         }
 
@@ -140,6 +138,8 @@ public class ArticleFeedFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mFirebaseAdapter.cleanup();
+        if (mFirebaseAdapter != null) {
+            mFirebaseAdapter.cleanup();
+        }
     }
 }

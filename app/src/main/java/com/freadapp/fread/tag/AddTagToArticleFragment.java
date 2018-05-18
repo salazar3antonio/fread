@@ -25,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
+import java.util.List;
+
 /**
  * Created by salaz on 3/22/2018.
  */
@@ -40,8 +42,8 @@ public class AddTagToArticleFragment extends Fragment {
     private FirebaseUser mUser;
     private String mUserUid;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
-    private RecyclerView mRecyclerView;
     private Query mQuery;
+    private RecyclerView mRecyclerView;
 
     public static AddTagToArticleFragment newInstance() {
         return new AddTagToArticleFragment();
@@ -61,7 +63,6 @@ public class AddTagToArticleFragment extends Fragment {
         mUserUid = mUser.getUid();
         //get all of the user's tags
         mUserTags = FbDatabase.getUserTags(mUserUid);
-
 
     }
 
@@ -95,11 +96,13 @@ public class AddTagToArticleFragment extends Fragment {
                         String string2 = string.replace(",", "");
 
                         FbDatabase.createNewTag(mUserTags, lowerCaseTagQuery(string2));
-                        mTagNameEdit.setText("");
+                        mTagNameEdit.setText(null);
                     }
                 }
+
                 String queryTag = lowerCaseTagQuery(charSequence);
                 setFirebaseAdapterQuery(queryTag);
+
             }
 
             @Override
@@ -111,13 +114,21 @@ public class AddTagToArticleFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //get the text the user entered for the Tag Name
-                String userEnteredTag = mTagNameEdit.getText().toString();
-                //create a new tag with the passed in Tag Name
-                FbDatabase.createNewTag(mUserTags, userEnteredTag);
+                String userEnteredTag = mTagNameEdit.getText().toString().toLowerCase();
+                if (userEnteredTag.length() == 0) {
+                    Toast.makeText(getContext(), "Enter tag", Toast.LENGTH_SHORT).show();
+                } else {
+                    //create a new tag with the passed in Tag Name
+                    FbDatabase.createNewTag(mUserTags, userEnteredTag);
+                    //clear out the EditText View
+                    mTagNameEdit.setText(null);
+                    Log.i(TAG, "NEW TAG ->> " + userEnteredTag + " <<- added to ArticleTags");
+                }
+
             }
         });
 
-       setFirebaseAdapter();
+        setFirebaseAdapter();
 
         Log.i(TAG, "Tagging Article: " + mArticleKeyID);
 
@@ -137,6 +148,21 @@ public class AddTagToArticleFragment extends Fragment {
                 Context context = getContext();
                 viewHolder.bindToTag(model, context, mArticleKeyID, mUserUid);
 
+            }
+
+            @Override
+            public int getItemCount() {
+                return super.getItemCount();
+            }
+
+            @Override
+            public Tag getItem(int position) {
+                return super.getItem(position);
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                return super.getItemViewType(position);
             }
         };
 
@@ -178,8 +204,18 @@ public class AddTagToArticleFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mFirebaseAdapter != null) {
+            mFirebaseAdapter.cleanup();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        mFirebaseAdapter.cleanup();
+        if (mFirebaseAdapter != null) {
+            mFirebaseAdapter.cleanup();
+        }
     }
 }

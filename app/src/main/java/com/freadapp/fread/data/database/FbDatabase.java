@@ -131,9 +131,12 @@ public class FbDatabase {
 
     }
 
-    public static void addTagToArticle(final DatabaseReference article, final Tag tag) {
+    public static void addTagToArticle(final DatabaseReference articleRef, final Tag tag) {
 
-        article.addListenerForSingleValueEvent(new ValueEventListener() {
+        // TODO: 4/5/2018 Check for duplicate Tag Name. User should not be able to add duplicate Tag Names
+        // TODO: 4/5/2018 Make check marks persistent upon first loading AddTags Activity. All tags associated with Article should be checked.
+
+        articleRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Article specArticle = dataSnapshot.getValue(Article.class);
@@ -143,6 +146,7 @@ public class FbDatabase {
                 //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
                 if (specArticle.getArticleTags() != null) {
                     articleTags = specArticle.getArticleTags();
+                    // TODO: 4/12/2018 Tags are persistent but it is adding duplicate tags. Check if tag is present already 
                     articleTags.add(tag.getTagName());
                 } else {
                     articleTags = new ArrayList<>();
@@ -151,7 +155,7 @@ public class FbDatabase {
 
                 Map<String, Object> writeMap = new HashMap<>();
                 writeMap.put("articleTags", articleTags);
-                article.updateChildren(writeMap);
+                articleRef.updateChildren(writeMap);
 
             }
 
@@ -202,7 +206,6 @@ public class FbDatabase {
 
 
     }
-
 
     public static void openArticleWebView(Activity activity, String url) {
 
