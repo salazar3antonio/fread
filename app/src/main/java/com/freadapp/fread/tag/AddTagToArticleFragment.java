@@ -1,6 +1,5 @@
 package com.freadapp.fread.tag;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,8 +24,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-import java.util.List;
-
 /**
  * Created by salaz on 3/22/2018.
  */
@@ -39,10 +36,11 @@ public class AddTagToArticleFragment extends Fragment {
     private EditText mTagNameEdit;
     private String mArticleKeyID;
     private DatabaseReference mUserTags;
-    private FirebaseUser mUser;
     private String mUserUid;
+    private FirebaseUser mUser;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
-    private Query mQuery;
+    private Query mTagQuery;
+    private Query mAllTagQuery;
     private RecyclerView mRecyclerView;
 
     public static AddTagToArticleFragment newInstance() {
@@ -138,15 +136,15 @@ public class AddTagToArticleFragment extends Fragment {
 
     private void setFirebaseAdapter() {
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
-                TagViewHolder.class, mUserTags) {
+        mAllTagQuery = mUserTags.orderByChild("tagName").startAt("a");
 
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
+                TagViewHolder.class, mAllTagQuery) {
 
             @Override
             protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
 
-                Context context = getContext();
-                viewHolder.bindToTag(model, context, mArticleKeyID, mUserUid);
+                viewHolder.bindToTag(model, mArticleKeyID, mUserUid);
 
             }
 
@@ -160,13 +158,8 @@ public class AddTagToArticleFragment extends Fragment {
                 return super.getItem(position);
             }
 
-            @Override
-            public int getItemViewType(int position) {
-                return super.getItemViewType(position);
-            }
         };
 
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mFirebaseAdapter);
 
@@ -174,22 +167,20 @@ public class AddTagToArticleFragment extends Fragment {
 
     private void setFirebaseAdapterQuery(String queryTag) {
 
-        mQuery = mUserTags.orderByChild("tagName").startAt(queryTag).endAt(queryTag + "\uf8ff");
+        mTagQuery = mUserTags.orderByChild("tagName").startAt(queryTag).endAt(queryTag + "\uf8ff");
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
-                TagViewHolder.class, mQuery) {
+                TagViewHolder.class, mTagQuery) {
 
 
             @Override
             protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
 
-                Context context = getContext();
-                viewHolder.bindToTag(model, context, mArticleKeyID, mUserUid);
+                viewHolder.bindToTag(model, mArticleKeyID, mUserUid);
 
             }
         };
 
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mFirebaseAdapter);
 

@@ -1,13 +1,11 @@
 package com.freadapp.fread.view_holders;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FbDatabase;
@@ -25,13 +23,12 @@ public class TagViewHolder extends RecyclerView.ViewHolder implements CompoundBu
     public static final String TAG = TagViewHolder.class.getName();
 
     private TextView mTagName;
-    private CheckBox mTagCheckBox;
+    public CheckBox mTagCheckBox;
     private String mArticleKeyID;
     private String mUserID;
     private DatabaseReference mUserArticleRef;
-    private Context mContext;
+    private DatabaseReference mUserTagsRef;
     private Tag mTag;
-    private List<Object> mArticleTags;
 
     public TagViewHolder(View itemView) {
         super(itemView);
@@ -47,102 +44,76 @@ public class TagViewHolder extends RecyclerView.ViewHolder implements CompoundBu
      *
      * @param tag Tag model to be bound to the List Item Views
      */
-    public void bindToTag(Tag tag, Context context, String articleKeyID, String userID) {
+    public void bindToTag(Tag tag, String articleKeyID, String userID) {
 
         mArticleKeyID = articleKeyID;
         mUserID = userID;
-        mContext = context;
         mTag = tag;
         mTagName.setText(mTag.getTagName());
         mUserArticleRef = FbDatabase.getUserArticles(mUserID).child(mArticleKeyID);
-        setTagCheckBox(mTag);
+        mUserTagsRef = FbDatabase.getUserTags(mUserID).child(mTag.getKeyid());
 
-    }
+        if (mTag.getTaggedArticles() != null) {
+                if (isArticleTagged(mTag, mArticleKeyID)) {
+                    mTagCheckBox.setChecked(true);
+                } else {
+                    mTagCheckBox.setChecked(false);
+                }
+        } else {
+            mTagCheckBox.setChecked(false);
+        }
+
+
+
+
+}
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
         if (b) {
 
-            if (mArticleTags == null) {
+            if (mTag.getTaggedArticles() == null) {
                 //if no ArticleTags exists then add the Tag to the Article
-                FbDatabase.addTagToArticle(mUserArticleRef, mTag);
+                FbDatabase.addTagToArticle(mUserArticleRef, mTag, mUserTagsRef, mArticleKeyID);
                 Log.i(TAG, "ADDED TAG ->> " + mTag.getTagName() + " <<- to ArticleTags");
-            } else if (isTagInArticleTagsList(mTag, mArticleTags)) {
-                //if the Tag is already in the list of ArticleTags, do not add the Tag
+            } else if (isArticleTagged(mTag, mArticleKeyID)) {
+                //if the ArticleKeyID is already in the list of TaggedArticles, do not add the ArticleKeyID
                 Log.i(TAG, "TAG ->> " + mTag.getTagName() + " <<- is in ArticleTags");
             } else {
                 // else if mArticleTags is not null and the Tag is not found in the ArticleTags list, then add the Tag to the Article
-                FbDatabase.addTagToArticle(mUserArticleRef, mTag);
+                FbDatabase.addTagToArticle(mUserArticleRef, mTag, mUserTagsRef, mArticleKeyID);
                 Log.i(TAG, "ADDED TAG ->> " + mTag.getTagName() + " <<- to ArticleTags");
             }
 
         } else {
-            //remove Tag from ArticleTags list
-            FbDatabase.removeTagFromArticle(mUserArticleRef, mTag);
+            //remove Tag from ArticleTags list and remove ArticleKeyID from TaggedArticles
+            FbDatabase.removeTagFromArticle(mUserArticleRef, mTag, mUserTagsRef, mArticleKeyID);
             Log.i(TAG, "REMOVED TAG ->> " + mTag.getTagName() + " <<- from ArticleTags");
         }
 
     }
 
-    /**
-     * Method to set the Tag checkbox as checked if the Tag is present in the ArticleTags list.
-     * This is so User can know which Tags are presently associated with the specific Article
-     *
-     * @param tag Tag model to be checked
-     */
-    private void setTagCheckBox(final Tag tag) {
-
-        mUserArticleRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //store the snapshot into an Article object to check it's tags
-                Article article = dataSnapshot.getValue(Article.class);
-
-                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
-                if (article.getArticleTags() != null) {
-
-                    mArticleTags = article.getArticleTags();
-
-                    //loop through mArticleTags and search for a match of the TagName
-                    for (int i = 0; i < mArticleTags.size(); i++) {
-                        if (isTagInArticleTagsList(tag, mArticleTags)) {
-                            //if Tag is in ArticleTags, check the checkbox.
-                            mTagCheckBox.setChecked(true);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     /**
-     * Method to check if the passed in Tag is in the ArticleTags list. Will return true if the Tag is found in the ArticleTags list.
-     * Can be used to prevent duplicate tags.
+     * Method to check if the passed in ArticleKeyID is in the TaggedArticle list of the Tag model. Will return true if the ArticleKeyID is found in the ArticleTags list.
+     * Can be used to prevent duplicates.
      *
      * @param tag         Tag model to be checked
-     * @param articleTags List of ArticleTags
+     * @param articleKeyID KeyID of article
      */
-    private boolean isTagInArticleTagsList(Tag tag, List<Object> articleTags) {
+    private boolean isArticleTagged(Tag tag, String articleKeyID) {
 
-        boolean tagInList = false;
+        boolean articleTagged = false;
 
-        for (int i = 0; i < articleTags.size(); i++) {
-
-            if (tag.getTagName().equals(articleTags.get(i).toString())) {
-                tagInList = true;
+        for (Object taggedArticle : tag.getTaggedArticles()) {
+            if (articleKeyID.equals(taggedArticle)) {
+                articleTagged = true;
                 break;
             }
         }
 
-        return tagInList;
+        return articleTagged;
     }
 
 
