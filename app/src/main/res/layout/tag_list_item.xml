@@ -27,7 +27,7 @@
         android:layout_marginEnd="96dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tag_checkbox"
         app:layout_constraintStart_toEndOf="@+id/tag_imageview"

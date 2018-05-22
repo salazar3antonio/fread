@@ -1,28 +1,18 @@
 package com.freadapp.fread.tag;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
-import com.freadapp.fread.data.database.FbDatabase;
-import com.freadapp.fread.data.model.Tag;
-import com.freadapp.fread.view_holders.TagViewHolder;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
+import com.freadapp.fread.signin.SignInActivity;
 
 /**
  * Created by salaz on 3/22/2018.
@@ -40,9 +30,10 @@ public class AddTagToArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_tag_fragment_container);
 
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        Toolbar toolbar = findViewById(R.id.add_tag_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(null);
 
         Bundle bundleFromIntent = getIntent().getExtras();
         if (bundleFromIntent != null) {
@@ -68,5 +59,26 @@ public class AddTagToArticleActivity extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_tag_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_tag_menu_item:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+
+    }
+
+
 
 }

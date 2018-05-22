@@ -8,7 +8,9 @@
     <string name="title_search">Search</string>
     <string name="title_profile">Profile</string>
     <string name="web_view_menu_text">Web View</string>
-    <string name="add_tag_hint_text">Enter tag</string>
+    <string name="add_tag_hint_text">Enter tag name</string>
     <string name="add_tag_button_text">Add Tag</string>
     <string name="article_keyid_pref">Article Key ID Pref</string>
+    <string name="create_tag_text">Create new tag</string>
+    <string name="edit_tags_text">Edit tags</string>
 </resources>

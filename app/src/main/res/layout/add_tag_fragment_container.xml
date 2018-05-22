@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <include
-        layout="@layout/main_activity_toolbar"
+        layout="@layout/add_tag_toolbar"
         />
 
 </FrameLayout>

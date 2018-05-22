@@ -1,5 +1,6 @@
 package com.freadapp.fread.tag;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,10 +10,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -32,7 +37,7 @@ public class AddTagToArticleFragment extends Fragment {
 
     private static final String TAG = AddTagToArticleFragment.class.getName();
 
-    private Button mAddTagButton;
+    private ImageButton mAddTagButton;
     private EditText mTagNameEdit;
     private String mArticleKeyID;
     private DatabaseReference mUserTags;
@@ -98,6 +103,7 @@ public class AddTagToArticleFragment extends Fragment {
                     }
                 }
 
+
                 String queryTag = lowerCaseTagQuery(charSequence);
                 setFirebaseAdapterQuery(queryTag);
 
@@ -105,6 +111,8 @@ public class AddTagToArticleFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+
+
             }
         });
 
@@ -132,7 +140,6 @@ public class AddTagToArticleFragment extends Fragment {
 
         return view;
     }
-
 
     private void setFirebaseAdapter() {
 
@@ -195,6 +202,23 @@ public class AddTagToArticleFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_tag_menu_item:
+                Toast.makeText(getContext(), "ADD menu", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (mFirebaseAdapter != null) {
@@ -209,4 +233,6 @@ public class AddTagToArticleFragment extends Fragment {
             mFirebaseAdapter.cleanup();
         }
     }
+
+
 }
