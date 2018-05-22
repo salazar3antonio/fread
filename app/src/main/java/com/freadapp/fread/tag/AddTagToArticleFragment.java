@@ -67,6 +67,8 @@ public class AddTagToArticleFragment extends Fragment {
         //get all of the user's tags
         mUserTags = FbDatabase.getUserTags(mUserUid);
 
+        setHasOptionsMenu(true);
+
     }
 
     @Nullable
@@ -76,8 +78,7 @@ public class AddTagToArticleFragment extends Fragment {
         //inflate the add_tag_fragment. hold edit text and add tag button.
         View view = inflater.inflate(R.layout.add_tag_fragment, container, false);
 
-        mAddTagButton = view.findViewById(R.id.add_tag_button);
-        mTagNameEdit = view.findViewById(R.id.add_tag_edit_text);
+        mTagNameEdit = getActivity().findViewById(R.id.add_tag_edit_text2);
         mRecyclerView = view.findViewById(R.id.tag_list_recycleView);
 
         mTagNameEdit.addTextChangedListener(new TextWatcher() {
@@ -112,24 +113,6 @@ public class AddTagToArticleFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
 
-
-            }
-        });
-
-        mAddTagButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //get the text the user entered for the Tag Name
-                String userEnteredTag = mTagNameEdit.getText().toString().toLowerCase();
-                if (userEnteredTag.length() == 0) {
-                    Toast.makeText(getContext(), "Enter tag", Toast.LENGTH_SHORT).show();
-                } else {
-                    //create a new tag with the passed in Tag Name
-                    FbDatabase.createNewTag(mUserTags, userEnteredTag);
-                    //clear out the EditText View
-                    mTagNameEdit.setText(null);
-                    Log.i(TAG, "NEW TAG ->> " + userEnteredTag + " <<- added to ArticleTags");
-                }
 
             }
         });
@@ -201,6 +184,22 @@ public class AddTagToArticleFragment extends Fragment {
 
     }
 
+    private void createNewTag() {
+        //get the text the user entered for the Tag Name
+        String userEnteredTag = mTagNameEdit.getText().toString().toLowerCase();
+        if (userEnteredTag.length() == 0) {
+            Toast.makeText(getContext(), "Enter tag name", Toast.LENGTH_SHORT).show();
+        } else {
+            //create a new tag with the passed in Tag Name
+            FbDatabase.createNewTag(mUserTags, userEnteredTag);
+            //clear out the EditText View
+            Toast.makeText(getContext(), "Added " + userEnteredTag, Toast.LENGTH_SHORT).show();
+            mTagNameEdit.setText(null);
+            Log.i(TAG, "NEW TAG ->> " + userEnteredTag + " <<- added to ArticleTags");
+
+        }
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -210,7 +209,7 @@ public class AddTagToArticleFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_tag_menu_item:
-                Toast.makeText(getContext(), "ADD menu", Toast.LENGTH_SHORT).show();
+                createNewTag();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

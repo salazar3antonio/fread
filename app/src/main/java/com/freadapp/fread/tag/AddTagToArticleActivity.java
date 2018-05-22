@@ -70,7 +70,7 @@ public class AddTagToArticleActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_tag_menu_item:
-                return true;
+                return false;
             default:
                 return super.onOptionsItemSelected(item);
 
