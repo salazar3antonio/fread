@@ -104,11 +104,11 @@ public class Article implements Parcelable {
         this.url = url;
     }
 
-    public String getKeyid() {
+    public String getKeyId() {
         return keyid;
     }
 
-    public void setKeyid(String keyid) {
+    public void setKeyId(String keyid) {
         this.keyid = keyid;
     }
 

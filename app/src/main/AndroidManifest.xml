@@ -23,6 +23,10 @@
             android:name=".signin.SignInActivity"
             android:label="Sign In" />
         <activity
+            android:name=".tag.EditTagsActivity"
+            android:label="Edit Tags"
+            android:parentActivityName=".MainActivity"/>
+        <activity
             android:name=".article.ArticleDetailActivity"
             android:label="fRead It"
             android:parentActivityName=".MainActivity">

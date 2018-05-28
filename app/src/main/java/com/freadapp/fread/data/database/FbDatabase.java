@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,8 +32,6 @@ public class FbDatabase {
 
     private static final FirebaseDatabase sFirebaseDatabase = FirebaseDatabase.getInstance();
     private static final FirebaseAuth sFirebaseAuth = FirebaseAuth.getInstance();
-    private Article mArticle;
-    private Tag mTag;
 
     /**
      * Get a reference of the User's Articles from the Firebase Database
@@ -68,9 +67,10 @@ public class FbDatabase {
     }
 
     /**
-     * Create a new tag in the User's tags database reference.
+     * Create a new Tag in the User's tags database reference.
+     * Creates a new Tag object in tags/[key]
      *
-     * @param userTags Database reference of the User Tags
+     * @param userTags Database reference of the User's Tags
      * @param tagName  Name of tag the user entered
      */
     public static void createNewTag(DatabaseReference userTags, String tagName) {
@@ -89,6 +89,20 @@ public class FbDatabase {
     }
 
     /**
+     * Deletes entire Tag object from user/[uID]/tags
+     *
+     * @param context Application context for Toast notification
+     * @param tag     Tag object to be removed
+     * @param userTag Database reference to the User's Tag
+     */
+    public static void deleteTag(Context context, Tag tag, DatabaseReference userTag) {
+
+        userTag.removeValue();
+        Toast.makeText(context, tag.getTagName() + " deleted", Toast.LENGTH_SHORT).show();
+
+    }
+
+    /**
      * Removes the specified article object found at /articles/$articlekeyid in the database
      *
      * @param context      Application context
@@ -97,16 +111,16 @@ public class FbDatabase {
      */
     public static void unSaveArticle(Context context, Article article, DatabaseReference userArticles) {
 
-        userArticles.child(article.getKeyid()).removeValue();
+        userArticles.child(article.getKeyId()).removeValue();
 
         Toast.makeText(context, "Article Unsaved.", Toast.LENGTH_SHORT).show();
     }
 
     /**
-     * Saves the specified Article. If Article is null, creates a new Article and pushes it to the database
+     * Saves the specified Article. If Article is null, creates a new Article and push it to the database
      *
      * @param context      Application context
-     * @param article      Article to be saved
+     * @param article      Article object to be saved
      * @param userArticles Database Reference to the User's Articles
      * @param url          URL received from Intent.EXTRA_TEXT
      * @param uid          User's UID
@@ -116,14 +130,14 @@ public class FbDatabase {
         //create a unique KeyID for the Article
         String key = userArticles.push().getKey();
         //store the keyid and userid into the Article object. This helps for retrieval later.
-        article.setKeyid(key);
+        article.setKeyId(key);
         article.setUid(uid);
         article.setUrl(url);
         article.setSaved(true);
 
         //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
         Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(article.getKeyid(), article);
+        writeMap.put(article.getKeyId(), article);
         //Save the specified article
         userArticles.updateChildren(writeMap);
 
@@ -131,11 +145,18 @@ public class FbDatabase {
 
     }
 
-    public static void addTagToArticle(final DatabaseReference articleRef, final Tag tag, final DatabaseReference userTags, final String articleKeyId) {
+    /**
+     * Add Tag name to the specified Article in the Database.
+     * Updates articles/[key]/articleTags
+     *
+     * @param article Database Reference to the specific Article
+     * @param tag     Tag object
+     */
+    public static void addTagNameToArticle(final DatabaseReference article, final Tag tag) {
 
         // TODO: 4/5/2018 Check for duplicate Tag Name. User should not be able to add duplicate Tag Names
 
-        articleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        article.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Article specArticle = dataSnapshot.getValue(Article.class);
@@ -153,7 +174,9 @@ public class FbDatabase {
 
                 Map<String, Object> writeMap = new HashMap<>();
                 writeMap.put("articleTags", articleTags);
-                articleRef.updateChildren(writeMap);
+                article.updateChildren(writeMap);
+
+                Log.i(TAG, "ADDED Tag Name >> " + tag.getTagName() + " << to Article KeyId >> " + specArticle.getKeyId() + " <<");
 
             }
 
@@ -163,7 +186,66 @@ public class FbDatabase {
             }
         });
 
-        userTags.addListenerForSingleValueEvent(new ValueEventListener() {
+    }
+
+    /**
+     * Remove the Tag Name from the specified Article.
+     * Updates articles/[key]/articleTags
+     *
+     * @param article Database Reference to the specific Article
+     * @param tag     Tag object
+     */
+    public static void removeTagNameFromArticle(final DatabaseReference article, final Tag tag) {
+
+        article.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Article specArticle = dataSnapshot.getValue(Article.class);
+                List<Object> articleTags;
+
+                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
+                if (specArticle.getArticleTags() != null) {
+
+                    articleTags = specArticle.getArticleTags();
+                    //loop through articleTags and search for a match of the TagName
+                    for (int i = 0; i < articleTags.size(); i++) {
+                        if (tag.getTagName().equals(articleTags.get(i).toString())) {
+
+                            articleTags.remove(i);
+
+                            Map<String, Object> writeMap = new HashMap<>();
+                            writeMap.put("articleTags", articleTags);
+                            article.updateChildren(writeMap);
+                            break;
+                        }
+                    }
+
+                    Log.i(TAG, "REMOVED Tag Name >> " + tag.getTagName() + " << from Article KeyId >> " + specArticle.getKeyId() + " <<");
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    /**
+     * Add Article KeyId to the specified Tag in the Database.
+     * Updates tags/[key]/taggedArticles
+     *
+     * @param tag          Database Reference to the specific Tag
+     * @param articleKeyId KeyId of the Article object
+     */
+    public static void addArticleKeyIdToTag(final DatabaseReference tag, final String articleKeyId) {
+
+        tag.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Tag specTag = dataSnapshot.getValue(Tag.class);
@@ -180,7 +262,9 @@ public class FbDatabase {
 
                 Map<String, Object> writeMap = new HashMap<>();
                 writeMap.put("taggedArticles", taggedArticles);
-                userTags.updateChildren(writeMap);
+                tag.updateChildren(writeMap);
+
+                Log.i(TAG, "ADDED Article KeyID >> " + articleKeyId + " << to Tag >> " + specTag.getTagName() + " <<");
 
             }
 
@@ -189,47 +273,19 @@ public class FbDatabase {
 
             }
         });
-
 
     }
 
-    public static void removeTagFromArticle(final DatabaseReference userArticle, final Tag tag, final DatabaseReference userTag, final String articleKeyId) {
+    /**
+     * Remove Article KeyId from the specified Tag
+     * Updates tags/[key]/taggedArticles
+     *
+     * @param tag          Database Reference to the specific Tag
+     * @param articleKeyId KeyId of the Article object
+     */
+    public static void removeArticleKeyIdFromTag(final DatabaseReference tag, final String articleKeyId) {
 
-        userArticle.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Article specArticle = dataSnapshot.getValue(Article.class);
-                List<Object> articleTags;
-
-                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
-                if (specArticle.getArticleTags() != null) {
-
-                    articleTags = specArticle.getArticleTags();
-                    //loop through articleTags and search for a match of the TagName
-                    for (int i = 0; i < articleTags.size(); i++) {
-                        if (tag.getTagName().equals(articleTags.get(i).toString())) {
-
-                            Log.i(TAG, articleTags.get(i).toString() + " was removed");
-                            articleTags.remove(i);
-
-                            Map<String, Object> writeMap = new HashMap<>();
-                            writeMap.put("articleTags", articleTags);
-                            userArticle.updateChildren(writeMap);
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        userTag.addListenerForSingleValueEvent(new ValueEventListener() {
+        tag.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -244,15 +300,73 @@ public class FbDatabase {
                     for (int i = 0; i < taggedArticles.size(); i++) {
                         if (articleKeyId.equals(taggedArticles.get(i).toString())) {
 
-                            Log.i(TAG, taggedArticles.get(i).toString() + " was removed");
                             taggedArticles.remove(i);
 
                             Map<String, Object> writeMap = new HashMap<>();
                             writeMap.put("taggedArticles", taggedArticles);
-                            userTag.updateChildren(writeMap);
+                            tag.updateChildren(writeMap);
                             break;
                         }
                     }
+
+                    Log.i(TAG, "REMOVED Article KeyID >> " + articleKeyId + " << from Tag >> " + specTag.getTagName() + " <<");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public static void updateTagName(DatabaseReference tag, DatabaseReference article, Tag oldTagName, Tag newTagName) {
+
+        List<Object> taggedArticles = oldTagName.getTaggedArticles();
+
+        if (taggedArticles != null) {
+
+            for (Object articleKeyId : taggedArticles) {
+                updateTagNameInArticleTags(article.child(articleKeyId.toString()), oldTagName, newTagName);
+            }
+
+            Map<String, Object> tagHash = new HashMap<>();
+            tagHash.put("tagName", newTagName.getTagName());
+            tag.updateChildren(tagHash);
+
+        }
+
+    }
+
+    public static void updateTagNameInArticleTags(final DatabaseReference article, final Tag oldTag, final Tag newTag) {
+
+        article.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Article specArticle = dataSnapshot.getValue(Article.class);
+                List<Object> articleTags;
+
+                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
+                if (specArticle.getArticleTags() != null) {
+
+                    articleTags = specArticle.getArticleTags();
+
+                    for (int i = 0; i < articleTags.size(); i++) {
+                        if (oldTag.getTagName().equals(articleTags.get(i).toString())) {
+
+                            String listPosition = String.valueOf(i);
+                            Map<String, Object> tagHash = new HashMap<>();
+                            tagHash.put(listPosition, newTag.getTagName());
+                            article.child("articleTags").updateChildren(tagHash);
+                            break;
+                        }
+                    }
+
+                    Log.i(TAG, "UPDATE Old Tag Name >> " + oldTag.getTagName() + " << to New Tag Name >> " + newTag.getTagName() + " <<");
+
                 }
 
             }
@@ -265,7 +379,6 @@ public class FbDatabase {
 
 
     }
-
 
 
     public static void openArticleWebView(Activity activity, String url) {

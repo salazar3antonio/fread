@@ -1,6 +1,5 @@
 package com.freadapp.fread.tag;
 
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,9 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -37,7 +34,6 @@ public class AddTagToArticleFragment extends Fragment {
 
     private static final String TAG = AddTagToArticleFragment.class.getName();
 
-    private ImageButton mAddTagButton;
     private EditText mTagNameEdit;
     private String mArticleKeyID;
     private DatabaseReference mUserTags;
@@ -128,7 +124,7 @@ public class AddTagToArticleFragment extends Fragment {
 
         mAllTagQuery = mUserTags.orderByChild("tagName").startAt("a");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.add_tag_list_item,
                 TagViewHolder.class, mAllTagQuery) {
 
             @Override
@@ -159,7 +155,7 @@ public class AddTagToArticleFragment extends Fragment {
 
         mTagQuery = mUserTags.orderByChild("tagName").startAt(queryTag).endAt(queryTag + "\uf8ff");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_list_item,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.add_tag_list_item,
                 TagViewHolder.class, mTagQuery) {
 
 

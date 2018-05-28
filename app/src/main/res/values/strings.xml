@@ -13,4 +13,6 @@
     <string name="article_keyid_pref">Article Key ID Pref</string>
     <string name="create_tag_text">Create new tag</string>
     <string name="edit_tags_text">Edit tags</string>
+    <string name="sign_in_menu_text">Sign In</string>
+    <string name="edit_tags_menu_text">Edit Tags</string>
 </resources>

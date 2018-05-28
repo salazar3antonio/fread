@@ -15,6 +15,7 @@ import android.view.MenuItem;
 
 import com.freadapp.fread.article.ArticleFeedFragment;
 import com.freadapp.fread.signin.SignInActivity;
+import com.freadapp.fread.tag.EditTagsActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,9 +48,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.sign_in_item:
+            case R.id.sign_in_menu_item:
                 Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.edit_tags_menu_item:
+                Intent editTags = new Intent(getApplicationContext(), EditTagsActivity.class);
+                startActivity(editTags);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

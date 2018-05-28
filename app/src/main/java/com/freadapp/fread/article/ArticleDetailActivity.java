@@ -18,7 +18,6 @@ import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.tag.AddTagToArticleActivity;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,19 +68,19 @@ public class ArticleDetailActivity extends AppCompatActivity {
             //store the ArticleKeyID into the Shared Preferences file
             SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.article_keyid_pref), mArticle.getKeyid());
+            editor.putString(getString(R.string.article_keyid_pref), mArticle.getKeyId());
             editor.apply();
 
         } else {
             //if bundle is null, retrieve the last saved keyID from SharedPreferences and set it to mArticle
             SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
             String keyid = sharedPref.getString(getString(R.string.article_keyid_pref), "default");
-            mArticle.setKeyid(keyid);
+            mArticle.setKeyId(keyid);
         }
 
 
         //DB reference to the specified Article. Defined by its Article KeyID
-        mUserArticle = FbDatabase.getUserArticles(mUser.getUid()).child(mArticle.getKeyid());
+        mUserArticle = FbDatabase.getUserArticles(mUser.getUid()).child(mArticle.getKeyId());
         mUserArticle.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -139,7 +138,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
             case R.id.add_tags_menu_item:
                 //launch AddTag Activity and pass on article keyid
                 Intent intent = new Intent(getApplicationContext(), AddTagToArticleActivity.class);
-                intent.putExtra(ARTICLE_KEY_ID, mArticle.getKeyid());
+                intent.putExtra(ARTICLE_KEY_ID, mArticle.getKeyId());
                 startActivity(intent);
                 return true;
 
@@ -171,7 +170,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
         Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(article.getKeyid(), article);
+        writeMap.put(article.getKeyId(), article);
         //unSave the specified article
         articles.updateChildren(writeMap);
 

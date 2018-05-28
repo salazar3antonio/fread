@@ -148,7 +148,7 @@ public class ArticleFetchActivity extends AppCompatActivity {
             case R.id.add_tags_menu_item:
                 //launch AddTagActivity and pass the Article KeyID
                 Intent intent = new Intent(getApplicationContext(), AddTagToArticleActivity.class);
-                intent.putExtra(ArticleDetailActivity.ARTICLE_KEY_ID, mArticle.getKeyid());
+                intent.putExtra(ArticleDetailActivity.ARTICLE_KEY_ID, mArticle.getKeyId());
                 startActivity(intent);
                 return true;
 
