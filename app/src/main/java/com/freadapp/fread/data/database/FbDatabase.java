@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -322,25 +321,42 @@ public class FbDatabase {
 
     }
 
-    public static void updateTagName(DatabaseReference tag, DatabaseReference article, Tag oldTagName, Tag newTagName) {
+    /**
+     * Updates the Tag name globally. All articles tagged with the oldTag will get updated with the newTag.
+     * Updates articles/[keyId]/articleTags/[position] and updates tags/[keyId]/tagName/
+     *
+     * @param article Database Reference to the specific Article
+     * @param oldTag  Old Tag object that is getting updated
+     * @param newTag  New Tag object with new user entered tagName
+     */
+    public static void updateTagName(DatabaseReference tag, DatabaseReference article, Tag oldTag, Tag newTag) {
 
-        List<Object> taggedArticles = oldTagName.getTaggedArticles();
+        List<Object> taggedArticles = oldTag.getTaggedArticles();
 
         if (taggedArticles != null) {
 
             for (Object articleKeyId : taggedArticles) {
-                updateTagNameInArticleTags(article.child(articleKeyId.toString()), oldTagName, newTagName);
+                updateTagNameInArticle(article.child(articleKeyId.toString()), oldTag, newTag);
             }
 
+//          Updates the Tag name inside of the Tag object.
             Map<String, Object> tagHash = new HashMap<>();
-            tagHash.put("tagName", newTagName.getTagName());
+            tagHash.put("tagName", newTag.getTagName());
             tag.updateChildren(tagHash);
 
         }
 
     }
 
-    public static void updateTagNameInArticleTags(final DatabaseReference article, final Tag oldTag, final Tag newTag) {
+    /**
+     * Updates the Tag name inside of the list of "articleTags" found in the Article object
+     * Updates articles/[keyId]/articleTags/[position]
+     *
+     * @param article Database Reference to the specific Article
+     * @param oldTag  Old Tag object that is getting updated
+     * @param newTag  New Tag object with new user entered tagName
+     */
+    public static void updateTagNameInArticle(final DatabaseReference article, final Tag oldTag, final Tag newTag) {
 
         article.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
