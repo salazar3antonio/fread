@@ -54,6 +54,12 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
             tools:text="URL" />
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/article_tag_list_recycleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
 
     </LinearLayout>
 

@@ -396,7 +396,6 @@ public class FbDatabase {
 
     }
 
-
     public static void openArticleWebView(Activity activity, String url) {
 
         Uri webpage = Uri.parse(url);

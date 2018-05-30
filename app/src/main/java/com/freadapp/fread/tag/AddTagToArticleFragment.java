@@ -21,7 +21,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Tag;
-import com.freadapp.fread.view_holders.TagViewHolder;
+import com.freadapp.fread.view_holders.AddTagViewHolder;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -124,11 +124,11 @@ public class AddTagToArticleFragment extends Fragment {
 
         mAllTagQuery = mUserTags.orderByChild("tagName").startAt("a");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.add_tag_list_item,
-                TagViewHolder.class, mAllTagQuery) {
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagViewHolder>(Tag.class, R.layout.add_tag_list_item,
+                AddTagViewHolder.class, mAllTagQuery) {
 
             @Override
-            protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
+            protected void populateViewHolder(AddTagViewHolder viewHolder, Tag model, int position) {
 
                 viewHolder.bindToTag(model, mArticleKeyID, mUserUid);
 
@@ -155,12 +155,12 @@ public class AddTagToArticleFragment extends Fragment {
 
         mTagQuery = mUserTags.orderByChild("tagName").startAt(queryTag).endAt(queryTag + "\uf8ff");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.add_tag_list_item,
-                TagViewHolder.class, mTagQuery) {
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagViewHolder>(Tag.class, R.layout.add_tag_list_item,
+                AddTagViewHolder.class, mTagQuery) {
 
 
             @Override
-            protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
+            protected void populateViewHolder(AddTagViewHolder viewHolder, Tag model, int position) {
 
                 viewHolder.bindToTag(model, mArticleKeyID, mUserUid);
 

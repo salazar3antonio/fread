@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
+import com.freadapp.fread.tag.ArticleTagsAdapter;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -129,7 +130,6 @@ public class ArticleFeedFragment extends Fragment {
             }
         };
 
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mFirebaseAdapter);
 
@@ -142,4 +142,5 @@ public class ArticleFeedFragment extends Fragment {
             mFirebaseAdapter.cleanup();
         }
     }
+
 }

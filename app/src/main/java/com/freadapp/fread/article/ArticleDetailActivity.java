@@ -153,32 +153,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * Removes the article object found at /articles/$articlekeyid in the DB
-     *
-     * @param specificArticle database reference of the article
-     */
-    private void unSaveArticle(Article article, DatabaseReference specificArticle) {
-
-        specificArticle.removeValue();
-
-        Toast.makeText(getApplicationContext(), "Article Unsaved.", Toast.LENGTH_SHORT).show();
-    }
-
-    private void saveArticle(Article article, DatabaseReference articles) {
-
-        article.setSaved(true);
-
-        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
-        Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(article.getKeyId(), article);
-        //unSave the specified article
-        articles.updateChildren(writeMap);
-
-        Toast.makeText(getApplicationContext(), "Article saved.", Toast.LENGTH_SHORT).show();
-
-    }
-
-    /**
      * Creates new ArticleFragment, bundles the Article object and commits a FragmentTransaction to display the completed ArticleFragment
      */
     public void showArticleFragment(Article article) {
@@ -193,14 +167,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.article_container, articleDetailFragment, ARTICLE_FRAGMENT_TAG);
         fragmentTransaction.commit();
-
-    }
-
-    public void openWebView() {
-
-        Uri webpage = Uri.parse(mArticle.getUrl());
-        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-        startActivity(intent);
 
     }
 

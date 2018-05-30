@@ -12,9 +12,9 @@ import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Tag;
 import com.google.firebase.database.DatabaseReference;
 
-public class TagViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
+public class AddTagViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
 
-    public static final String TAG = TagViewHolder.class.getName();
+    public static final String TAG = AddTagViewHolder.class.getName();
 
     private TextView mTagName;
     public CheckBox mTagCheckBox;
@@ -24,7 +24,7 @@ public class TagViewHolder extends RecyclerView.ViewHolder implements CompoundBu
     private DatabaseReference mUserTagRef;
     private Tag mTag;
 
-    public TagViewHolder(View itemView) {
+    public AddTagViewHolder(View itemView) {
         super(itemView);
 
         mTagName = itemView.findViewById(R.id.tag_name_textview);
