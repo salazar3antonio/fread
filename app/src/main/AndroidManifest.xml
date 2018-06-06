@@ -27,18 +27,12 @@
             android:label="Edit Tags"
             android:parentActivityName=".MainActivity"/>
         <activity
-            android:name=".article.ArticleDetailActivity"
-            android:label="fRead It"
-            android:parentActivityName=".MainActivity">
-
-        </activity>
-        <activity
             android:name=".tag.AddTagToArticleActivity"
             android:parentActivityName=".article.ArticleDetailActivity" />
         <activity
-            android:name=".article.ArticleFetchActivity"
-            android:label="fRead It 2"
-            android:parentActivityName=".article.ArticleDetailActivity">
+            android:name=".article.ArticleDetailActivity"
+            android:label="fRead Mode"
+            android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

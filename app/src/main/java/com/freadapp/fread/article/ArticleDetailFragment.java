@@ -14,13 +14,12 @@ import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
 
-/**
- * Created by salaz on 2/11/2018.
- */
-
 public class ArticleDetailFragment extends Fragment {
 
     public static final String TAG = ArticleDetailFragment.class.getName();
+
+    public static final String ARTICLE_BUNDLE = "article_bundle";
+
 
     private TextView mTitleView;
     private TextView mAuthorView;
@@ -44,7 +43,7 @@ public class ArticleDetailFragment extends Fragment {
 
         savedInstanceState = getArguments();
         if (savedInstanceState != null) {
-            mArticle = savedInstanceState.getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
+            mArticle = savedInstanceState.getParcelable(ARTICLE_BUNDLE);
         }
 
     }
@@ -89,5 +88,6 @@ public class ArticleDetailFragment extends Fragment {
 
 
     }
+
 
 }

@@ -102,13 +102,13 @@ public class FbDatabase {
     }
 
     /**
-     * Removes the specified article object found at /articles/$articlekeyid in the database
+     * Removes the specified article object found at /articles/[articlekeyid] in the database
      *
      * @param context      Application context
      * @param article      Article to be unsaved
      * @param userArticles Database Reference to the User's Articles
      */
-    public static void unSaveArticle(Context context, Article article, DatabaseReference userArticles) {
+    public static void removeArticle(Context context, Article article, DatabaseReference userArticles) {
 
         userArticles.child(article.getKeyId()).removeValue();
 
@@ -118,13 +118,12 @@ public class FbDatabase {
     /**
      * Saves the specified Article. If Article is null, creates a new Article and push it to the database
      *
-     * @param context      Application context
      * @param article      Article object to be saved
      * @param userArticles Database Reference to the User's Articles
      * @param url          URL received from Intent.EXTRA_TEXT
      * @param uid          User's UID
      */
-    public static void saveArticle(Context context, Article article, DatabaseReference userArticles, String url, String uid) {
+    public static void saveArticle(Article article, DatabaseReference userArticles, String url, String uid) {
 
         //create a unique KeyID for the Article
         String key = userArticles.push().getKey();
@@ -132,7 +131,6 @@ public class FbDatabase {
         article.setKeyId(key);
         article.setUid(uid);
         article.setUrl(url);
-        article.setSaved(true);
 
         //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
         Map<String, Object> writeMap = new HashMap<>();
@@ -140,7 +138,32 @@ public class FbDatabase {
         //Save the specified article
         userArticles.updateChildren(writeMap);
 
-        Toast.makeText(context, "Article Saved.", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Sets the key "saved" value of the Article object to true or false in the database
+     *
+     * @param context      Application context
+     * @param article      Article object to set saved value to
+     * @param userArticles Database Reference to the User's Articles
+     * @param save         set saved value of Article object
+     */
+    public static void setSavedArticle(Context context, DatabaseReference userArticles, Article article, boolean save) {
+
+        article.setSaved(save);
+
+        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
+        Map<String, Object> writeMap = new HashMap<>();
+        writeMap.put(article.getKeyId(), article);
+        //Save the specified article
+        userArticles.updateChildren(writeMap);
+
+        if (save) {
+            Toast.makeText(context, "Article Saved.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Article Removed.", Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 

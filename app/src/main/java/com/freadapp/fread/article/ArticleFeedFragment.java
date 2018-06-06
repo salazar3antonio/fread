@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.tag.ArticleTagsAdapter;
+import com.freadapp.fread.view_holders.ArticleTagViewHolder;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,6 +43,8 @@ public class ArticleFeedFragment extends Fragment {
     private DatabaseReference mArticlesDBref;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mRecyclerView;
+    private RecyclerView mArticleTagsRecyclerView;
+    private RecyclerView.Adapter<ArticleTagViewHolder> mArticleTagsAdapter;
 
     //todo tony move this class to List folder. This class in not an article. It populates all User Articles
 

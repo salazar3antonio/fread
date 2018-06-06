@@ -1,6 +1,5 @@
 package com.freadapp.fread.tag;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -12,7 +11,6 @@ import android.view.MenuItem;
 
 import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
-import com.freadapp.fread.signin.SignInActivity;
 
 /**
  * Created by salaz on 3/22/2018.
