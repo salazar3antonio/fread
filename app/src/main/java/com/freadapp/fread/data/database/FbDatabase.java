@@ -161,7 +161,7 @@ public class FbDatabase {
         if (save) {
             Toast.makeText(context, "Article Saved.", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "Article Removed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Article Unsaved.", Toast.LENGTH_SHORT).show();
         }
 
 

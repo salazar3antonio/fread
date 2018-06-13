@@ -18,7 +18,7 @@ import com.freadapp.fread.data.api.FetchArticleAPI;
 import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
-import com.freadapp.fread.tag.AddTagToArticleActivity;
+import com.freadapp.fread.tag.AddTagsDialogFragment;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +29,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.freadapp.fread.article.ArticleDetailFragment.ARTICLE_DETAIL_FRAGMENT_TAG;
+import static com.freadapp.fread.tag.AddTagsDialogFragment.ADD_TAGS_DIALOG_FRAGMENT_TAG;
 
 /**
  * This class handles three ways the user can populate the details of an Article
@@ -43,7 +46,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     public static final String ARTICLE = "fetched_article";
     public static final String ARTICLE_KEY_ID = "article_key_id";
     public static final String ARTICLE_BUNDLE = "article_bundle";
-    public static final String ARTICLE_FRAGMENT_TAG = "article_fragment_tag";
 
 
     private String mURLreceived;
@@ -85,10 +87,8 @@ public class ArticleDetailActivity extends AppCompatActivity {
             if (mArticle != null) {
                 showArticleFragment(mArticle);
             }
-
-
-
-        } else {
+        }
+        else {
             //if bundle is null, retrieve the last saved keyID from SharedPreferences and set it to mArticle
             String keyid = mSharedPrefs.getString(getString(R.string.article_keyid_pref), "default");
             mArticle.setKeyId(keyid);
@@ -198,12 +198,16 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 return true;
 
             case R.id.add_tags_menu_item:
-                if (!mArticle.isSaved()) {
-                    FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, true);
-                }
-                Intent intent = new Intent(getApplicationContext(), AddTagToArticleActivity.class);
-                intent.putExtra(ARTICLE_KEY_ID, mArticle.getKeyId());
-                startActivity(intent);
+
+                AddTagsDialogFragment addTagsDialogFragment = AddTagsDialogFragment.newInstance();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(ARTICLE_KEY_ID, mArticle.getKeyId());
+                addTagsDialogFragment.setArguments(bundle);
+
+                addTagsDialogFragment.setTargetFragment(getSupportFragmentManager().findFragmentByTag(ARTICLE_DETAIL_FRAGMENT_TAG), 1);
+                addTagsDialogFragment.show(getSupportFragmentManager(), ADD_TAGS_DIALOG_FRAGMENT_TAG);
+
                 return true;
 
             default:
@@ -224,7 +228,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         articleDetailFragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.article_container, articleDetailFragment, ARTICLE_FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.article_container, articleDetailFragment, ARTICLE_DETAIL_FRAGMENT_TAG);
         fragmentTransaction.commit();
 
     }
@@ -247,11 +251,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = mSharedPrefs.edit();
         editor.putString(getString(R.string.article_keyid_pref), mArticle.getKeyId());
         editor.apply();
-
-        if (!mArticle.isSaved()) {
-            //remove Article from DB if isSaved returns false
-            FbDatabase.removeArticle(getApplicationContext(), mArticle, mUserArticles);
-        }
 
     }
 }

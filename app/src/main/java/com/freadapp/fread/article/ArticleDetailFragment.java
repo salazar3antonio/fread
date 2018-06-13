@@ -1,5 +1,6 @@
 package com.freadapp.fread.article;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,12 +15,14 @@ import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
 
+import static com.freadapp.fread.tag.AddTagsDialogFragment.ADD_TAGS_DIALOG_FRAGMENT_TAG;
+
 public class ArticleDetailFragment extends Fragment {
 
     public static final String TAG = ArticleDetailFragment.class.getName();
 
     public static final String ARTICLE_BUNDLE = "article_bundle";
-
+    public static final String ARTICLE_DETAIL_FRAGMENT_TAG = "article_detail_fragment_tag";
 
     private TextView mTitleView;
     private TextView mAuthorView;
@@ -89,5 +92,16 @@ public class ArticleDetailFragment extends Fragment {
 
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
+        Fragment addTagsDialogFragment = getFragmentManager().findFragmentByTag(ADD_TAGS_DIALOG_FRAGMENT_TAG);
+
+        //this attaches the AddTagsToArticleFragment upon a config change
+        if (addTagsDialogFragment != null) {
+            addTagsDialogFragment.setTargetFragment(this, 1);
+        }
+
+    }
 }

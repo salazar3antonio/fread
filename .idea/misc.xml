@@ -25,6 +25,12 @@
       </value>
     </option>
   </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/add_tag_fragment.xml" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/add_tag_fragment_container.xml" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/add_tag_list_item.xml" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/add_tag_toolbar.xml" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
