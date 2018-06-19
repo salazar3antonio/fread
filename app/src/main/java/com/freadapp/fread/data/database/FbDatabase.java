@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.freadapp.fread.data.model.Article;
@@ -69,36 +71,45 @@ public class FbDatabase {
      * Create a new Tag in the User's tags database reference.
      * Creates a new Tag object in tags/[key]
      *
-     * @param userTags Database reference of the User's Tags
-     * @param tagName  Name of tag the user entered
+     * @param userTags    Database reference of the User's Tags
+     * @param tagEditText EditText Box. Holds the User entered Tag.
      */
-    public static void createNewTag(DatabaseReference userTags, String tagName) {
+    public static void createNewTag(Context context, DatabaseReference userTags, EditText tagEditText) {
 
         Tag tag = new Tag();
         String key = userTags.push().getKey();
+        String tagName = tagEditText.getText().toString().toLowerCase();
 
         tag.setKeyid(key);
         tag.setTagName(tagName);
 
         Map<String, Object> writeMap = new HashMap<>();
         writeMap.put(key, tag);
-        //update the children of "tags" in the DB with the passed in Hash Map
-        userTags.updateChildren(writeMap);
+
+        if (tagName.length() == 0) {
+            Toast.makeText(context, "Enter tag name", Toast.LENGTH_SHORT).show();
+        } else {
+            //update the children of "tags" in the DB with the passed in Hash Map
+            userTags.updateChildren(writeMap);
+            tagEditText.setText(null);
+            Toast.makeText(context, "Added " + tagName, Toast.LENGTH_SHORT).show();
+        }
 
     }
 
     /**
-     * Deletes entire Tag object from user/[uID]/tags
+     * Deletes entire Tag object globally from user/[uID]/tags
      *
      * @param context Application context for Toast notification
      * @param tag     Tag object to be removed
      * @param userTag Database reference to the User's Tag
      */
-    public static void deleteTag(Context context, Tag tag, DatabaseReference userTag) {
+    public static void removeTag(Context context, Tag tag, DatabaseReference userTag) {
 
         userTag.removeValue();
         Toast.makeText(context, tag.getTagName() + " deleted", Toast.LENGTH_SHORT).show();
 
+        Log.i(TAG, "REMOVED Tag >> " + tag + " from User Tags");
     }
 
     /**
@@ -113,6 +124,9 @@ public class FbDatabase {
         userArticles.child(article.getKeyId()).removeValue();
 
         Toast.makeText(context, "Article Unsaved.", Toast.LENGTH_SHORT).show();
+
+        Log.i(TAG, "REMOVED Article >> " + article.getKeyId() + " from User Articles");
+
     }
 
     /**
@@ -243,7 +257,7 @@ public class FbDatabase {
                         }
                     }
 
-                    Log.i(TAG, "REMOVED Tag Name >> " + tag.getTagName() + " << from Article KeyId >> " + specArticle.getKeyId() + " <<");
+                    Log.i(TAG, "REMOVED Tag Name >> " + tag.getTagName() + " << from Article >> " + specArticle.getKeyId() + " <<");
 
                 }
 
@@ -345,7 +359,7 @@ public class FbDatabase {
     }
 
     /**
-     * Updates the Tag name globally. All articles tagged with the oldTag will get updated with the newTag.
+     * Updates the Tag name globally. All articles tagged with the oldTag will get updated with newTag.
      * Updates articles/[keyId]/articleTags/[position] and updates tags/[keyId]/tagName/
      *
      * @param article Database Reference to the specific Article
@@ -357,17 +371,16 @@ public class FbDatabase {
         List<Object> taggedArticles = oldTag.getTaggedArticles();
 
         if (taggedArticles != null) {
-
+            //if the Tag has Articles associated with the tag, loop through and update each Tag in each Article found.
             for (Object articleKeyId : taggedArticles) {
                 updateTagNameInArticle(article.child(articleKeyId.toString()), oldTag, newTag);
             }
-
-//          Updates the Tag name inside of the Tag object.
-            Map<String, Object> tagHash = new HashMap<>();
-            tagHash.put("tagName", newTag.getTagName());
-            tag.updateChildren(tagHash);
-
         }
+
+//      Updates the Tag name inside of the Tag object.
+        Map<String, Object> tagHash = new HashMap<>();
+        tagHash.put("tagName", newTag.getTagName());
+        tag.updateChildren(tagHash);
 
     }
 
@@ -379,7 +392,7 @@ public class FbDatabase {
      * @param oldTag  Old Tag object that is getting updated
      * @param newTag  New Tag object with new user entered tagName
      */
-    public static void updateTagNameInArticle(final DatabaseReference article, final Tag oldTag, final Tag newTag) {
+    private static void updateTagNameInArticle(final DatabaseReference article, final Tag oldTag, final Tag newTag) {
 
         article.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

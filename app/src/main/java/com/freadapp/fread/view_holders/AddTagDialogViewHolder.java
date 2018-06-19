@@ -53,7 +53,6 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
         mTagName.setText(mTag.getTagName());
         mUserTagRef = FbDatabase.getUserTags(mUserID).child(mTag.getKeyid());
         mUserArticleRef = FbDatabase.getUserArticles(mUserID).child(mArticleKeyId);
-//        mAddTagCheckBox.setChecked(false);
 
         if (mTag.getTaggedArticles() != null) {
             if (isArticleTagged(mTag, mArticleKeyId)) {

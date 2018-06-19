@@ -38,7 +38,7 @@ public class AddTagsDialogFragment extends DialogFragment {
     private EditText mCreateNewTag;
     private RecyclerView mRecyclerView;
     private String mArticleKeyId;
-    private ImageButton mAddNewTagButton;
+    private ImageButton mCreateNewTagButton;
     private EditText mCreateNewTagEditText;
 
 
@@ -67,14 +67,14 @@ public class AddTagsDialogFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.add_tags_dialog_fragment, container, false);
 
-        mAddNewTagButton = view.findViewById(R.id.add_new_tag_button);
+        mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
         mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
         mRecyclerView = view.findViewById(R.id.add_tag_list_dialog_recycleView);
 
-        mAddNewTagButton.setOnClickListener(new View.OnClickListener() {
+        mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createNewTag();
+                FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText);
             }
         });
 
@@ -87,7 +87,7 @@ public class AddTagsDialogFragment extends DialogFragment {
 
         mAllTagQuery = mUserTags.orderByChild("tagName").startAt("a");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagDialogViewHolder>(Tag.class, R.layout.add_tags_dialog_list_item,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagDialogViewHolder>(Tag.class, R.layout.add_tag_list_item,
                 AddTagDialogViewHolder.class, mAllTagQuery) {
 
             @Override
@@ -122,22 +122,6 @@ public class AddTagsDialogFragment extends DialogFragment {
         Dialog dialog = getDialog();
         if (dialog != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-    }
-
-    private void createNewTag() {
-        //get the text the user entered for the Tag Name
-        String userEnteredTag = mCreateNewTagEditText.getText().toString().toLowerCase();
-        if (userEnteredTag.length() == 0) {
-            Toast.makeText(getContext(), "Enter tag name", Toast.LENGTH_SHORT).show();
-        } else {
-            //create a new tag with the passed in Tag Name
-            FbDatabase.createNewTag(mUserTags, userEnteredTag);
-            //clear out the EditText View
-            Toast.makeText(getContext(), "Added " + userEnteredTag, Toast.LENGTH_SHORT).show();
-            mCreateNewTagEditText.setText(null);
-            Log.i(TAG, "NEW TAG ->> " + userEnteredTag + " <<- added to ArticleTags");
-
         }
     }
 

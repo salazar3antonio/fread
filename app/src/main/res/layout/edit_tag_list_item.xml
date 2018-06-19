@@ -32,28 +32,29 @@
         android:inputType="text"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/edit_tag_button"
+        app:layout_constraintEnd_toStartOf="@id/edit_tag_checkbox"
         app:layout_constraintStart_toEndOf="@+id/tag_imageview"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Name Of Tag To Edit" />
 
     <CheckBox
-        android:id="@+id/edit_tag_button"
-        android:layout_width="wrap_content"
+        android:id="@+id/edit_tag_checkbox"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:checked="false"
         android:button="@xml/edit_tag_check_state"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/delete_tag_button"
+        app:layout_constraintStart_toEndOf="@id/delete_tag_imagebutton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/delete_tag_button"
+        android:id="@+id/delete_tag_imagebutton"
         style="@android:style/Widget.DeviceDefault.ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,5 +1,8 @@
 package com.freadapp.fread.data.model;
 
+import android.content.Context;
+import android.widget.EditText;
+
 import java.util.List;
 
 /**
@@ -43,5 +46,9 @@ public class Tag {
 
     public void setTaggedArticles(List<Object> taggedArticles) {
         this.taggedArticles = taggedArticles;
+    }
+
+    public static void createNewTag(EditText tagName, Context context) {
+
     }
 }

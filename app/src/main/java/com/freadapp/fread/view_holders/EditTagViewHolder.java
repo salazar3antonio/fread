@@ -1,11 +1,8 @@
 package com.freadapp.fread.view_holders;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -40,8 +37,8 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         mEditTagName = itemView.findViewById(R.id.edit_tag_name);
-        mEditTagButton = itemView.findViewById(R.id.edit_tag_button);
-        mDeleteTagButton = itemView.findViewById(R.id.delete_tag_button);
+        mEditTagButton = itemView.findViewById(R.id.edit_tag_checkbox);
+        mDeleteTagButton = itemView.findViewById(R.id.delete_tag_imagebutton);
 
     }
 
@@ -50,7 +47,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
      *
      * @param tag Tag model to be bound to the List Item Views
      */
-    public void bindToTag(Context context, final Tag tag, String userID) {
+    public void bindToTag(final Context context, final Tag tag, String userID) {
 
         mContext = context;
         mUserID = userID;
@@ -60,7 +57,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
         mUserArticleRef = FbDatabase.getUserArticles(mUserID);
         mEditTagButton.setChecked(false);
 
-                // need to handle if Tags are empty
+        // need to handle if Tags are empty
 //        if (mTag.getTaggedArticles() != null) {
 //            if (isArticleTagged(mTag, mArticleKeyID)) {
 //            } else {
@@ -75,22 +72,24 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
                         InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
 
                         if (b) {
-                            //move focus to edit tag naem
+                            //move focus to mEditTagName
                             mEditTagName.requestFocus();
+                            //set cursor to end of Tag Name
+                            mEditTagName.setSelection(mEditTagName.getText().length());
                             //show soft input to let user edit name of tag
                             imm.showSoftInput(mEditTagName, InputMethodManager.SHOW_IMPLICIT);
                         } else {
-                            //create new tag object to store the new user entered tag name
+                            //create new Tag object to store the new Tag Name
                             mNewTag = new Tag();
                             mNewTag.setTagName(mEditTagName.getText().toString());
-                            //update Tag name in /tags/[keyId]/[tagName]
                             FbDatabase.updateTagName(mUserTagRef.child(mTag.getKeyid()), mUserArticleRef, mTag, mNewTag);
+                            mEditTagName.clearFocus();
                         }
 
                     }
                 });
 
-        mEditTagName.setOnFocusChangeListener(new OnFocusChangeListener() {
+        mEditTagName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
 
@@ -103,30 +102,25 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
-
         mDeleteTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //loop through taggedArticles, get all article KeyIDs. then go through each article and remove the specified articleTag
-
                 List<Object> taggedArticles = mTag.getTaggedArticles();
 
                 if (taggedArticles != null) {
 
                     //loop through taggedArticles to get all Articles associated with the Tag
                     // then remove tagName from articleTags found at Database Reference articles/[keyid]/articleTags/[tagName]
-                    // this is so when you delete a Tag, all Articles that have the Tag assigned to it get deleted as well.
+                    // this is so when you delete a Tag, all Tags associated with an Article get removed as well.
                     for (Object articleKeyId : taggedArticles) {
                         FbDatabase.removeTagNameFromArticle(mUserArticleRef.child(articleKeyId.toString()), mTag);
                     }
-
                 }
 
                 //delete Tag object found at Database Reference users/[uid]/tags/[tag]
-                FbDatabase.deleteTag(mContext, mTag, mUserTagRef.child(mTag.getKeyid()));
-
-                Log.i(TAG, "onClick: Delete");
+                FbDatabase.removeTag(mContext, mTag, mUserTagRef.child(mTag.getKeyid()));
 
             }
         });

@@ -1,8 +1,6 @@
 package com.freadapp.fread.article;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -20,10 +18,7 @@ import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.tag.AddTagsDialogFragment;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,6 +49,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     private String mUserUid;
     private DatabaseReference mUserArticles;
+    private Menu mOptionsMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +133,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         //inflate the menu view on the toolbar
         getMenuInflater().inflate(R.menu.fetch_article_menu_item, menu);
+        mOptionsMenu = menu;
         return true;
     }
 
@@ -156,7 +153,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_fetched_article_menu:
                 if (item.isChecked()) {
-//                    FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, false);
                     FbDatabase.removeArticle(getApplicationContext(), mArticle, mUserArticles);
                     item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
                     item.setChecked(false);
@@ -171,6 +167,18 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 return true;
 
             case R.id.add_tags_menu_item:
+
+                if (mArticle.getKeyId() == null) {
+                    //Save Article object to DB and allow user to add tags. Article must be saved in order to add Tags to it.
+                    FbDatabase.saveArticle(mArticle, mUserArticles, mURLreceived, mUserUid);
+                    FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, true);
+                    mArticle.setSaved(true);
+
+                    //Set saved menu item to checked. Let's user know the Article has been saved.
+                    MenuItem saveArticleMenuItem = mOptionsMenu.findItem(R.id.save_fetched_article_menu);
+                    saveArticleMenuItem.setIcon(R.drawable.ic_bookmark_white_24dp);
+                    saveArticleMenuItem.setChecked(true);
+                }
 
                 AddTagsDialogFragment addTagsDialogFragment = AddTagsDialogFragment.newInstance();
 
