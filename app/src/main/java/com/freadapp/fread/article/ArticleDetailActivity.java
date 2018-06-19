@@ -54,7 +54,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     private String mUserUid;
     private DatabaseReference mUserArticles;
-    private SharedPreferences mSharedPrefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,7 +76,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
         mUserUid = mUser.getUid();
         mUserArticles = FbDatabase.getUserArticles(mUserUid);
 
-        mSharedPrefs = this.getPreferences(Context.MODE_PRIVATE);
         Bundle bundle = getIntent().getExtras();
 
         if (bundle != null) {
@@ -87,11 +85,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
             if (mArticle != null) {
                 showArticleFragment(mArticle);
             }
-        }
-        else {
-            //if bundle is null, retrieve the last saved keyID from SharedPreferences and set it to mArticle
-            String keyid = mSharedPrefs.getString(getString(R.string.article_keyid_pref), "default");
-            mArticle.setKeyId(keyid);
         }
 
         if (savedInstanceState != null) {
@@ -120,15 +113,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             //Assign mArticle to the API Response Body (JSON object).
                             mArticle = response.body();
-                            FbDatabase.saveArticle(mArticle, mUserArticles, mURLreceived, mUserUid);
-                            //show the Article in the Fragment
                             showArticleFragment(mArticle);
-
-                            //store the ArticleKeyID into the Shared Preferences file
-                            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putString(getString(R.string.article_keyid_pref), mArticle.getKeyId());
-                            editor.apply();
 
                         } else {
                             Log.e(TAG, "API Response Failed: " + response.message());
@@ -144,22 +129,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
                     }
                 });
             }
-        } else {
-            mUserArticle = FbDatabase.getUserArticles(mUser.getUid()).child(mArticle.getKeyId());
-            mUserArticle.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    mArticle = dataSnapshot.getValue(Article.class);
-                    if (mArticle != null) {
-                        showArticleFragment(mArticle);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
         }
 
     }
@@ -187,13 +156,17 @@ public class ArticleDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_fetched_article_menu:
                 if (item.isChecked()) {
-                    FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, false);
+//                    FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, false);
+                    FbDatabase.removeArticle(getApplicationContext(), mArticle, mUserArticles);
                     item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
                     item.setChecked(false);
+                    mArticle.setSaved(false);
                 } else {
+                    FbDatabase.saveArticle(mArticle, mUserArticles, mURLreceived, mUserUid);
                     FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, true);
                     item.setIcon(R.drawable.ic_bookmark_white_24dp);
                     item.setChecked(true);
+                    mArticle.setSaved(true);
                 }
                 return true;
 
@@ -243,14 +216,4 @@ public class ArticleDetailActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        //store the ArticleKeyID into the Shared Preferences file
-        SharedPreferences.Editor editor = mSharedPrefs.edit();
-        editor.putString(getString(R.string.article_keyid_pref), mArticle.getKeyId());
-        editor.apply();
-
-    }
 }
