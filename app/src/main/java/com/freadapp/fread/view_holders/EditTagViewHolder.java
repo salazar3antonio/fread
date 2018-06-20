@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
-public class EditTagViewHolder extends RecyclerView.ViewHolder {
+public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public static final String TAG = EditTagViewHolder.class.getName();
 
@@ -39,6 +39,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
         mEditTagName = itemView.findViewById(R.id.edit_tag_name);
         mEditTagButton = itemView.findViewById(R.id.edit_tag_checkbox);
         mDeleteTagButton = itemView.findViewById(R.id.delete_tag_imagebutton);
+        itemView.setOnClickListener(this);
 
     }
 
@@ -69,15 +70,12 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-
                         if (b) {
                             //move focus to mEditTagName
                             mEditTagName.requestFocus();
                             //set cursor to end of Tag Name
                             mEditTagName.setSelection(mEditTagName.getText().length());
                             //show soft input to let user edit name of tag
-                            imm.showSoftInput(mEditTagName, InputMethodManager.SHOW_IMPLICIT);
                         } else {
                             //create new Tag object to store the new Tag Name
                             mNewTag = new Tag();
@@ -127,4 +125,13 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    @Override
+    public void onClick(View view) {
+
+        //move focus to mEditTagName
+        mEditTagName.requestFocus();
+        //set cursor to end of Tag Name
+        mEditTagName.setSelection(mEditTagName.getText().length());
+
+    }
 }

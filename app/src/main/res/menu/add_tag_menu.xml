@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/create_tag_menu_item"
-        android:icon="@drawable/ic_tag_plus_white_24dp"
+        android:icon="@drawable/ic_tag_plus_black_24dp"
         android:title="@string/create_tag_text"
         app:showAsAction="always" />
 
