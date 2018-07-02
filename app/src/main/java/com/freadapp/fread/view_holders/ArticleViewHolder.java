@@ -21,7 +21,6 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     private TextView mArticleTile;
     private TextView mArticleURL;
     private ImageView mArticleImage;
-    private Context mContext;
     private RecyclerView mArticleTagsRecyclerView;
     private ArticleTagsAdapter mArticleTagsAdapter;
 
@@ -38,21 +37,20 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Binds the passed in Article properties to the populated ViewHolder.
+     *
      * @param article Article model to be bound to the List Item Views
      */
-    public void bindToArticle(Article article, Context context){
+    public void bindToArticle(Article article, Context context) {
 
         mArticleTile.setText(article.getTitle());
         mArticleURL.setText(article.getUrl());
-        mContext = context;
         Glide.with(context).load(article.getImage()).into(mArticleImage);
 
-        if (article.getArticleTags() != null) {
-            mArticleTagsAdapter = new ArticleTagsAdapter(mContext, article.getArticleTags());
-            mArticleTagsRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-            mArticleTagsRecyclerView.setAdapter(mArticleTagsAdapter);
-        }
-
+        ArticleTagsAdapter articleTagsAdapter = new ArticleTagsAdapter(context, article);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        mArticleTagsRecyclerView.setHasFixedSize(true);
+        mArticleTagsRecyclerView.setLayoutManager(linearLayoutManager);
+        mArticleTagsRecyclerView.setAdapter(articleTagsAdapter);
 
     }
 

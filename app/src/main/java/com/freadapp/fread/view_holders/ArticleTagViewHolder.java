@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ArticleTagViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView mTagNameTextView;
+    public TextView mTagNameTextView;
 
     public ArticleTagViewHolder(View itemView) {
         super(itemView);
@@ -19,14 +19,5 @@ public class ArticleTagViewHolder extends RecyclerView.ViewHolder {
         mTagNameTextView = itemView.findViewById(R.id.article_tag_name);
 
     }
-
-    public void bindTagName(List<Object> articleTags, int position) {
-
-        String tagName = articleTags.get(position).toString();
-        mTagNameTextView.setText(tagName);
-    }
-
-
-
 
 }

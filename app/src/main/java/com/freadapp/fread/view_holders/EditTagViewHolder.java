@@ -58,14 +58,6 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
         mUserArticleRef = FbDatabase.getUserArticles(mUserID);
         mEditTagButton.setChecked(false);
 
-        // need to handle if Tags are empty
-//        if (mTag.getTaggedArticles() != null) {
-//            if (isArticleTagged(mTag, mArticleKeyID)) {
-//            } else {
-//            }
-//        } else {
-//        }
-
         mEditTagButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -81,6 +73,12 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
                             mNewTag = new Tag();
                             mNewTag.setTagName(mEditTagName.getText().toString());
                             FbDatabase.updateTagName(mUserTagRef.child(mTag.getKeyid()), mUserArticleRef, mTag, mNewTag);
+
+                            //force entered String to lowercase. All tags will be strictly lowercase.
+                            String tag = mEditTagName.getText().toString();
+                            mEditTagName.setText(tag.toLowerCase());
+
+                            //reset Focus to top View
                             mEditTagName.clearFocus();
                         }
 

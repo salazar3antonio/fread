@@ -379,7 +379,7 @@ public class FbDatabase {
 
 //      Updates the Tag name inside of the Tag object.
         Map<String, Object> tagHash = new HashMap<>();
-        tagHash.put("tagName", newTag.getTagName());
+        tagHash.put("tagName", newTag.getTagName().toLowerCase());
         tag.updateChildren(tagHash);
 
     }
@@ -411,7 +411,7 @@ public class FbDatabase {
 
                             String listPosition = String.valueOf(i);
                             Map<String, Object> tagHash = new HashMap<>();
-                            tagHash.put(listPosition, newTag.getTagName());
+                            tagHash.put(listPosition, newTag.getTagName().toLowerCase());
                             article.child("articleTags").updateChildren(tagHash);
                             break;
                         }

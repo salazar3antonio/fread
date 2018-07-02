@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.freadapp.fread.R;
+import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.view_holders.ArticleTagViewHolder;
 
 import java.util.List;
@@ -14,11 +15,11 @@ import java.util.List;
 public class ArticleTagsAdapter extends RecyclerView.Adapter<ArticleTagViewHolder> {
 
     private LayoutInflater mInflater;
-    private List<Object> mArticleTags;
+    private List<Object> mTags;
 
-    public ArticleTagsAdapter(Context context, List<Object> articleTags) {
+    public ArticleTagsAdapter(Context context, Article article) {
 
-        mArticleTags = articleTags;
+        mTags = article.getArticleTags();
         mInflater = LayoutInflater.from(context);
 
     }
@@ -32,12 +33,28 @@ public class ArticleTagsAdapter extends RecyclerView.Adapter<ArticleTagViewHolde
     @Override
     public void onBindViewHolder(ArticleTagViewHolder holder, int position) {
 
-        holder.bindTagName(mArticleTags, position);
+        if (mTags != null) {
+            String tagName = mTags.get(position).toString();
+            holder.mTagNameTextView.setText(tagName);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mArticleTags.size();
+        if (mTags != null) {
+            return mTags.size();
+        } else {
+            return 0;
+        }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 }

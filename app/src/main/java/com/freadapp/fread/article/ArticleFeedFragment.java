@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.view_holders.ArticleTagViewHolder;
+import com.freadapp.fread.tag.ArticleTagsAdapter;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,9 +42,7 @@ public class ArticleFeedFragment extends Fragment {
     private FirebaseUser mUser;
     private DatabaseReference mArticlesDBref;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
-    private RecyclerView mRecyclerView;
-    private RecyclerView mArticleTagsRecyclerView;
-    private RecyclerView.Adapter<ArticleTagViewHolder> mArticleTagsAdapter;
+    private RecyclerView mArticleRecyclerView;
 
     //todo tony move this class to List folder. This class in not an article. It populates all User Articles
 
@@ -62,7 +60,7 @@ public class ArticleFeedFragment extends Fragment {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
-        mRecyclerView = view.findViewById(R.id.article_recycleView);
+        mArticleRecyclerView = view.findViewById(R.id.article_recycleView);
 
         //check to see if user is logged in.
         if (mUser == null) {
@@ -126,14 +124,13 @@ public class ArticleFeedFragment extends Fragment {
                     }
                 });
 
-                Context context = getContext();
-                viewHolder.bindToArticle(model, context);
+                viewHolder.bindToArticle(model, getContext());
 
             }
         };
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(mFirebaseAdapter);
+        mArticleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mArticleRecyclerView.setAdapter(mFirebaseAdapter);
 
     }
 

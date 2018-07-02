@@ -168,7 +168,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
             case R.id.add_tags_menu_item:
 
-                if (mArticle.getKeyId() == null) {
+                if (mArticle.getKeyId() == null || !mArticle.isSaved()) {
                     //Save Article object to DB and allow user to add tags. Article must be saved in order to add Tags to it.
                     FbDatabase.saveArticle(mArticle, mUserArticles, mURLreceived, mUserUid);
                     FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, true);
