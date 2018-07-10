@@ -46,6 +46,7 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
         mArticleURL.setText(article.getUrl());
         Glide.with(context).load(article.getImage()).into(mArticleImage);
 
+        //setup the tags recycler view holder
         ArticleTagsAdapter articleTagsAdapter = new ArticleTagsAdapter(context, article);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         mArticleTagsRecyclerView.setHasFixedSize(true);

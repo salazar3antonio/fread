@@ -86,7 +86,7 @@ public class AddTagsDialogFragment extends DialogFragment {
 
     private void setFirebaseAdapter() {
 
-        mAllTagQuery = mUserTags.orderByChild("tagName").startAt("a");
+        mAllTagQuery = mUserTags.orderByChild("tagName");
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagDialogViewHolder>(Tag.class, R.layout.add_tag_list_item,
                 AddTagDialogViewHolder.class, mAllTagQuery) {

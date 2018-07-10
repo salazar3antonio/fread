@@ -82,7 +82,7 @@ public class EditTagsFragment extends Fragment {
 
     private void setFirebaseAdapter() {
 
-        mAllTagQuery = mUserTags.orderByChild("tagName").startAt("a");
+        mAllTagQuery = mUserTags.orderByChild("tagName");
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, EditTagViewHolder>(Tag.class, R.layout.edit_tag_list_item,
                 EditTagViewHolder.class, mAllTagQuery) {

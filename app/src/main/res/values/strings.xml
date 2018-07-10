@@ -16,4 +16,7 @@
     <string name="sign_in_menu_text">Sign In</string>
     <string name="edit_tags_menu_text">Edit Tags</string>
     <string name="delete_menu_text">Delete</string>
+    <string name="nav_header_text">My header title</string>
+    <string name="articles_menu_text">Articles</string>
+    <string name="settings_menu_text">Settings</string>
 </resources>
