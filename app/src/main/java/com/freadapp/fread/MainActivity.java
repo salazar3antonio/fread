@@ -1,105 +1,118 @@
 package com.freadapp.fread;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
-import static java.lang.Math.toIntExact;
-
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.article.ArticleFeedFragment;
+import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsFragment;
+import com.freadapp.fread.view_holders.EditTagViewHolder;
+import com.freadapp.fread.view_holders.NavTagViewHolder;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
+
+    private FirebaseUser mUser;
+    private String mUserUid;
+    private DatabaseReference mUserTags;
+    private RecyclerView mRecyclerView;
+    private FirebaseRecyclerAdapter mFirebaseAdapter;
+    private Query mAllTagQuery;
+
+    private DrawerLayout mDrawerLayout;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main_activity);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        final ActionBar actionbar = getSupportActionBar();
+        ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionbar.setTitle(R.string.articles_menu_text);
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem()
-                .withIdentifier(1)
-                .withName(R.string.articles_menu_text)
-                .withIcon(R.drawable.ic_chrome_reader_mode_white_24dp);
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem()
-                .withIdentifier(2)
-                .withName(R.string.edit_tags_menu_text)
-                .withIcon(R.drawable.ic_edit_black_24dp);
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem()
-                .withIdentifier(3)
-                .withName(R.string.settings_menu_text)
-                .withIcon(R.drawable.ic_settings_black_24dp);
+        //get the current logged in user
+        mUser = FbDatabase.getAuthUser(mUser);
+        mUserUid = mUser.getUid();
+        //get all of the user's tags
+        mUserTags = FbDatabase.getUserTags(mUserUid);
 
-        DividerDrawerItem dividerDrawerItem = new DividerDrawerItem();
+        mRecyclerView = findViewById(R.id.nav_tag_list_recycleView);
 
-        final Drawer mainDrawer = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .addDrawerItems(
-                        item1, item2, dividerDrawerItem, item3
-                )
-                .build();
-
-        mainDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-            @Override
-            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                //cast long to int for switch statement
-                int identifier = (int) (long) drawerItem.getIdentifier();
-                switch (identifier) {
-                    case 1:
-                        ArticleFeedFragment articleFeedFragment = ArticleFeedFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_content_framelayout, articleFeedFragment).commit();
-                        actionbar.setTitle(R.string.articles_menu_text);
-                        mainDrawer.closeDrawer();
-                        return true;
-                    case 2:
-                        EditTagsFragment editTagsFragment = EditTagsFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_content_framelayout, editTagsFragment).commit();
-                        actionbar.setTitle(R.string.edit_tags_menu_text);
-                        mainDrawer.closeDrawer();
-                        return true;
-                    case 3:
-                        SignInFragment signInFragment = SignInFragment.newInstance();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_content_framelayout, signInFragment).commit();
-                        actionbar.setTitle(R.string.sign_in_menu_text);
-                        mainDrawer.closeDrawer();
-                        return true;
-                }
-                return true;
-            }
-        });
+        setFirebaseAdapter();
 
         ArticleFeedFragment articleFeedFragment = ArticleFeedFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_framelayout, articleFeedFragment).commit();
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setFirebaseAdapter() {
+
+        mAllTagQuery = mUserTags.orderByChild("tagName");
+
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, NavTagViewHolder>(Tag.class, R.layout.nav_tag_list_item,
+                NavTagViewHolder.class, mAllTagQuery) {
+
+            @Override
+            protected void populateViewHolder(NavTagViewHolder viewHolder, Tag model, int position) {
+
+                viewHolder.bindToNavTag(model, getApplicationContext());
+
+            }
+
+        };
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mRecyclerView.setAdapter(mFirebaseAdapter);
 
     }
 

@@ -1,20 +1,16 @@
 package com.freadapp.fread.tag;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
@@ -25,12 +21,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-import java.util.List;
-
 public class EditTagsFragment extends Fragment {
 
+    public static final String TAG = EditTagsFragment.class.getName();
+
     private DatabaseReference mUserTags;
-    private DatabaseReference mUserArticleRef;
+    private DatabaseReference mUserArticles;
     private String mUserUid;
     private FirebaseUser mUser;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
@@ -53,7 +49,7 @@ public class EditTagsFragment extends Fragment {
         mUserUid = mUser.getUid();
         //get all of the user's tags
         mUserTags = FbDatabase.getUserTags(mUserUid);
-        mUserArticleRef = FbDatabase.getUserArticles(mUserUid);
+        mUserArticles = FbDatabase.getUserArticles(mUserUid);
 
         setHasOptionsMenu(true);
 

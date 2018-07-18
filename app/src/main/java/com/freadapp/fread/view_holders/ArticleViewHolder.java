@@ -22,8 +22,6 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     private TextView mArticleURL;
     private ImageView mArticleImage;
     private RecyclerView mArticleTagsRecyclerView;
-    private ArticleTagsAdapter mArticleTagsAdapter;
-
 
     public ArticleViewHolder(View itemView) {
         super(itemView);

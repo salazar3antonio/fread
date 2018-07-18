@@ -1,8 +1,10 @@
 package com.freadapp.fread.view_holders;
 
 import android.content.Context;
+import android.inputmethodservice.InputMethodService;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -128,6 +130,9 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
 
         //move focus to mEditTagName
         mEditTagName.requestFocus();
+        //show keyboard
+        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEditTagName, InputMethodManager.SHOW_IMPLICIT);
         //set cursor to end of Tag Name
         mEditTagName.setSelection(mEditTagName.getText().length());
 
