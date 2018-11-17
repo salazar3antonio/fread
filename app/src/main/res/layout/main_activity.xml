@@ -37,8 +37,10 @@
                 android:id="@+id/nav_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                app:menu="@menu/drawer_layout_menu"
-                app:headerLayout="@layout/nav_header"/>
+                app:headerLayout="@layout/nav_header"
+                app:menu="@menu/main_activity_menu" >
+
+            </android.support.design.widget.NavigationView>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/nav_tag_list_recycleView"

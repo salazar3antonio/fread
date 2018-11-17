@@ -3,6 +3,7 @@ package com.freadapp.fread;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -83,6 +84,22 @@ public class MainActivity extends AppCompatActivity {
         ArticleFeedFragment articleFeedFragment = ArticleFeedFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_framelayout, articleFeedFragment).commit();
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // set item as selected to persist highlight
+                        menuItem.setChecked(true);
+                        // close drawer when item is tapped
+                        mDrawerLayout.closeDrawers();
+
+                        // Add code here to update the UI based on the item selected
+                        // For example, swap UI fragments here
+
+                        return true;
+                    }
+                });
     }
 
     @Override
@@ -113,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRecyclerView.setAdapter(mFirebaseAdapter);
+
+        Log.i(TAG, "setFirebaseAdapter: " + mAllTagQuery);
 
     }
 

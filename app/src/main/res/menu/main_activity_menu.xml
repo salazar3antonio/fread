@@ -17,29 +17,7 @@
     </group>
 
 
-    <item
-        android:id="@+id/tags_menu_list"
-        android:title="Tags">
-
-
-        <menu>
-            <group android:id="@+id/tags_menu_group">
-                <item
-                    android:id="@+id/tag_name_menu_item"
-                    android:icon="@drawable/ic_tag_black_24dp"
-                    android:title="@string/edit_tags_menu_text"
-                    app:showAsAction="never" />
-            </group>
-        </menu>
-    </item>
-
     <group android:id="@+id/settings_group_menu">
-        <item
-            android:id="@+id/sign_in_menu_item"
-            android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="@string/sign_in_menu_text"
-            app:showAsAction="never" />
-
         <item
             android:id="@+id/settings_menu_item"
             android:icon="@drawable/ic_settings_black_24dp"
