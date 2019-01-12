@@ -1,6 +1,7 @@
 package com.freadapp.fread.data.api;
 
 import com.freadapp.fread.data.model.Article;
+import com.freadapp.fread.helpers.Constants;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,8 +17,8 @@ public interface FetchArticleAPI {
 
     //These are the headers for the api. Holds app key and id.
     @Headers({
-            "X-AYLIEN-TextAPI-Application-Key: 27af5a80c921f6f5373c574d97ff19bf",
-            "X-AYLIEN-TextAPI-Application-ID: cb702bf1",
+            "X-AYLIEN-TextAPI-Application-Key: " + Constants.API_APP_KEY,
+            "X-AYLIEN-TextAPI-Application-ID: " + Constants.API_APP_ID,
             "accept-encoding: gzip, deflate"
     })
 

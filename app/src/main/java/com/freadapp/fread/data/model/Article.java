@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * This is the model for the Article object.
- * Artile Extraction API from Aylien.com.
+ * Article Extraction API from Aylien.com.
  */
 
 public class Article implements Parcelable {
