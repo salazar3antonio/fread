@@ -4,7 +4,7 @@
     <string name="save_article_menu_text">Save Article</string>
     <string name="add_tag_menu_text">Add Tags</string>
     <string name="share_article_menu_text">Share Article</string>
-    <string name="title_freads">My fReads</string>
+    <string name="menu_text_articles">Articles</string>
     <string name="title_search">Search</string>
     <string name="title_profile">Profile</string>
     <string name="web_view_menu_text">Web View</string>
@@ -19,4 +19,5 @@
     <string name="nav_header_text">My header title</string>
     <string name="articles_menu_text">Articles</string>
     <string name="settings_menu_text">Settings</string>
+    <string name="menu_text_tags">Tags</string>
 </resources>

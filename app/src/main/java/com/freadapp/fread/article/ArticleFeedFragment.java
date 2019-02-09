@@ -39,7 +39,6 @@ public class ArticleFeedFragment extends Fragment {
     public static final String FB_ARTICLE_KEY_ID = "fb_key_id";
     public static final String ARTICLE_MODEL = "article_model";
 
-
     private FirebaseUser mUser;
     private DatabaseReference mArticlesDBref;
     private FirebaseRecyclerAdapter mFirebaseAdapter;

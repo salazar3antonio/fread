@@ -15,7 +15,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "744600230162-ju460pdnk5q09qvgpmir7to5s7jn3r10.apps.googleusercontent.com",
+          "client_id": "744600230162-rt5nto355eeuhhn2jjqim4lj0k8sts1p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.freadapp.fread",
+            "certificate_hash": "ba295c3a19b307ef4dfc8cc41e77576d2d070b66"
+          }
+        },
+        {
+          "client_id": "744600230162-fm3bovek3nithbt0dt44kf7s0u48bqrs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.freadapp.fread",
+            "certificate_hash": "2b97787e913bee5a59e7c6f7f7b7b4f4100d9f58"
+          }
+        },
+        {
+          "client_id": "744600230162-2n6p1bdatdn0s8gg3oo4qrnjr3uvi9je.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -29,8 +45,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "744600230162-2n6p1bdatdn0s8gg3oo4qrnjr3uvi9je.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
