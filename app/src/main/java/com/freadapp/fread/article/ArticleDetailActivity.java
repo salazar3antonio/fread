@@ -180,6 +180,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                     saveArticleMenuItem.setChecked(true);
                 }
 
+                //create a new dialog fragment that allows the user to add/create tags for the article
                 AddTagsDialogFragment addTagsDialogFragment = AddTagsDialogFragment.newInstance();
 
                 Bundle bundle = new Bundle();

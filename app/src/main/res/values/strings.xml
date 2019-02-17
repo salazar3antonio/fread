@@ -20,4 +20,5 @@
     <string name="articles_menu_text">Articles</string>
     <string name="settings_menu_text">Settings</string>
     <string name="menu_text_tags">Tags</string>
+    <string name="empty_widget_text">No Articles to display</string>
 </resources>

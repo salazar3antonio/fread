@@ -86,7 +86,7 @@ public class ArticleDetailFragment extends Fragment {
         if (mArticle.getImage() == "") {
             Toast.makeText(getContext(), "no image link", Toast.LENGTH_SHORT).show();
         } else {
-            Glide.with(getContext()).load(mArticle.getImage()).into(mArticleImageView);
+            Glide.with(this).load(mArticle.getImage()).into(mArticleImageView);
         }
 
 
