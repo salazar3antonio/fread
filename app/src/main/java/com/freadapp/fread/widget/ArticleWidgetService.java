@@ -177,25 +177,9 @@ class ArticleWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     private void fetchArticles(DataSnapshot dataSnapshot) {
 
-        mArticles.clear();
-
         Article article = dataSnapshot.getValue(Article.class);
-        Log.i(TAG, "Article Title: " + article.getTitle());
-
-//        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//            Article article = ds.getValue(Article.class);
-//            Log.i(TAG, "Article Title: " + ds.getValue());
-//            Log.i(TAG, "User UID: " + article.getUid());
-//            mArticles.add(article);
-//        }
-
-//        for (int i = 0; i < dataSnapshot.getChildrenCount(); i++) {
-//            Article article = dataSnapshot.getValue(Article.class);
-//            mArticles.add(article);
-//        }
-
-//        Article article = dataSnapshot.getValue(Article.class);
-//        mArticles.add(article);
+        Log.i(TAG, "Titles: " + article.getTitle());
+        mArticles.add(article);
 
     }
 

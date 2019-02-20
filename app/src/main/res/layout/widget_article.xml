@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="4dp"
     android:background="@color/widgetLightGray"
     android:orientation="vertical"
     android:padding="2dp">
@@ -22,6 +23,7 @@
         android:layout_width="match_parent"
 
         android:layout_height="wrap_content"
+        android:maxLines="5"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingBottom="4dp"
