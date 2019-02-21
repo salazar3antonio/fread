@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 pushFragment(EditTagsFragment.newInstance());
                 break;
             case R.id.main_nav_profile:
-                pushFragment(null);
+                pushFragment(SignInFragment.newInstance());
                 break;
         }
     }

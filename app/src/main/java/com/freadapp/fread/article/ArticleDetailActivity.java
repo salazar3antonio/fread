@@ -45,7 +45,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     private String mURLreceived;
     private Article mArticle = new Article();
-    private DatabaseReference mUserArticle;
     private FirebaseUser mUser;
     private String mUserUid;
     private DatabaseReference mUserArticles;
@@ -59,7 +58,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("");
 
         if (findViewById(R.id.article_container) != null) {
             //placing in the loading screen for when quiz api is being called
