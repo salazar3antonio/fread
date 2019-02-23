@@ -26,14 +26,10 @@ public class EditTagsFragment extends Fragment {
     public static final String TAG = EditTagsFragment.class.getName();
 
     private DatabaseReference mUserTags;
-    private DatabaseReference mUserArticles;
     private String mUserUid;
     private FirebaseUser mUser;
-    private FirebaseRecyclerAdapter mFirebaseAdapter;
-    private Query mAllTagQuery;
     private EditText mCreateNewTagEditText;
     private ImageButton mCreateNewTagButton;
-
     private RecyclerView mRecyclerView;
 
     public static EditTagsFragment newInstance() {
@@ -46,10 +42,13 @@ public class EditTagsFragment extends Fragment {
 
         //get the current logged in user
         mUser = FbDatabase.getAuthUser(mUser);
-        mUserUid = mUser.getUid();
-        //get all of the user's tags
-        mUserTags = FbDatabase.getUserTags(mUserUid);
-        mUserArticles = FbDatabase.getUserArticles(mUserUid);
+
+        if (mUser != null) {
+            // if a user is logged in get the user's ID
+            mUserUid = mUser.getUid();
+            //get all of the user's tags
+            mUserTags = FbDatabase.getUserTags(mUserUid);
+        }
 
         setHasOptionsMenu(true);
 
@@ -59,29 +58,37 @@ public class EditTagsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.edit_tags_fragment, container, false);
-        mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
-        mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
-        mRecyclerView = view.findViewById(R.id.edit_tag_list_recycleView);
+        if (mUser != null) {
+            //inflate the view only if a user is signed in. else return null
+            View view = inflater.inflate(R.layout.edit_tags_fragment, container, false);
+            mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
+            mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
+            mRecyclerView = view.findViewById(R.id.edit_tag_list_recycleView);
 
-        mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText);
-            }
-        });
+            mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //create a new tag in the database once clicked
+                    FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText);
+                }
+            });
 
-        setFirebaseAdapter();
+            setFirebaseAdapter();
 
-        return view;
+            return view;
+
+        } else {
+            return null;
+        }
+
     }
 
     private void setFirebaseAdapter() {
 
-        mAllTagQuery = mUserTags.orderByChild("tagName");
+        Query allTagsQuery = mUserTags.orderByChild("tagName");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, EditTagViewHolder>(Tag.class, R.layout.edit_tag_list_item,
-                EditTagViewHolder.class, mAllTagQuery) {
+        FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Tag, EditTagViewHolder>(Tag.class, R.layout.edit_tag_list_item,
+                EditTagViewHolder.class, allTagsQuery) {
 
             @Override
             protected void populateViewHolder(final EditTagViewHolder viewHolder, final Tag model, int position) {
@@ -93,7 +100,7 @@ public class EditTagsFragment extends Fragment {
         };
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(mFirebaseAdapter);
+        mRecyclerView.setAdapter(firebaseRecyclerAdapter);
 
     }
 }
