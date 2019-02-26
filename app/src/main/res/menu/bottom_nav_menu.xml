@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/main_nav_list"
+        android:id="@+id/main_nav_articles"
         android:icon="@drawable/ic_chrome_reader_mode_white_24dp"
         android:title="@string/menu_text_articles" />
 
     <item
-        android:id="@+id/main_nav_search"
+        android:id="@+id/main_nav_tags"
         android:icon="@drawable/ic_tag_black_24dp"
         android:title="@string/menu_text_tags" />
 

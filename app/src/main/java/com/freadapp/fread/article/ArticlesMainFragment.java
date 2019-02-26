@@ -30,9 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
  * fragment class should populate the Firebase Database Recyclerview Feed of all the user articles
  */
 
-public class ArticleFeedFragment extends Fragment {
+public class ArticlesMainFragment extends Fragment {
 
-    public static final String TAG = ArticleFeedFragment.class.getName();
+    public static final String TAG = ArticlesMainFragment.class.getName();
     public static final String FB_ARTICLE_KEY_ID = "fb_key_id";
     public static final String ARTICLE_MODEL = "article_model";
 
@@ -41,10 +41,8 @@ public class ArticleFeedFragment extends Fragment {
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mArticleRecyclerView;
 
-    //todo tony move this class to List folder. This class in not an article. It populates all User Articles
-
-    public static ArticleFeedFragment newInstance() {
-        return new ArticleFeedFragment();
+    public static ArticlesMainFragment newInstance() {
+        return new ArticlesMainFragment();
     }
 
     @Nullable
@@ -52,12 +50,12 @@ public class ArticleFeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         //inflate fragment layout of article feed
-        View view = inflater.inflate(R.layout.article_feed_fragment, container, false);
+        View view = inflater.inflate(R.layout.main_articles_fragment, container, false);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
-        mArticleRecyclerView = view.findViewById(R.id.article_recycleView);
+        mArticleRecyclerView = view.findViewById(R.id.rv_articles_main_list);
 
         //check to see if user is logged in.
         if (mUser == null) {

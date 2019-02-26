@@ -4,16 +4,13 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
@@ -65,7 +62,7 @@ public class AddTagsDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.add_tags_dialog_fragment, container, false);
+        View view = inflater.inflate(R.layout.tags_add_dialog_fragment, container, false);
 
         mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
         mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
@@ -87,7 +84,7 @@ public class AddTagsDialogFragment extends DialogFragment {
 
         mAllTagQuery = mUserTags.orderByChild("tagName");
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagDialogViewHolder>(Tag.class, R.layout.add_tag_list_item,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, AddTagDialogViewHolder>(Tag.class, R.layout.tag_add_list_item,
                 AddTagDialogViewHolder.class, mAllTagQuery) {
 
             @Override

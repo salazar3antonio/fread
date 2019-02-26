@@ -13,7 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.freadapp.fread.article.ArticleFeedFragment;
+import com.freadapp.fread.article.ArticlesMainFragment;
 import com.freadapp.fread.signin.SignInActivity;
 import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
@@ -86,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
         item.setChecked(true);
 
         switch (item.getItemId()) {
-            case R.id.main_nav_list:
-                pushFragment(ArticleFeedFragment.newInstance());
+            case R.id.main_nav_articles:
+                pushFragment(ArticlesMainFragment.newInstance());
                 break;
-            case R.id.main_nav_search:
+            case R.id.main_nav_tags:
                 pushFragment(TagsMainFragment.newInstance());
                 break;
             case R.id.main_nav_profile:

@@ -3,33 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:layout_editor_absoluteY="25dp">
 
     <TextView
-        android:id="@+id/nav_tag_textview"
+        android:id="@+id/tag_name_dialog_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/nav_tag_imageview"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Name Of Tag" />
-
-    <ImageView
-        android:id="@+id/nav_tag_imageview"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_tag_black_24dp" />
+        tools:text="Name Of Tag" />
+
+    <CheckBox
+        android:id="@+id/tag_dialog_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

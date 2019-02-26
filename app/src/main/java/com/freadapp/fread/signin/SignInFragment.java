@@ -66,7 +66,7 @@ public class SignInFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.signin_fragment, container, false);
+        View view = inflater.inflate(R.layout.main_signin_fragment, container, false);
 
         mSignOutButton = view.findViewById(R.id.signout_button);
         mGoogleSignInButton = view.findViewById(R.id.google_signin_button);

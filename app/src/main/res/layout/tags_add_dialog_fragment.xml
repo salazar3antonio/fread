@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/include"
-        layout="@layout/create_tag_constraint_layout" />
+        layout="@layout/tag_create_layout" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/add_tag_list_dialog_recycleView"

@@ -75,7 +75,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         if (bundle != null) {
             //assign Extra Text from the Intent that the Web Browser started.
             mURLreceived = bundle.getString(Intent.EXTRA_TEXT);
-            mArticle = bundle.getParcelable(ArticleFeedFragment.ARTICLE_MODEL);
+            mArticle = bundle.getParcelable(ArticlesMainFragment.ARTICLE_MODEL);
             if (mArticle != null) {
                 showArticleFragment(mArticle);
             }

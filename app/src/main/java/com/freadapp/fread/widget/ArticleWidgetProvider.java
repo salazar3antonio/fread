@@ -19,7 +19,7 @@ public class ArticleWidgetProvider extends AppWidgetProvider {
             // provide the views for this collection.
             Intent intent = new Intent(context, ArticleWidgetService.class);
             // Instantiate the RemoteViews object for the app widget layout.
-            RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_stack_view);
+            RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_grid_view);
             // Set up the RemoteViews object to use a RemoteViews adapter.
             // This adapter connects
             // to a RemoteViewsService  through the specified intent.
