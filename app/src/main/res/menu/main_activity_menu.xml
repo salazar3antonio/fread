@@ -8,5 +8,9 @@
         android:title="Sign In"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/edit_tags_item"
+        android:title="Edit Tags"
+        app:showAsAction="never" />
 
 </menu>

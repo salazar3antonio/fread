@@ -15,7 +15,7 @@
         android:background="@android:color/transparent"
         android:imeOptions="actionDone"
         android:inputType="text"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edit_tag_checkbox"
         app:layout_constraintTop_toTopOf="parent"

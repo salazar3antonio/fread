@@ -8,30 +8,32 @@ import android.view.ViewGroup;
 
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.view_holders.ArticleTagViewHolder;
+import com.freadapp.fread.view_holders.TagViewHolder;
 
 import java.util.List;
 
-public class ArticleTagsAdapter extends RecyclerView.Adapter<ArticleTagViewHolder> {
+public class TagsAdapter extends RecyclerView.Adapter<TagViewHolder> {
 
     private LayoutInflater mInflater;
     private List<Object> mTags;
+    private int mTagLayoutResource;
 
-    public ArticleTagsAdapter(Context context, Article article) {
+    public TagsAdapter(Context context, Article article, int layoutResource) {
 
         mTags = article.getArticleTags();
         mInflater = LayoutInflater.from(context);
+        mTagLayoutResource = layoutResource;
 
     }
 
     @Override
-    public ArticleTagViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View tagView = mInflater.inflate(R.layout.article_tag_list_item, parent, false);
-        return new ArticleTagViewHolder(tagView);
+    public TagViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View tagView = mInflater.inflate(mTagLayoutResource, parent, false);
+        return new TagViewHolder(tagView, R.id.tv_tag_small_name);
     }
 
     @Override
-    public void onBindViewHolder(ArticleTagViewHolder holder, int position) {
+    public void onBindViewHolder(TagViewHolder holder, int position) {
 
         if (mTags != null) {
             String tagName = mTags.get(position).toString();
@@ -48,13 +50,4 @@ public class ArticleTagsAdapter extends RecyclerView.Adapter<ArticleTagViewHolde
         }
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
 }

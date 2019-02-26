@@ -36,7 +36,6 @@ public class AddTagsDialogFragment extends DialogFragment {
     private FirebaseUser mUser;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private Query mAllTagQuery;
-    private EditText mCreateNewTag;
     private RecyclerView mRecyclerView;
     private String mArticleKeyId;
     private ImageButton mCreateNewTagButton;

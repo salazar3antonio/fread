@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.tag.ArticleTagsAdapter;
+import com.freadapp.fread.tag.TagsAdapter;
 
 /**
  * Created by salaz on 2/20/2018.
@@ -45,11 +45,11 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
         Glide.with(context).load(article.getImage()).into(mArticleImage);
 
         //setup the tags recycler view holder
-        ArticleTagsAdapter articleTagsAdapter = new ArticleTagsAdapter(context, article);
+        TagsAdapter tagsAdapter = new TagsAdapter(context, article, R.layout.tag_small_list_item);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         mArticleTagsRecyclerView.setHasFixedSize(true);
         mArticleTagsRecyclerView.setLayoutManager(linearLayoutManager);
-        mArticleTagsRecyclerView.setAdapter(articleTagsAdapter);
+        mArticleTagsRecyclerView.setAdapter(tagsAdapter);
 
     }
 
