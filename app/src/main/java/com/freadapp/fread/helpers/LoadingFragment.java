@@ -1,4 +1,4 @@
-package com.freadapp.fread.article;
+package com.freadapp.fread.helpers;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,10 +13,10 @@ import com.freadapp.fread.R;
  * Created by salaz on 2/26/2018.
  */
 
-public class ArticleLoadingFragment extends Fragment {
+public class LoadingFragment extends Fragment {
 
-    public static ArticleLoadingFragment newInstance() {
-        return new ArticleLoadingFragment();
+    public static LoadingFragment newInstance() {
+        return new LoadingFragment();
     }
 
     @Nullable

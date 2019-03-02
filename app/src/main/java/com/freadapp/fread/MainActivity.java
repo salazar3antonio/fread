@@ -23,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
 
+    public static final String MENU_ITEM_ID = "menu_item_id";
+
+    private BottomNavigationView mBottomNavView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +36,29 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
-        setupNavigationView();
+        mBottomNavView = findViewById(R.id.bottom_nav);
+        Menu bottomNavMenu = mBottomNavView.getMenu();
+
+        if (savedInstanceState != null) {
+
+            MenuItem menuItem = bottomNavMenu.findItem(savedInstanceState.getInt(MENU_ITEM_ID));
+            //pass in last saved menu item id and create the fragment
+            selectFragment(menuItem);
+
+        } else {
+            //initial loading of the first fragment
+            selectFragment(bottomNavMenu.getItem(0));
+        }
+
+        mBottomNavView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        selectFragment(item);
+                        return false;
+                    }
+                });
+
 
     }
 
@@ -60,25 +86,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-    private void setupNavigationView() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
-        if (bottomNavigationView != null) {
+        outState.putInt(MENU_ITEM_ID, mBottomNavView.getSelectedItemId());
 
-            // Select first menu item by default and show Fragment accordingly.
-            Menu menu = bottomNavigationView.getMenu();
-            selectFragment(menu.getItem(0));
-
-            // Set action to perform when any menu-item is selected.
-            bottomNavigationView.setOnNavigationItemSelectedListener(
-                    new BottomNavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                            selectFragment(item);
-                            return false;
-                        }
-                    });
-        }
     }
 
     private void selectFragment(MenuItem item) {

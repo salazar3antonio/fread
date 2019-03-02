@@ -16,6 +16,7 @@ import com.freadapp.fread.data.api.FetchArticleAPI;
 import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
+import com.freadapp.fread.helpers.LoadingFragment;
 import com.freadapp.fread.tag.AddTagsDialogFragment;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -61,9 +62,9 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         if (findViewById(R.id.article_container) != null) {
             //placing in the loading screen for when quiz api is being called
-            ArticleLoadingFragment articleLoadingFragmentLoadingFragment = ArticleLoadingFragment.newInstance();
-            articleLoadingFragmentLoadingFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.article_container, articleLoadingFragmentLoadingFragment).commit();
+            LoadingFragment loadingFragment = LoadingFragment.newInstance();
+            loadingFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction().add(R.id.article_container, loadingFragment).commit();
         }
 
         mUser = FbDatabase.getAuthUser(mUser);
