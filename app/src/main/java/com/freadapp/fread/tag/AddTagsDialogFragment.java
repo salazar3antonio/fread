@@ -16,6 +16,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
 import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.AddTagDialogViewHolder;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,6 +38,7 @@ public class AddTagsDialogFragment extends DialogFragment {
     private String mArticleKeyId;
     private ImageButton mCreateNewTagButton;
     private EditText mCreateNewTagEditText;
+    private Article mArticle;
 
 
     public static AddTagsDialogFragment newInstance() {
@@ -55,6 +57,7 @@ public class AddTagsDialogFragment extends DialogFragment {
 
         //get the ArticleKeyId supplied when the fragment was instantiated
         mArticleKeyId = getArguments().getString(ArticleDetailActivity.ARTICLE_KEY_ID);
+        mArticle = getArguments().getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
 
     }
 
@@ -71,7 +74,10 @@ public class AddTagsDialogFragment extends DialogFragment {
         mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText);
+                //create a new tag in the database once clicked
+                FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
+                //then clear the EditText field
+                mCreateNewTagEditText.setText(null);
             }
         });
 
@@ -91,18 +97,8 @@ public class AddTagsDialogFragment extends DialogFragment {
             protected void populateViewHolder(AddTagDialogViewHolder viewHolder, Tag model, int position) {
 
                 //create bindToTag method
-                viewHolder.bindToTag(getContext(), model, mUserUid, mArticleKeyId);
+                viewHolder.bindToTag(getContext(), model, mUserUid, mArticleKeyId, mArticle);
 
-            }
-
-            @Override
-            public int getItemCount() {
-                return super.getItemCount();
-            }
-
-            @Override
-            public Tag getItem(int position) {
-                return super.getItem(position);
             }
 
         };

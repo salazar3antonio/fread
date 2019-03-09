@@ -104,21 +104,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
             @Override
             public void onClick(View view) {
 
-                //loop through taggedArticles, get all article KeyIDs. then go through each article and remove the specified articleTag
-                List<Object> taggedArticles = mTag.getTaggedArticles();
-
-                if (taggedArticles != null) {
-
-                    //loop through taggedArticles to get all Articles associated with the Tag
-                    // then remove tagName from articleTags found at Database Reference articles/[keyid]/articleTags/[tagName]
-                    // this is so when you delete a Tag, all Tags associated with an Article get removed as well.
-                    for (Object articleKeyId : taggedArticles) {
-                        FbDatabase.removeTagNameFromArticle(mUserArticleRef.child(articleKeyId.toString()), mTag);
-                    }
-                }
-
-                //delete Tag object found at Database Reference users/[uid]/tags/[tag]
-                FbDatabase.removeTag(mContext, mTag, mUserTagRef.child(mTag.getKeyid()));
+                FbDatabase.removeTag(mContext, mTag, mUserTagRef.child(mTag.getTagName()), mUserArticleRef);
 
             }
         });

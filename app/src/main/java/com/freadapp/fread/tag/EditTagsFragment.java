@@ -68,7 +68,9 @@ public class EditTagsFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     //create a new tag in the database once clicked
-                    FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText);
+                    FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
+                    //then clear the EditText field
+                    mCreateNewTagEditText.setText(null);
                 }
             });
 

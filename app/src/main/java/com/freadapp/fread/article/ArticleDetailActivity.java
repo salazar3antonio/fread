@@ -184,6 +184,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
                 Bundle bundle = new Bundle();
                 bundle.putString(ARTICLE_KEY_ID, mArticle.getKeyId());
+                bundle.putParcelable(ARTICLE_BUNDLE, mArticle);
                 addTagsDialogFragment.setArguments(bundle);
 
                 addTagsDialogFragment.setTargetFragment(getSupportFragmentManager().findFragmentByTag(ARTICLE_DETAIL_FRAGMENT_TAG), 1);

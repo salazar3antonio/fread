@@ -44,9 +44,8 @@ public class ArticleDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        savedInstanceState = getArguments();
-        if (savedInstanceState != null) {
-            mArticle = savedInstanceState.getParcelable(ARTICLE_BUNDLE);
+        if (getArguments() != null) {
+            mArticle = getArguments().getParcelable(ARTICLE_BUNDLE);
         }
 
     }
