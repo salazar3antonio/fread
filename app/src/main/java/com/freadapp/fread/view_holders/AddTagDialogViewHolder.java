@@ -3,15 +3,10 @@ package com.freadapp.fread.view_holders;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FbDatabase;
@@ -20,7 +15,6 @@ import com.freadapp.fread.data.model.Tag;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
@@ -28,13 +22,9 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
     public static final String TAG = AddTagDialogViewHolder.class.getName();
 
     private Tag mTag;
-    private String mUserID;
     private DatabaseReference mUserTagRef;
     private DatabaseReference mUserArticleRef;
-    private String mArticleKeyId;
     private Article mArticle;
-
-    private Context mContext;
     private TextView mTagName;
     private CheckBox mAddTagCheckBox;
 
@@ -51,16 +41,42 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
      *
      * @param tag Tag model to be bound to the List Item Views
      */
-    public void bindToTag(Context context, final Tag tag, String userID, String articleKeyId, Article article) {
+    public void bindToTag(Tag tag, String userId, Article article) {
 
-        mArticleKeyId = articleKeyId;
         mArticle = article;
-        mContext = context;
-        mUserID = userID;
         mTag = tag;
+        mUserTagRef = FbDatabase.getUserTags(userId);
+        mUserArticleRef = FbDatabase.getUserArticles(userId).child(mArticle.getKeyId());
+
         mTagName.setText(mTag.getTagName());
-        mUserTagRef = FbDatabase.getUserTags(mUserID);
-        mUserArticleRef = FbDatabase.getUserArticles(mUserID).child(mArticleKeyId);
+
+        setTagCheckBox();
+        setTagOnCheckChanged();
+
+    }
+
+    private void setTagCheckBox() {
+
+        mUserArticleRef.child("tags").child(mTag.getKeyid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Object value = dataSnapshot.getValue();
+                if (value != null) {
+                    mAddTagCheckBox.setChecked(true);
+                } else {
+                    mAddTagCheckBox.setChecked(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void setTagOnCheckChanged() {
 
         mAddTagCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

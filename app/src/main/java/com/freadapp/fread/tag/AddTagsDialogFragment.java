@@ -35,7 +35,6 @@ public class AddTagsDialogFragment extends DialogFragment {
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private Query mAllTagQuery;
     private RecyclerView mRecyclerView;
-    private String mArticleKeyId;
     private ImageButton mCreateNewTagButton;
     private EditText mCreateNewTagEditText;
     private Article mArticle;
@@ -55,8 +54,7 @@ public class AddTagsDialogFragment extends DialogFragment {
         //get all of the user's tags
         mUserTags = FbDatabase.getUserTags(mUserUid);
 
-        //get the ArticleKeyId supplied when the fragment was instantiated
-        mArticleKeyId = getArguments().getString(ArticleDetailActivity.ARTICLE_KEY_ID);
+        //get the Article supplied when the fragment was instantiated
         mArticle = getArguments().getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
 
     }
@@ -94,10 +92,10 @@ public class AddTagsDialogFragment extends DialogFragment {
                 AddTagDialogViewHolder.class, mAllTagQuery) {
 
             @Override
-            protected void populateViewHolder(AddTagDialogViewHolder viewHolder, Tag model, int position) {
+            protected void populateViewHolder(AddTagDialogViewHolder viewHolder, Tag tag, int position) {
 
                 //create bindToTag method
-                viewHolder.bindToTag(getContext(), model, mUserUid, mArticleKeyId, mArticle);
+                viewHolder.bindToTag(tag, mUserUid, mArticle);
 
             }
 
