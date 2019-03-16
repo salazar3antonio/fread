@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-import static com.freadapp.fread.tag.TagsMainFragment.TAG_BUNDLE;
+import static com.freadapp.fread.tag.TagsMainFragment.TAG_KEY_ID;
 
 public class TagDetailFragment extends Fragment {
 
@@ -48,7 +48,7 @@ public class TagDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mTagKey = getArguments().getString(TAG_BUNDLE);
+            mTagKey = getArguments().getString(TAG_KEY_ID);
         }
 
     }

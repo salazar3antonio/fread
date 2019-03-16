@@ -13,17 +13,28 @@ import java.util.Map;
 public class Tag {
 
     private String tagName;
+    private String keyId;
     private Map<String, Object> articlesTagged;
 
     public Tag() {
     }
 
-    public Tag(String tagName) {
+    public Tag(String tagName, String keyId, Map<String, Object> articlesTagged) {
         this.tagName = tagName;
+        this.keyId = keyId;
+        this.articlesTagged = articlesTagged;
     }
 
     public String getTagName() {
         return tagName;
+    }
+
+    public String getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(String keyId) {
+        this.keyId = keyId;
     }
 
     public void setTagName(String tagName) {
@@ -34,7 +45,4 @@ public class Tag {
         return articlesTagged;
     }
 
-    public void setArticlesTagged(Map<String, Object> articlesTagged) {
-        this.articlesTagged = articlesTagged;
-    }
 }

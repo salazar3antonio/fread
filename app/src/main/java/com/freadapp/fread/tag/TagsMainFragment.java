@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +17,13 @@ import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.TagViewHolder;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class TagsMainFragment extends Fragment {
 
     public static final String TAG = TagsMainFragment.class.getName();
-    public static final String TAG_BUNDLE = "tag_bundle";
+    public static final String TAG_KEY_ID = "tag_keyId";
     public static final String TAG_DETAIL_FRAGMENT_TAG = "tag_detail_fragment_tag";
 
 
@@ -123,7 +116,7 @@ public class TagsMainFragment extends Fragment {
         TagDetailFragment tagsMainFragment = TagDetailFragment.newInstance();
 
         Bundle tagBundle = new Bundle();
-        tagBundle.putString(TAG_BUNDLE, tag.getTagName());
+        tagBundle.putString(TAG_KEY_ID, tag.getKeyId());
         tagsMainFragment.setArguments(tagBundle);
 
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();

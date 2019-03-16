@@ -57,7 +57,7 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
 
     private void setTagCheckBox() {
 
-        mUserArticleRef.child("tags").child(mTag.getTagName()).addValueEventListener(new ValueEventListener() {
+        mUserArticleRef.child("tags").child(mTag.getKeyId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object value = dataSnapshot.getValue();
