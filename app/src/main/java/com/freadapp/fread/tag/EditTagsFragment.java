@@ -86,15 +86,15 @@ public class EditTagsFragment extends Fragment {
 
     private void setEditTagsAdapter() {
 
-        Query allTagsByName = mUserTags.orderByChild("tagName");
+        Query allTagsByName = mUserTags.orderByChild(FbDatabase.FB_TAG_NAME);
 
         FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Tag, EditTagViewHolder>(Tag.class, R.layout.tag_edit_list_item,
                 EditTagViewHolder.class, allTagsByName) {
 
             @Override
-            protected void populateViewHolder(final EditTagViewHolder viewHolder, final Tag model, int position) {
+            protected void populateViewHolder(final EditTagViewHolder viewHolder, final Tag tag, int position) {
 
-                viewHolder.bindToTag(getContext(), model, mUserUid);
+                viewHolder.bindToTag(getContext(), tag, mUserUid);
 
             }
 

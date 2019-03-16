@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +17,11 @@ import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
 import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Article;
-import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import static com.freadapp.fread.tag.TagsMainFragment.TAG_BUNDLE;
 
@@ -43,7 +36,7 @@ public class TagDetailFragment extends Fragment {
     private DatabaseReference mArticlesDBref;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mArticleRecyclerView;
-    private String mTagKeyId;
+    private String mTagKey;
 
 
     public static TagDetailFragment newInstance() {
@@ -55,7 +48,7 @@ public class TagDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mTagKeyId = getArguments().getString(TAG_BUNDLE);
+            mTagKey = getArguments().getString(TAG_BUNDLE);
         }
 
     }
@@ -85,7 +78,7 @@ public class TagDetailFragment extends Fragment {
     private void setFirebaseAdapter() {
 
         //query only Articles that contain the passed in TagKeyId
-        Query query = mArticlesDBref.orderByChild("tags/" + mTagKeyId).equalTo(true);
+        Query query = mArticlesDBref.orderByChild("tags/" + mTagKey).equalTo(true);
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
                 ArticleViewHolder.class, query) {

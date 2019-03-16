@@ -11,29 +11,13 @@ import java.util.List;
 
 public class Tag {
 
-    private String keyid;
     private String tagName;
-    private List<Object> taggedArticles = null;
 
     public Tag() {
     }
 
-    public Tag(String keyid, String tagName, List<Object> taggedArticles) {
-        this.keyid = keyid;
-        this.tagName = tagName;
-        this.taggedArticles = taggedArticles;
-    }
-
     public Tag(String tagName) {
         this.tagName = tagName;
-    }
-
-    public String getKeyid() {
-        return keyid;
-    }
-
-    public void setKeyid(String keyid) {
-        this.keyid = keyid;
     }
 
     public String getTagName() {
@@ -42,14 +26,6 @@ public class Tag {
 
     public void setTagName(String tagName) {
         this.tagName = tagName;
-    }
-
-    public List<Object> getTaggedArticles() {
-        return taggedArticles;
-    }
-
-    public void setTaggedArticles(List<Object> taggedArticles) {
-        this.taggedArticles = taggedArticles;
     }
 
 }

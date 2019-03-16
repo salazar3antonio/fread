@@ -37,7 +37,7 @@ public class TagsAdapter extends RecyclerView.Adapter<TagViewHolder> {
 
         if (mTags != null) {
             String tagName = mTags.get(position).toString();
-            holder.mTagNameTextView.setText(tagName);
+            holder.bindToTag(tagName);
         }
     }
 

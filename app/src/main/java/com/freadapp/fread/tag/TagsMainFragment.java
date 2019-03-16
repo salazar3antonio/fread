@@ -20,8 +20,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-import static com.freadapp.fread.article.ArticleDetailFragment.ARTICLE_DETAIL_FRAGMENT_TAG;
-
 public class TagsMainFragment extends Fragment {
 
     public static final String TAG = TagsMainFragment.class.getName();
@@ -29,7 +27,7 @@ public class TagsMainFragment extends Fragment {
     public static final String TAG_DETAIL_FRAGMENT_TAG = "tag_detail_fragment_tag";
 
 
-    private DatabaseReference mUserTags;
+    private DatabaseReference mUserTagsRef;
     private String mUserUid;
     private FirebaseUser mUser;
     private RecyclerView mRecyclerView;
@@ -49,7 +47,7 @@ public class TagsMainFragment extends Fragment {
             // if a user is logged in get the user's ID
             mUserUid = mUser.getUid();
             //get all of the user's tags
-            mUserTags = FbDatabase.getUserTags(mUserUid);
+            mUserTagsRef = FbDatabase.getUserTags(mUserUid);
         }
 
         setHasOptionsMenu(true);
@@ -77,38 +75,32 @@ public class TagsMainFragment extends Fragment {
 
     private void setMainTagsAdapter() {
 
-        Query allTagsByName = mUserTags.orderByChild("tagName");
+        Query allTagsByName = mUserTagsRef.orderByChild(FbDatabase.FB_TAG_NAME);
 
         FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_main_list_item,
                 TagViewHolder.class, allTagsByName) {
 
             @Override
             public TagViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
                 View view = LayoutInflater.from(getContext()).inflate(R.layout.tag_main_list_item, parent, false);
+
                 return new TagViewHolder(view, R.id.tv_tag_main_name);
             }
 
             @Override
-            protected void populateViewHolder(TagViewHolder viewHolder, final Tag model, int position) {
+            protected void populateViewHolder(TagViewHolder viewHolder, final Tag tag, int position) {
 
-                viewHolder.mTagNameTextView.setText(model.getTagName());
+                viewHolder.bindToTag(tag.getTagName());
+
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        TagDetailFragment tagsMainFragment = TagDetailFragment.newInstance();
-
-                        Bundle tagBundle = new Bundle();
-                        tagBundle.putString(TAG_BUNDLE, model.getKeyid());
-                        tagsMainFragment.setArguments(tagBundle);
-
-                        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.main_content_frame, tagsMainFragment, TAG_DETAIL_FRAGMENT_TAG);
-                        fragmentTransaction.commit();
+                        commitTagDetailFragment(tag);
 
                     }
                 });
-
 
             }
 
@@ -119,5 +111,18 @@ public class TagsMainFragment extends Fragment {
 
     }
 
+    private void commitTagDetailFragment(Tag tag) {
+
+        TagDetailFragment tagsMainFragment = TagDetailFragment.newInstance();
+
+        Bundle tagBundle = new Bundle();
+        tagBundle.putString(TAG_BUNDLE, tag.getTagName());
+        tagsMainFragment.setArguments(tagBundle);
+
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_content_frame, tagsMainFragment, TAG_DETAIL_FRAGMENT_TAG);
+        fragmentTransaction.commit();
+
+    }
 
 }
