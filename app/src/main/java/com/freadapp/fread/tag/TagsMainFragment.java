@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,14 @@ import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.TagViewHolder;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TagsMainFragment extends Fragment {
 
@@ -85,13 +92,13 @@ public class TagsMainFragment extends Fragment {
 
                 View view = LayoutInflater.from(getContext()).inflate(R.layout.tag_main_list_item, parent, false);
 
-                return new TagViewHolder(view, R.id.tv_tag_main_name);
+                return new TagViewHolder(getContext(), view, R.id.tv_tag_main_name);
             }
 
             @Override
             protected void populateViewHolder(TagViewHolder viewHolder, final Tag tag, int position) {
 
-                viewHolder.bindToTag(tag.getTagName());
+                viewHolder.bindToTag(tag);
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override

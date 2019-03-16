@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.EditText;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by salaz on 3/4/2018.
@@ -12,6 +13,7 @@ import java.util.List;
 public class Tag {
 
     private String tagName;
+    private Map<String, Object> articlesTagged;
 
     public Tag() {
     }
@@ -28,4 +30,11 @@ public class Tag {
         this.tagName = tagName;
     }
 
+    public Map<String, Object> getArticlesTagged() {
+        return articlesTagged;
+    }
+
+    public void setArticlesTagged(Map<String, Object> articlesTagged) {
+        this.articlesTagged = articlesTagged;
+    }
 }

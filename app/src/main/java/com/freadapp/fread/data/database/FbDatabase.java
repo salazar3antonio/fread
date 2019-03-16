@@ -240,7 +240,7 @@ public class FbDatabase {
      */
     public static void editTagName(Context context, DatabaseReference tags, Tag tag, String updateTagName) {
 
-        tags.child(tag.getTagName()).child("tagName").setValue(updateTagName);
+        tags.child(tag.getTagName()).child(FbDatabase.FB_TAG_NAME).setValue(updateTagName);
 
         Toast.makeText(context, updateTagName + " updated", Toast.LENGTH_SHORT).show();
 
