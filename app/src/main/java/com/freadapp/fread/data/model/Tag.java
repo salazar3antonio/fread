@@ -24,6 +24,10 @@ public class Tag {
         this.taggedArticles = taggedArticles;
     }
 
+    public Tag(String tagName) {
+        this.tagName = tagName;
+    }
+
     public String getKeyid() {
         return keyid;
     }
@@ -48,7 +52,4 @@ public class Tag {
         this.taggedArticles = taggedArticles;
     }
 
-    public static void createNewTag(EditText tagName, Context context) {
-
-    }
 }

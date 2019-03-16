@@ -48,6 +48,12 @@ public class Article implements Parcelable {
         this.videos = videos;
     }
 
+    public Article(String title, String image, String keyid) {
+        this.title = title;
+        this.image = image;
+        this.keyid = keyid;
+    }
+
     public String getAuthor() {
         return author;
     }

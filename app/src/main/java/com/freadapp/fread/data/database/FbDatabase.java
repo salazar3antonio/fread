@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,19 +70,26 @@ public class FbDatabase {
     }
 
     /**
-     * Create a new Tag in the User's /tags database reference.
+     * Creates a new Tag in the User's /tags database reference.
      *
      * @param userTags Database reference of the User's /tags
      * @param tagName  Name of the tag
      */
     public static void createNewTag(Context context, DatabaseReference userTags, String tagName) {
 
-        Tag tag = new Tag(tagName);
+        String tagKeyId = userTags.push().getKey();
+
+        Tag tag = new Tag();
+        tag.setTagName(tagName);
+        tag.setKeyid(tagKeyId);
+
+        Map<String, Object> tagMap = new HashMap<>();
+        tagMap.put(tag.getKeyid(), tag);
 
         if (tagName.length() == 0) {
             Toast.makeText(context, "Enter tag name", Toast.LENGTH_SHORT).show();
         } else {
-            userTags.child(tag.getTagName()).setValue(tag);
+            userTags.updateChildren(tagMap);
             Toast.makeText(context, "Added " + tagName, Toast.LENGTH_SHORT).show();
         }
 
@@ -91,7 +99,7 @@ public class FbDatabase {
 
         //add the tag key (which is the the tagName) to "taggedArticles as a key/boolean pair
         Map<String, Object> map = new HashMap<>();
-        map.put(tag.getTagName(), true);
+        map.put(tag.getKeyid(), true);
 
         articles.child("tags").updateChildren(map);
 
@@ -99,7 +107,7 @@ public class FbDatabase {
 
     public static void removeTagKeyFromArticle(DatabaseReference articles, Tag tag) {
 
-        articles.child("tags").child(tag.getTagName()).removeValue();
+        articles.child("tags").child(tag.getKeyid()).removeValue();
 
     }
 
@@ -108,13 +116,13 @@ public class FbDatabase {
         Map<String, Object> map = new HashMap<>();
         map.put(article.getKeyId(), true);
 
-        tags.child(tag.getTagName()).child("articlesTagged").updateChildren(map);
+        tags.child(tag.getKeyid()).child("articlesTagged").updateChildren(map);
 
     }
 
     public static void removeArticleKeyFromTag(DatabaseReference tags, Article article, Tag tag) {
 
-        tags.child(tag.getTagName()).child("articlesTagged").child(article.getKeyId()).removeValue();
+        tags.child(tag.getKeyid()).child("articlesTagged").child(article.getKeyId()).removeValue();
 
     }
 
@@ -124,19 +132,19 @@ public class FbDatabase {
      *
      * @param context  Context for Toast notification
      * @param tag      Tag to be removed
-     * @param userTag  Database reference to the specific tag
+     * @param tags     Database reference to the specific tag
      * @param articles Database reference to the User's articles
      */
-    public static void removeTag(Context context, final Tag tag, DatabaseReference userTag, final DatabaseReference articles) {
+    public static void deleteTag(Context context, final Tag tag, DatabaseReference tags, final DatabaseReference articles) {
 
-        userTag.child("articlesTagged").addValueEventListener(new ValueEventListener() {
+        tags.child(tag.getKeyid()).child("articlesTagged").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String articleKeyId = child.getKey();
                     //remove the Tag from each related Article
-                    articles.child(articleKeyId).child("tags").child(tag.getTagName()).removeValue();
+                    articles.child(articleKeyId).child("tags").child(tag.getKeyid()).removeValue();
                 }
 
             }
@@ -147,10 +155,11 @@ public class FbDatabase {
             }
         });
 
-        //remove the Tag from /tags/
-        userTag.removeValue();
+        //remove the Tag from /tags
+        tags.child(tag.getKeyid()).removeValue();
 
         Toast.makeText(context, tag.getTagName() + " deleted", Toast.LENGTH_SHORT).show();
+
         Log.i(TAG, "REMOVED Tag >> " + tag + " from User Tags");
     }
 
@@ -161,7 +170,7 @@ public class FbDatabase {
      * @param article      Article to be unsaved
      * @param userArticles Database Reference to the User's Articles
      */
-    public static void removeArticle(Context context, Article article, DatabaseReference userArticles) {
+    public static void deleteArticle(Context context, Article article, DatabaseReference userArticles) {
 
         userArticles.child(article.getKeyId()).removeValue();
 
@@ -224,76 +233,17 @@ public class FbDatabase {
     }
 
     /**
-     * Updates the Tag name globally. All articles tagged with the oldTag will get updated with newTag.
-     * Updates articles/[keyId]/articleTags/[position] and updates tags/[keyId]/tagName/
+     * Edit the Tag Name globally.
      *
-     * @param article Database Reference to the specific Article
-     * @param oldTag  Old Tag object that is getting updated
-     * @param newTag  New Tag object with new user entered tagName
+     * @param context       Context for Toast notification
+     * @param tag           Tag object that is getting updated
+     * @param updateTagName Updated new tag name
      */
-    public static void updateTagName(DatabaseReference tag, DatabaseReference article, Tag oldTag, Tag newTag) {
+    public static void editTagName(Context context, DatabaseReference tags, Tag tag, String updateTagName) {
 
-        List<Object> taggedArticles = oldTag.getTaggedArticles();
+        tags.child(tag.getKeyid()).child("tagName").setValue(updateTagName);
 
-        if (taggedArticles != null) {
-            //if the Tag has Articles associated with the tag, loop through and update each Tag in each Article found.
-            for (Object articleKeyId : taggedArticles) {
-                updateTagNameInArticle(article.child(articleKeyId.toString()), oldTag, newTag);
-            }
-        }
-
-//      Updates the Tag name inside of the Tag object.
-        Map<String, Object> tagHash = new HashMap<>();
-        tagHash.put("tagName", newTag.getTagName().toLowerCase());
-        tag.updateChildren(tagHash);
-
-    }
-
-    /**
-     * Updates the Tag name inside of the list of "articleTags" found in the Article object
-     * Updates articles/[keyId]/articleTags/[position]
-     *
-     * @param article Database Reference to the specific Article
-     * @param oldTag  Old Tag object that is getting updated
-     * @param newTag  New Tag object with new user entered tagName
-     */
-    private static void updateTagNameInArticle(final DatabaseReference article, final Tag oldTag, final Tag newTag) {
-
-        article.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Article specArticle = dataSnapshot.getValue(Article.class);
-                List<Object> articleTags;
-
-                //check to see if Article Tags are empty. If so create a new ArrayList and add the TagName
-                if (specArticle.getArticleTags() != null) {
-
-                    articleTags = specArticle.getArticleTags();
-
-                    for (int i = 0; i < articleTags.size(); i++) {
-                        if (oldTag.getTagName().equals(articleTags.get(i).toString())) {
-
-                            String listPosition = String.valueOf(i);
-                            Map<String, Object> tagHash = new HashMap<>();
-                            tagHash.put(listPosition, newTag.getTagName().toLowerCase());
-                            article.child("articleTags").updateChildren(tagHash);
-                            break;
-                        }
-                    }
-
-                    Log.i(TAG, "UPDATE Old Tag Name >> " + oldTag.getTagName() + " << to New Tag Name >> " + newTag.getTagName() + " <<");
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        Toast.makeText(context, updateTagName + " updated", Toast.LENGTH_SHORT).show();
 
     }
 

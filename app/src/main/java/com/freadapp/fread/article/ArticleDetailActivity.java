@@ -152,7 +152,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save_fetched_article_menu:
                 if (item.isChecked()) {
-                    FbDatabase.removeArticle(getApplicationContext(), mArticle, mUserArticles);
+                    FbDatabase.deleteArticle(getApplicationContext(), mArticle, mUserArticles);
                     item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
                     item.setChecked(false);
                     mArticle.setSaved(false);

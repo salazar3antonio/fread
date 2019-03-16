@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,9 +20,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
+import static com.freadapp.fread.article.ArticleDetailFragment.ARTICLE_DETAIL_FRAGMENT_TAG;
+
 public class TagsMainFragment extends Fragment {
 
     public static final String TAG = TagsMainFragment.class.getName();
+    public static final String TAG_BUNDLE = "tag_bundle";
+    public static final String TAG_DETAIL_FRAGMENT_TAG = "tag_detail_fragment_tag";
+
 
     private DatabaseReference mUserTags;
     private String mUserUid;
@@ -67,8 +73,6 @@ public class TagsMainFragment extends Fragment {
             return null;
         }
 
-
-
     }
 
     private void setMainTagsAdapter() {
@@ -85,9 +89,25 @@ public class TagsMainFragment extends Fragment {
             }
 
             @Override
-            protected void populateViewHolder(TagViewHolder viewHolder, Tag model, int position) {
+            protected void populateViewHolder(TagViewHolder viewHolder, final Tag model, int position) {
 
                 viewHolder.mTagNameTextView.setText(model.getTagName());
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        TagDetailFragment tagsMainFragment = TagDetailFragment.newInstance();
+
+                        Bundle tagBundle = new Bundle();
+                        tagBundle.putString(TAG_BUNDLE, model.getKeyid());
+                        tagsMainFragment.setArguments(tagBundle);
+
+                        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.main_content_frame, tagsMainFragment, TAG_DETAIL_FRAGMENT_TAG);
+                        fragmentTransaction.commit();
+
+                    }
+                });
 
 
             }

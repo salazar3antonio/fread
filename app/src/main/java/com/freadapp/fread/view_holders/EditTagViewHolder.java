@@ -1,33 +1,28 @@
 package com.freadapp.fread.view_holders;
 
 import android.content.Context;
-import android.inputmethodservice.InputMethodService;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FbDatabase;
 import com.freadapp.fread.data.model.Tag;
 import com.google.firebase.database.DatabaseReference;
 
-import java.util.List;
-
 public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public static final String TAG = EditTagViewHolder.class.getName();
 
     private Tag mTag;
-    private Tag mNewTag;
+    private String mNewTag;
     private String mUserID;
     private DatabaseReference mUserTagRef;
-    private DatabaseReference mUserArticleRef;
+    private DatabaseReference mUserArticlesRef;
 
 
     private Context mContext;
@@ -57,7 +52,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
         mTag = tag;
         mEditTagName.setText(mTag.getTagName());
         mUserTagRef = FbDatabase.getUserTags(mUserID);
-        mUserArticleRef = FbDatabase.getUserArticles(mUserID);
+        mUserArticlesRef = FbDatabase.getUserArticles(mUserID);
         mEditTagButton.setChecked(false);
 
         mEditTagButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -71,14 +66,12 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
                             mEditTagName.setSelection(mEditTagName.getText().length());
                             //show soft input to let user edit name of tag
                         } else {
-                            //create new Tag object to store the new Tag Name
-                            mNewTag = new Tag();
-                            mNewTag.setTagName(mEditTagName.getText().toString());
-                            FbDatabase.updateTagName(mUserTagRef.child(mTag.getKeyid()), mUserArticleRef, mTag, mNewTag);
 
-                            //force entered String to lowercase. All tags will be strictly lowercase.
-                            String tag = mEditTagName.getText().toString();
-                            mEditTagName.setText(tag.toLowerCase());
+                            mNewTag = (mEditTagName.getText().toString());
+
+                            if (!mTag.getTagName().equals(mNewTag)) {
+                                FbDatabase.editTagName(mContext, mUserTagRef, mTag, mNewTag);
+                            }
 
                             //reset Focus to top View
                             mEditTagName.clearFocus();
@@ -104,7 +97,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
             @Override
             public void onClick(View view) {
 
-                FbDatabase.removeTag(mContext, mTag, mUserTagRef.child(mTag.getTagName()), mUserArticleRef);
+                FbDatabase.deleteTag(mContext, mTag, mUserTagRef, mUserArticlesRef);
 
             }
         });
