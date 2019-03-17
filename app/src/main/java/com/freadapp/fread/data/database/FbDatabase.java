@@ -32,7 +32,8 @@ public class FbDatabase {
     private static final String FB_USERS = "users";
     private static final String FB_ARTICLES = "articles";
     private static final String FB_TAGS = "tags";
-    public static final String FB_ARTICLES_TAGGED = "articlesTagged";
+    public static final String FB_ARTICLE_TAGS = "articleTags";
+    private static final String FB_ARTICLES_TAGGED = "articlesTagged";
     public static final String FB_TAG_NAME = "tagName";
 
     private static final FirebaseDatabase sFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -93,17 +94,17 @@ public class FbDatabase {
         } else {
             userTags.updateChildren(tagMap);
             Toast.makeText(context, "Added " + tagName, Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "CREATED Tag >> " + tag.getTagName());
         }
 
     }
 
     public static void addTagKeyToArticle(DatabaseReference articles, Tag tag) {
 
-        //add the tag key (which is the the tagName) to "taggedArticles as a key/boolean pair
         Map<String, Object> map = new HashMap<>();
         map.put(tag.getKeyId(), true);
 
-        articles.child(FB_TAGS).updateChildren(map);
+        articles.child(FB_ARTICLE_TAGS).updateChildren(map);
 
     }
 
@@ -146,7 +147,8 @@ public class FbDatabase {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String articleKeyId = child.getKey();
                     //remove the Tag from each related Article
-                    articles.child(articleKeyId).child(FB_TAGS).child(tag.getKeyId()).removeValue();
+                    articles.child(articleKeyId).child(FB_ARTICLE_TAGS).child(tag.getKeyId()).removeValue();
+                    Log.i(TAG, "REMOVED Tag >> " + tag.getTagName() + " FROM Article >> " + articleKeyId);
                 }
 
             }
@@ -160,9 +162,9 @@ public class FbDatabase {
         //remove the Tag from /tags
         tags.child(tag.getKeyId()).removeValue();
 
-        Toast.makeText(context, tag.getKeyId() + " deleted", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, tag.getTagName() + " deleted", Toast.LENGTH_SHORT).show();
 
-        Log.i(TAG, "REMOVED Tag >> " + tag + " from User Tags");
+        Log.i(TAG, "REMOVED Tag >> " + tag.getTagName() + " from User Tags");
     }
 
     /**
@@ -178,7 +180,7 @@ public class FbDatabase {
 
         Toast.makeText(context, "Article Unsaved.", Toast.LENGTH_SHORT).show();
 
-        Log.i(TAG, "REMOVED Article >> " + article.getKeyId() + " from User Articles");
+        Log.i(TAG, "DELETED Article >> " + article.getKeyId() + " from User Articles");
 
     }
 
@@ -243,9 +245,11 @@ public class FbDatabase {
      */
     public static void editTagName(Context context, DatabaseReference tags, Tag tag, String updateTagName) {
 
-        tags.child(tag.getKeyId()).child(FbDatabase.FB_TAG_NAME).setValue(updateTagName);
+        tags.child(tag.getKeyId()).child(FB_TAG_NAME).setValue(updateTagName);
 
         Toast.makeText(context, updateTagName + " updated", Toast.LENGTH_SHORT).show();
+
+        Log.i(TAG, "Tag >> " + tag.getTagName() + " UPDATED To >> " + updateTagName);
 
     }
 

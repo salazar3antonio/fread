@@ -1,6 +1,5 @@
 package com.freadapp.fread.view_holders;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -57,7 +56,7 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
 
     private void setTagCheckBox() {
 
-        mUserArticleRef.child("tags").child(mTag.getKeyId()).addValueEventListener(new ValueEventListener() {
+        mUserArticleRef.child(FbDatabase.FB_ARTICLE_TAGS).child(mTag.getKeyId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object value = dataSnapshot.getValue();

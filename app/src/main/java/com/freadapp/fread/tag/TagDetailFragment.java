@@ -78,7 +78,7 @@ public class TagDetailFragment extends Fragment {
     private void setFirebaseAdapter() {
 
         //query only Articles that contain the passed in TagKeyId
-        Query query = mArticlesDBref.orderByChild("tags/" + mTagKey).equalTo(true);
+        Query query = mArticlesDBref.orderByChild(FbDatabase.FB_ARTICLE_TAGS + "/" + mTagKey).equalTo(true);
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
                 ArticleViewHolder.class, query) {

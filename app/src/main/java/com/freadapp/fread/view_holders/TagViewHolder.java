@@ -28,12 +28,18 @@ public class TagViewHolder extends RecyclerView.ViewHolder {
         mTagNameTextView.setText(tag.getTagName());
 
         if (tag.getArticlesTagged() != null) {
-            String numArticlesFormatted = mContext.getString(R.string.number_of_articles, String.valueOf(tag.getArticlesTagged().size()));
-            mNumberOfArticles.setText(numArticlesFormatted);
+            int articlesTaggedSize = tag.getArticlesTagged().size();
+            String formattedString = getFormattedString(mContext, articlesTaggedSize);
+            mNumberOfArticles.setText(formattedString);
         } else {
             mNumberOfArticles.setText(R.string.empty_number_of_articles);
         }
 
+    }
+
+    private String getFormattedString(Context context, int articlesTaggedSize) {
+
+        return context.getString(R.string.number_of_articles, String.valueOf(articlesTaggedSize));
 
     }
 

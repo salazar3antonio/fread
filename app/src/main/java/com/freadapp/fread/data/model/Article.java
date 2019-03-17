@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is the model for the Article object.
@@ -17,7 +19,7 @@ public class Article implements Parcelable {
     private String uid;
     private String image;
     private String article;
-    private List<Object> articleTags = null;
+    private Map<String, Object> articleTags;
     public String title;
     private String publishDate;
     private String url;
@@ -31,7 +33,7 @@ public class Article implements Parcelable {
 
     public Article(String author, String uid,
                    String image, String article,
-                   List<Object> articleTags, String title,
+                   Map<String, Object> articleTags, String title,
                    String publishDate, String url,
                    String keyid, boolean saved,
                    List<Object> videos) {
@@ -134,11 +136,11 @@ public class Article implements Parcelable {
         this.videos = videos;
     }
 
-    public List<Object> getArticleTags() {
+    public Map<String, Object> getArticleTags() {
         return articleTags;
     }
 
-    public void setArticleTags(List<Object> articleTags) {
+    public void setArticleTags(Map<String, Object> articleTags) {
         this.articleTags = articleTags;
     }
 
@@ -147,8 +149,8 @@ public class Article implements Parcelable {
         author = in.readString();
         uid = in.readString();
         image = in.readString();
-        articleTags = new ArrayList<>();
-        in.readList(articleTags, null);
+        articleTags = new HashMap<>();
+        in.readMap(articleTags, null);
         article = in.readString();
         title = in.readString();
         publishDate = in.readString();
@@ -169,7 +171,7 @@ public class Article implements Parcelable {
         parcel.writeString(author);
         parcel.writeString(uid);
         parcel.writeString(image);
-        parcel.writeList(articleTags);
+        parcel.writeMap(articleTags);
         parcel.writeString(article);
         parcel.writeString(title);
         parcel.writeString(publishDate);
