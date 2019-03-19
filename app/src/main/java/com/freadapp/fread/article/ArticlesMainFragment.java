@@ -113,7 +113,6 @@ public class ArticlesMainFragment extends Fragment {
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
                         Intent intent = new Intent(getContext(), ArticleDetailActivity.class);
-                        intent.putExtra(FB_ARTICLE_KEY_ID, model.getKeyId());
                         intent.putExtra(ARTICLE_MODEL, model);
                         startActivity(intent);
                     }

@@ -12,11 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <receiver android:name=".widget.ArticleWidgetProvider" >
+        <receiver android:name=".widget.ArticleWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/article_widget_info" />
         </receiver>
 
@@ -34,11 +35,15 @@
         <activity
             android:name=".tag.EditTagsActivity"
             android:label="Edit Tags"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".article.ArticleDetailActivity"
-            android:label="fRead Mode"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".article.ArticleFetchActivity"
+            android:label="fRead"
             android:parentActivityName=".MainActivity">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -46,8 +51,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".widget.ArticleWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <service
+            android:name=".widget.ArticleWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
 

@@ -30,20 +30,22 @@ import static com.freadapp.fread.article.ArticleDetailFragment.ARTICLE_DETAIL_FR
 import static com.freadapp.fread.tag.AddTagsDialogFragment.ADD_TAGS_DIALOG_FRAGMENT_TAG;
 
 /**
- * This class populates the details of the Article
+ * This class wil handle only the fetching of the Article information via Retrofit
+ * The user should be able to save the Article to the Firebase Database
  */
-public class ArticleDetailActivity extends AppCompatActivity {
 
-    public static final String TAG = ArticleDetailActivity.class.getName();
+public class ArticleFetchActivity extends AppCompatActivity {
 
-    public static final String ARTICLE = "fetched_article";
+    public static final String TAG = ArticleFetchActivity.class.getName();
+
     public static final String ARTICLE_KEY_ID = "article_key_id";
+    public static final String ARTICLE = "fetched_article";
     public static final String ARTICLE_BUNDLE = "article_bundle";
 
-
-    private Article mArticle = new Article();
-    private FirebaseUser mUser;
+    private String mURLreceived;
+    private Article mArticle;
     private String mUserUid;
+    private FirebaseUser mUser;
     private DatabaseReference mUserArticles;
     private Menu mOptionsMenu;
 
@@ -54,7 +56,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         if (findViewById(R.id.article_container) != null) {
             //placing in the loading screen for when quiz api is being called
@@ -70,16 +72,49 @@ public class ArticleDetailActivity extends AppCompatActivity {
         Bundle intentExtras = getIntent().getExtras();
 
         if (intentExtras != null) {
-            mArticle = intentExtras.getParcelable(ArticlesMainFragment.ARTICLE_MODEL);
+            //assign Extra Text from the Intent that the Web Browser started.
+            mURLreceived = intentExtras.getString(Intent.EXTRA_TEXT);
             if (mArticle != null) {
                 showArticleFragment(mArticle);
             }
         }
 
-        if (savedInstanceState != null) {
-            //this handles config changes
-            mArticle = savedInstanceState.getParcelable(ARTICLE);
-            showArticleFragment(mArticle);
+        //building up the Retrofit object to begin calling the API
+        retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                .baseUrl(Constants.AYLIEN_API_ENDPOINT_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        //passing in the ArticleAPI interface class into the retrofit Object
+        FetchArticleAPI fetchArticleAPI = retrofit.create(FetchArticleAPI.class);
+
+        if (mArticle == null) {
+            if (mURLreceived != null) {
+                //using the articleAPI object to call the GET method of the API. Passes in the URL received from the Intent.
+                Call<Article> call = fetchArticleAPI.getArticle(mURLreceived, true);
+                call.enqueue(new Callback<Article>() {
+                    @Override
+                    public void onResponse(Call<Article> call, Response<Article> response) {
+
+                        if (response.isSuccessful()) {
+                            //Assign mArticle to the API Response Body (JSON object).
+                            mArticle = response.body();
+                            showArticleFragment(mArticle);
+
+                        } else {
+                            Log.e(TAG, "API Response Failed: " + response.message());
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Article> call, Throwable t) {
+                        //on failure, Toast error code
+                        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "API Failed: " + t.getMessage());
+                    }
+                });
+            }
         }
 
     }
@@ -93,17 +128,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        //change save article menu item to be checked if article has been saved.
-        if (mArticle != null && mArticle.isSaved()) {
-            MenuItem saveArticleMenuItem = menu.findItem(R.id.save_fetched_article_menu);
-            saveArticleMenuItem.setIcon(R.drawable.ic_bookmark_white_24dp);
-            saveArticleMenuItem.setChecked(true);
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_fetched_article_menu:
@@ -113,6 +137,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                     item.setChecked(false);
                     mArticle.setSaved(false);
                 } else {
+                    FbDatabase.saveArticle(mArticle, mUserArticles, mURLreceived, mUserUid);
                     FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, true);
                     item.setIcon(R.drawable.ic_bookmark_white_24dp);
                     item.setChecked(true);
@@ -123,6 +148,11 @@ public class ArticleDetailActivity extends AppCompatActivity {
             case R.id.add_tags_menu_item:
 
                 if (mArticle.getKeyId() == null || !mArticle.isSaved()) {
+                    //Save Article object to DB and allow user to add tags. Article must be saved in order to add Tags to it.
+                    FbDatabase.saveArticle(mArticle, mUserArticles, mURLreceived, mUserUid);
+                    FbDatabase.setSavedArticle(getApplicationContext(), mUserArticles, mArticle, true);
+                    mArticle.setSaved(true);
+
                     //Set saved menu item to checked. Let's user know the Article has been saved.
                     MenuItem saveArticleMenuItem = mOptionsMenu.findItem(R.id.save_fetched_article_menu);
                     saveArticleMenuItem.setIcon(R.drawable.ic_bookmark_white_24dp);
@@ -137,7 +167,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 bundle.putParcelable(ARTICLE_BUNDLE, mArticle);
                 addTagsDialogFragment.setArguments(bundle);
 
-                addTagsDialogFragment.setTargetFragment(getSupportFragmentManager().findFragmentByTag(ARTICLE_DETAIL_FRAGMENT_TAG), 1);
+//                addTagsDialogFragment.setTargetFragment(getSupportFragmentManager().findFragmentByTag(ARTICLE_DETAIL_FRAGMENT_TAG), 1);
                 addTagsDialogFragment.show(getSupportFragmentManager(), ADD_TAGS_DIALOG_FRAGMENT_TAG);
 
                 return true;
@@ -147,6 +177,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         }
 
     }
+
 
     /**
      * Creates new ArticleFragment, bundles the Article object and commits a FragmentTransaction to display the completed ArticleFragment
