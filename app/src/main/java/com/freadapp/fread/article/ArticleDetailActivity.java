@@ -9,8 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.api.FetchArticleAPI;
 import com.freadapp.fread.data.database.FbDatabase;
@@ -55,6 +57,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if (findViewById(R.id.article_container) != null) {
             //placing in the loading screen for when quiz api is being called
@@ -72,6 +75,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         if (intentExtras != null) {
             mArticle = intentExtras.getParcelable(ArticlesMainFragment.ARTICLE_MODEL);
             if (mArticle != null) {
+                loadToolbarImage();
                 showArticleFragment(mArticle);
             }
         }
@@ -79,6 +83,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             //this handles config changes
             mArticle = savedInstanceState.getParcelable(ARTICLE);
+            loadToolbarImage();
             showArticleFragment(mArticle);
         }
 
@@ -172,6 +177,17 @@ public class ArticleDetailActivity extends AppCompatActivity {
         if (mArticle != null) {
             //save Article object during config change
             outState.putParcelable(ARTICLE, mArticle);
+        }
+    }
+
+    private void loadToolbarImage() {
+
+        ImageView toolbarImage = findViewById(R.id.iv_article_toolbar);
+
+        if (mArticle.getImage().isEmpty()) {
+            Toast.makeText(getApplicationContext(), "No image link", Toast.LENGTH_SHORT).show();
+        } else {
+            Glide.with(this).load(mArticle.getImage()).into(toolbarImage);
         }
     }
 

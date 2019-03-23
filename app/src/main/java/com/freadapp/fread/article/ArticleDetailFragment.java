@@ -28,7 +28,6 @@ public class ArticleDetailFragment extends Fragment {
     private TextView mAuthorView;
     private TextView mArticleView;
     private TextView mPUBdateView;
-    private ImageView mArticleImageView;
     private Article mArticle;
 
     //public constructor
@@ -60,7 +59,6 @@ public class ArticleDetailFragment extends Fragment {
         mAuthorView = view.findViewById(R.id.author_view);
         mArticleView = view.findViewById(R.id.article_view);
         mPUBdateView = view.findViewById(R.id.pubdate_view);
-        mArticleImageView = view.findViewById(R.id.image_article_view);
 
         setTextViews();
 
@@ -81,13 +79,6 @@ public class ArticleDetailFragment extends Fragment {
         mAuthorView.setText(mArticle.getAuthor());
         mArticleView.setText(mArticle.getArticle());
         mPUBdateView.setText(mArticle.getPublishDate());
-
-        if (mArticle.getImage() == "") {
-            Toast.makeText(getContext(), "no image link", Toast.LENGTH_SHORT).show();
-        } else {
-            Glide.with(this).load(mArticle.getImage()).into(mArticleImageView);
-        }
-
 
     }
 
