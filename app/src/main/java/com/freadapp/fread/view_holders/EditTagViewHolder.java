@@ -19,16 +19,14 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
     public static final String TAG = EditTagViewHolder.class.getName();
 
     private Tag mTag;
-    private String mNewTag;
-    private String mUserID;
-    private DatabaseReference mUserTagRef;
-    private DatabaseReference mUserArticlesRef;
-
-
+    private String mNewTagName;
+    private DatabaseReference mUserTags = FirebaseUtils.getUserTags();
+    private DatabaseReference mUserArticles = FirebaseUtils.getUserArticles();
     private Context mContext;
     private EditText mEditTagName;
     private CheckBox mEditTagButton;
     private ImageButton mDeleteTagButton;
+
 
     public EditTagViewHolder(View itemView) {
         super(itemView);
@@ -45,40 +43,37 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
      *
      * @param tag Tag model to be bound to the List Item Views
      */
-    public void bindToTag(final Context context, final Tag tag, String userID) {
+    public void bindToTag(final Context context, final Tag tag) {
 
         mContext = context;
-        mUserID = userID;
         mTag = tag;
         mEditTagName.setText(mTag.getTagName());
-        mUserTagRef = FirebaseUtils.getUserTags();
-        mUserArticlesRef = FirebaseUtils.getUserArticles();
         mEditTagButton.setChecked(false);
 
         mEditTagButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                        if (b) {
-                            //move focus to mEditTagName
-                            mEditTagName.requestFocus();
-                            //set cursor to end of Tag Name
-                            mEditTagName.setSelection(mEditTagName.getText().length());
-                            //show soft input to let user edit name of tag
-                        } else {
+                if (b) {
+                    //move focus to mEditTagName
+                    mEditTagName.requestFocus();
+                    //set cursor to end of Tag Name
+                    mEditTagName.setSelection(mEditTagName.getText().length());
+                    //show soft input to let user edit name of tag
+                } else {
 
-                            mNewTag = (mEditTagName.getText().toString());
+                    mNewTagName = (mEditTagName.getText().toString());
 
-                            if (!mTag.getTagName().equals(mNewTag)) {
-                                FirebaseUtils.editTagName(mContext, mUserTagRef, mTag, mNewTag);
-                            }
-
-                            //reset Focus to top View
-                            mEditTagName.clearFocus();
-                        }
-
+                    if (!mTag.getTagName().equals(mNewTagName)) {
+                        FirebaseUtils.editTagName(mContext, mUserTags, mTag, mNewTagName);
                     }
-                });
+
+                    //reset Focus to top View
+                    mEditTagName.clearFocus();
+                }
+
+            }
+        });
 
         mEditTagName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -97,7 +92,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
             @Override
             public void onClick(View view) {
 
-                FirebaseUtils.deleteTag(mContext, mTag, mUserTagRef, mUserArticlesRef);
+                FirebaseUtils.deleteTag(mContext, mTag, mUserTags, mUserArticles);
 
             }
         });

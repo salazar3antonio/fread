@@ -24,9 +24,7 @@ public class EditTagsFragment extends Fragment {
 
     public static final String TAG = EditTagsFragment.class.getName();
 
-    private DatabaseReference mUserTags;
-    private String mUserUid;
-    private FirebaseUser mUser;
+    private DatabaseReference mUserTags  = FirebaseUtils.getUserTags();
     private EditText mCreateNewTagEditText;
     private ImageButton mCreateNewTagButton;
     private RecyclerView mRecyclerView;
@@ -35,44 +33,29 @@ public class EditTagsFragment extends Fragment {
         return new EditTagsFragment();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mUserTags = FirebaseUtils.getUserTags();
-
-        setHasOptionsMenu(true);
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        if (mUser != null) {
-            //inflate the view only if a user is signed in. else return null
-            View view = inflater.inflate(R.layout.tags_edit_fragment, container, false);
-            mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
-            mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
-            mRecyclerView = view.findViewById(R.id.rv_tags_main_list);
+        View view = inflater.inflate(R.layout.tags_edit_fragment, container, false);
+        mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
+        mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
+        mRecyclerView = view.findViewById(R.id.rv_tags_main_list);
 
-            mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //create a new tag in the database once clicked
-                    FirebaseUtils.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
-                    //then clear the EditText field
-                    mCreateNewTagEditText.setText(null);
-                }
-            });
+        mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String newTagName = mCreateNewTagEditText.getText().toString();
+                //create a new tag in the database once clicked
+                FirebaseUtils.createNewTag(getContext(), mUserTags, newTagName);
+                //then clear the EditText field
+                mCreateNewTagEditText.setText(null);
+            }
+        });
 
-            setEditTagsAdapter();
+        setEditTagsAdapter();
 
-            return view;
-
-        } else {
-            return null;
-        }
+        return view;
 
     }
 
@@ -86,7 +69,7 @@ public class EditTagsFragment extends Fragment {
             @Override
             protected void populateViewHolder(final EditTagViewHolder viewHolder, final Tag tag, int position) {
 
-                viewHolder.bindToTag(getContext(), tag, mUserUid);
+                viewHolder.bindToTag(getContext(), tag);
 
             }
 
