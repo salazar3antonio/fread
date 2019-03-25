@@ -1,5 +1,7 @@
 package com.freadapp.fread.article;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +20,7 @@ import com.freadapp.fread.tag.AddTagsDialogFragment;
 import com.google.firebase.database.DatabaseReference;
 
 import static com.freadapp.fread.article.ArticleDetailFragment.ARTICLE_DETAIL_FRAGMENT_TAG;
+import static com.freadapp.fread.article.DeleteArticleDialogFragment.DELETE_ARTICLE_DIALOG_FRAGMENT_TAG;
 import static com.freadapp.fread.tag.AddTagsDialogFragment.ADD_TAGS_DIALOG_FRAGMENT_TAG;
 
 /**
@@ -69,13 +72,20 @@ public class ArticleDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
+            case R.id.share_menu_item:
+                shareArticle(mArticle);
+                return true;
+
             case R.id.add_tags_menu_item:
                 showAddTagsDialogFragment(mArticle);
                 return true;
 
+            case R.id.web_view_menu_item:
+                openArticleWebView(mArticle);
+                return true;
+
             case R.id.delete_menu_item:
-                FirebaseUtils.deleteArticle(getApplicationContext(), mArticle, mUserArticles);
-                finish();
+                showDeleteArticleDialogFragment(mArticle);
                 return true;
 
             default:
@@ -125,6 +135,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
         addTagsDialogFragment.show(getSupportFragmentManager(), ADD_TAGS_DIALOG_FRAGMENT_TAG);
     }
 
+    public void showDeleteArticleDialogFragment(Article article) {
+
+        DeleteArticleDialogFragment deleteArticleDialogFragment = DeleteArticleDialogFragment.newInstance(article);
+        deleteArticleDialogFragment.show(getSupportFragmentManager(), DELETE_ARTICLE_DIALOG_FRAGMENT_TAG);
+
+    }
+
     public void loadToolbarArticleImage(Article article) {
 
         ImageView toolbarImageView = findViewById(R.id.iv_article_toolbar);
@@ -134,6 +151,22 @@ public class ArticleDetailActivity extends AppCompatActivity {
         } else {
             Glide.with(this).load(article.getImage()).into(toolbarImageView);
         }
+    }
+
+    public void shareArticle(Article article) {
+
+        Intent shareUrlIntent = new Intent();
+        shareUrlIntent.setAction(Intent.ACTION_SEND);
+        shareUrlIntent.putExtra(Intent.EXTRA_TEXT, article.getUrl());
+        shareUrlIntent.setType("text/plain");
+        startActivity(shareUrlIntent);
+
+    }
+
+    public void openArticleWebView(Article article) {
+        Uri webUrl = Uri.parse(article.getUrl());
+        Intent intent = new Intent(Intent.ACTION_VIEW, webUrl);
+        this.startActivity(intent);
     }
 
 }

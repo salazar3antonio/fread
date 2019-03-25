@@ -140,7 +140,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
             case R.id.save_fetched_article_menu_item:
                 if (item.isChecked()) {
 
-                    FirebaseUtils.deleteArticle(getApplicationContext(), mArticle, mUserArticles);
+                    FirebaseUtils.deleteArticle(mArticle, mUserArticles);
 
                     item.setIcon(R.drawable.ic_bookmark_border_white_24dp);
                     item.setChecked(false);
