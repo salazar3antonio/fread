@@ -8,7 +8,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.freadapp.fread.R;
-import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.data.model.Tag;
 import com.google.firebase.database.DataSnapshot;
@@ -44,8 +44,8 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
 
         mArticle = article;
         mTag = tag;
-        mUserTagRef = FbDatabase.getUserTags(userId);
-        mUserArticleRef = FbDatabase.getUserArticles(userId).child(mArticle.getKeyId());
+        mUserTagRef = FirebaseUtils.getUserTags();
+        mUserArticleRef = FirebaseUtils.getUserArticles().child(mArticle.getKeyId());
 
         mTagName.setText(mTag.getTagName());
 
@@ -56,7 +56,7 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
 
     private void setTagCheckBox() {
 
-        mUserArticleRef.child(FbDatabase.FB_ARTICLE_TAGS).child(mTag.getKeyId()).addValueEventListener(new ValueEventListener() {
+        mUserArticleRef.child(FirebaseUtils.FB_ARTICLE_TAGS).child(mTag.getKeyId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object value = dataSnapshot.getValue();
@@ -82,11 +82,11 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
                 if (b) {
-                    FbDatabase.addTagKeyToArticle(mUserArticleRef, mTag);
-                    FbDatabase.addArticleKeyToTag(mUserTagRef, mArticle, mTag);
+                    FirebaseUtils.addTagKeyToArticle(mUserArticleRef, mTag);
+                    FirebaseUtils.addArticleKeyToTag(mUserTagRef, mArticle, mTag);
                 } else {
-                    FbDatabase.removeArticleKeyFromTag(mUserTagRef, mArticle, mTag);
-                    FbDatabase.removeTagKeyFromArticle(mUserArticleRef, mTag);
+                    FirebaseUtils.removeArticleKeyFromTag(mUserTagRef, mArticle, mTag);
+                    FirebaseUtils.removeTagKeyFromArticle(mUserArticleRef, mTag);
                 }
 
             }

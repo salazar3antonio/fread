@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.freadapp.fread.data.model.Article;
@@ -19,16 +18,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-public class FbDatabase {
+public class FirebaseUtils {
 
-    private static final String TAG = FbDatabase.class.getName();
+    private static final String TAG = FirebaseUtils.class.getName();
+
     private static final String FB_USERS = "users";
     private static final String FB_ARTICLES = "articles";
     private static final String FB_TAGS = "tags";
@@ -41,31 +37,28 @@ public class FbDatabase {
 
     /**
      * Get a reference of the User's Articles from the Firebase Database
-     *
-     * @param userUid Firebase User's UID
      */
-    public static DatabaseReference getUserArticles(String userUid) {
-        return sFirebaseDatabase.getReference().child(FB_USERS).child(userUid).child(FB_ARTICLES);
+    public static DatabaseReference getUserArticles() {
+
+        return sFirebaseDatabase.getReference().child(FB_USERS).child(getAuthUserId()).child(FB_ARTICLES);
     }
 
     /**
      * Get a reference of the User's Tags from the Firebase Database
-     *
-     * @param userUid Firebase User's UID
      */
-    public static DatabaseReference getUserTags(String userUid) {
-        return sFirebaseDatabase.getReference().child(FB_USERS).child(userUid).child(FB_TAGS);
+    public static DatabaseReference getUserTags() {
+
+        return sFirebaseDatabase.getReference().child(FB_USERS).child(getAuthUserId()).child(FB_TAGS);
     }
 
     /**
-     * Authenticate the Firebase User. Returns Null if no user logged in.
+     * Get the authorized user's id. Returns null if no user logged in.
      *
-     * @param user Firebase User
      */
-    public static FirebaseUser getAuthUser(FirebaseUser user) {
-        user = sFirebaseAuth.getCurrentUser();
-        if (user != null) {
-            return user;
+    private static String getAuthUserId() {
+        FirebaseUser currentUser = sFirebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUid();
         } else {
             Log.e(TAG, "No user logged in");
             return null;
@@ -178,7 +171,7 @@ public class FbDatabase {
 
         userArticles.child(article.getKeyId()).removeValue();
 
-        Toast.makeText(context, "Article Unsaved.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Article unsaved.", Toast.LENGTH_SHORT).show();
 
         Log.i(TAG, "DELETED Article >> " + article.getKeyId() + " from User Articles");
 
@@ -190,15 +183,14 @@ public class FbDatabase {
      * @param article      Article object to be saved
      * @param userArticles Database Reference to the User's Articles
      * @param url          URL received from Intent.EXTRA_TEXT
-     * @param uid          User's UID
      */
-    public static void saveArticle(Article article, DatabaseReference userArticles, String url, String uid) {
+    public static void saveArticle(Article article, DatabaseReference userArticles, String url) {
 
         //create a unique KeyID for the Article
         String key = userArticles.push().getKey();
         //store the keyid and userid into the Article object. This helps for retrieval later.
         article.setKeyId(key);
-        article.setUid(uid);
+        article.setUid(getAuthUserId());
         article.setUrl(url);
 
         //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
@@ -226,13 +218,6 @@ public class FbDatabase {
         writeMap.put(article.getKeyId(), article);
         //Save the specified article
         userArticles.updateChildren(writeMap);
-
-        if (save) {
-            Toast.makeText(context, "Article Saved.", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Article Unsaved.", Toast.LENGTH_SHORT).show();
-        }
-
 
     }
 

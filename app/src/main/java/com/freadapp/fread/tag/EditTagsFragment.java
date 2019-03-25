@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
-import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.EditTagViewHolder;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,15 +39,7 @@ public class EditTagsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //get the current logged in user
-        mUser = FbDatabase.getAuthUser(mUser);
-
-        if (mUser != null) {
-            // if a user is logged in get the user's ID
-            mUserUid = mUser.getUid();
-            //get all of the user's tags
-            mUserTags = FbDatabase.getUserTags(mUserUid);
-        }
+        mUserTags = FirebaseUtils.getUserTags();
 
         setHasOptionsMenu(true);
 
@@ -68,7 +60,7 @@ public class EditTagsFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     //create a new tag in the database once clicked
-                    FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
+                    FirebaseUtils.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
                     //then clear the EditText field
                     mCreateNewTagEditText.setText(null);
                 }
@@ -86,7 +78,7 @@ public class EditTagsFragment extends Fragment {
 
     private void setEditTagsAdapter() {
 
-        Query allTagsByName = mUserTags.orderByChild(FbDatabase.FB_TAG_NAME);
+        Query allTagsByName = mUserTags.orderByChild(FirebaseUtils.FB_TAG_NAME);
 
         FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Tag, EditTagViewHolder>(Tag.class, R.layout.tag_edit_list_item,
                 EditTagViewHolder.class, allTagsByName) {

@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
-import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -68,7 +68,7 @@ public class TagDetailFragment extends Fragment {
         if (mUser == null) {
             Toast.makeText(getContext(), "No user logged in.", Toast.LENGTH_SHORT).show();
         } else {
-            mArticlesDBref = FbDatabase.getUserArticles(mUser.getUid());
+            mArticlesDBref = FirebaseUtils.getUserArticles();
             setFirebaseAdapter();
         }
 
@@ -78,7 +78,7 @@ public class TagDetailFragment extends Fragment {
     private void setFirebaseAdapter() {
 
         //query only Articles that contain the passed in TagKeyId
-        Query query = mArticlesDBref.orderByChild(FbDatabase.FB_ARTICLE_TAGS + "/" + mTagKey).equalTo(true);
+        Query query = mArticlesDBref.orderByChild(FirebaseUtils.FB_ARTICLE_TAGS + "/" + mTagKey).equalTo(true);
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
                 ArticleViewHolder.class, query) {
@@ -91,7 +91,6 @@ public class TagDetailFragment extends Fragment {
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
                         Intent intent = new Intent(getContext(), ArticleDetailActivity.class);
-                        intent.putExtra(FB_ARTICLE_KEY_ID, model.getKeyId());
                         intent.putExtra(ARTICLE_MODEL, model);
                         startActivity(intent);
                     }

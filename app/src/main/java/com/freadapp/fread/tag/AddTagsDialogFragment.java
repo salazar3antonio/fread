@@ -15,7 +15,7 @@ import android.widget.ImageButton;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
-import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.AddTagDialogViewHolder;
@@ -48,11 +48,7 @@ public class AddTagsDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //get the current logged in user
-        mUser = FbDatabase.getAuthUser(mUser);
-        mUserUid = mUser.getUid();
-        //get all of the user's tags
-        mUserTags = FbDatabase.getUserTags(mUserUid);
+        mUserTags = FirebaseUtils.getUserTags();
 
         //get the Article supplied when the fragment was instantiated
         mArticle = getArguments().getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
@@ -73,7 +69,7 @@ public class AddTagsDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 //create a new tag in the database once clicked
-                FbDatabase.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
+                FirebaseUtils.createNewTag(getContext(), mUserTags, mCreateNewTagEditText.getText().toString());
                 //then clear the EditText field
                 mCreateNewTagEditText.setText(null);
             }

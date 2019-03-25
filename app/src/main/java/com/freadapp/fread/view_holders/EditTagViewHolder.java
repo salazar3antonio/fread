@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.freadapp.fread.R;
-import com.freadapp.fread.data.database.FbDatabase;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Tag;
 import com.google.firebase.database.DatabaseReference;
 
@@ -51,8 +51,8 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
         mUserID = userID;
         mTag = tag;
         mEditTagName.setText(mTag.getTagName());
-        mUserTagRef = FbDatabase.getUserTags(mUserID);
-        mUserArticlesRef = FbDatabase.getUserArticles(mUserID);
+        mUserTagRef = FirebaseUtils.getUserTags();
+        mUserArticlesRef = FirebaseUtils.getUserArticles();
         mEditTagButton.setChecked(false);
 
         mEditTagButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -70,7 +70,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
                             mNewTag = (mEditTagName.getText().toString());
 
                             if (!mTag.getTagName().equals(mNewTag)) {
-                                FbDatabase.editTagName(mContext, mUserTagRef, mTag, mNewTag);
+                                FirebaseUtils.editTagName(mContext, mUserTagRef, mTag, mNewTag);
                             }
 
                             //reset Focus to top View
@@ -97,7 +97,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
             @Override
             public void onClick(View view) {
 
-                FbDatabase.deleteTag(mContext, mTag, mUserTagRef, mUserArticlesRef);
+                FirebaseUtils.deleteTag(mContext, mTag, mUserTagRef, mUserArticlesRef);
 
             }
         });
