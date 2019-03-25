@@ -24,4 +24,6 @@
     <string name="number_of_articles">(%1$s)</string>
     <string name="empty_number_of_articles">(0)</string>
     <string name="article_toolbar_image">Article toolbar image.</string>
+    <string name="snackbar_article_saved">Article saved.</string>
+    <string name="snackbar_add_tags">Add Tags</string>
 </resources>

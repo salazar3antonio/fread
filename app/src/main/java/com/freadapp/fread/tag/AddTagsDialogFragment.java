@@ -51,7 +51,10 @@ public class AddTagsDialogFragment extends DialogFragment {
         mUserTags = FirebaseUtils.getUserTags();
 
         //get the Article supplied when the fragment was instantiated
-        mArticle = getArguments().getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mArticle = arguments.getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
+        }
 
     }
 

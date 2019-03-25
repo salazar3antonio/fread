@@ -3,17 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/save_fetched_article_menu"
+        android:id="@+id/save_fetched_article_menu_item"
         android:checkable="true"
-        android:checked="false"
         android:icon="@drawable/ic_bookmark_border_white_24dp"
         android:title="@string/save_article_menu_text"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/add_tags_menu_item"
-        android:title="@string/add_tag_menu_text"
-        android:icon="@drawable/ic_tags_menu_white_24dp"
         app:showAsAction="ifRoom" />
 
 </menu>
