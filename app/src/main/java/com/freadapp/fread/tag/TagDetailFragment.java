@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
@@ -18,8 +17,6 @@ import com.freadapp.fread.article.ArticleDetailActivity;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -29,14 +26,12 @@ public class TagDetailFragment extends Fragment {
 
     public static final String TAG = TagDetailFragment.class.getName();
 
-    public static final String FB_ARTICLE_KEY_ID = "fb_key_id";
     public static final String ARTICLE_MODEL = "article_model";
 
-    private FirebaseUser mUser;
-    private DatabaseReference mArticlesDBref;
+    private DatabaseReference mUserArticles = FirebaseUtils.getUserArticles();
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mArticleRecyclerView;
-    private String mTagKey;
+    private String mTagKeyId;
 
 
     public static TagDetailFragment newInstance() {
@@ -48,7 +43,7 @@ public class TagDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mTagKey = getArguments().getString(TAG_KEY_ID);
+            mTagKeyId = getArguments().getString(TAG_KEY_ID);
         }
 
     }
@@ -59,26 +54,17 @@ public class TagDetailFragment extends Fragment {
         //inflate fragment layout of article feed
         View view = inflater.inflate(R.layout.main_articles_fragment, container, false);
 
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        mUser = firebaseAuth.getCurrentUser();
-
         mArticleRecyclerView = view.findViewById(R.id.rv_articles_main_list);
 
-        //check to see if user is logged in.
-        if (mUser == null) {
-            Toast.makeText(getContext(), "No user logged in.", Toast.LENGTH_SHORT).show();
-        } else {
-            mArticlesDBref = FirebaseUtils.getUserArticles();
-            setFirebaseAdapter();
-        }
+        setArticlesByTagAdapter();
 
         return view;
     }
 
-    private void setFirebaseAdapter() {
+    private void setArticlesByTagAdapter() {
 
         //query only Articles that contain the passed in TagKeyId
-        Query query = mArticlesDBref.orderByChild(FirebaseUtils.FB_ARTICLE_TAGS + "/" + mTagKey).equalTo(true);
+        Query query = mUserArticles.orderByChild(FirebaseUtils.FB_ARTICLE_TAGS + "/" + mTagKeyId).equalTo(true);
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
                 ArticleViewHolder.class, query) {

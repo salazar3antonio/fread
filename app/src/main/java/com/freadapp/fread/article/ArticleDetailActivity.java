@@ -33,7 +33,6 @@ public class ArticleDetailActivity extends AppCompatActivity {
     public static final String ARTICLE_BUNDLE = "article_bundle";
 
     private Article mArticle;
-    private DatabaseReference mUserArticles = FirebaseUtils.getUserArticles();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

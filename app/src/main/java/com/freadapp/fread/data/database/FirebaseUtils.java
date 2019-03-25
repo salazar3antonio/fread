@@ -163,15 +163,12 @@ public class FirebaseUtils {
     /**
      * Removes the specified article object found at /articles/[articlekeyid] in the database
      *
-     * @param context      Application context
      * @param article      Article to be unsaved
      * @param userArticles Database Reference to the User's Articles
      */
-    public static void deleteArticle(Context context, Article article, DatabaseReference userArticles) {
+    public static void deleteArticle(Article article, DatabaseReference userArticles) {
 
         userArticles.child(article.getKeyId()).removeValue();
-
-        Toast.makeText(context, "Article unsaved.", Toast.LENGTH_SHORT).show();
 
         Log.i(TAG, "DELETED Article >> " + article.getKeyId() + " from User Articles");
 
@@ -199,25 +196,8 @@ public class FirebaseUtils {
         //Save the specified article
         userArticles.updateChildren(writeMap);
 
-    }
+        Log.i(TAG, "SAVED Article >> " + article.getKeyId() + " from User Articles");
 
-    /**
-     * Sets the key "saved" value of the Article object to true or false in the database
-     *
-     * @param context      Application context
-     * @param article      Article object to set saved value to
-     * @param userArticles Database Reference to the User's Articles
-     * @param save         set saved value of Article object
-     */
-    public static void setSavedArticle(Context context, DatabaseReference userArticles, Article article, boolean save) {
-
-        article.setSaved(save);
-
-        //a hash map to store the key (keyid) and value (article object) pair to be saved to the DB
-        Map<String, Object> writeMap = new HashMap<>();
-        writeMap.put(article.getKeyId(), article);
-        //Save the specified article
-        userArticles.updateChildren(writeMap);
 
     }
 
@@ -235,14 +215,6 @@ public class FirebaseUtils {
         Toast.makeText(context, updateTagName + " updated", Toast.LENGTH_SHORT).show();
 
         Log.i(TAG, "Tag >> " + tag.getTagName() + " UPDATED To >> " + updateTagName);
-
-    }
-
-    public static void openArticleWebView(Activity activity, String url) {
-
-        Uri webpage = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
-        activity.startActivity(intent);
 
     }
 

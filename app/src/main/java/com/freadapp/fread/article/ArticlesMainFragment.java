@@ -26,8 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 /**
- * Created by salaz on 3/11/2018.
- * fragment class should populate the Firebase Database Recyclerview Feed of all the user articles
+ * Fragment class should populate the Firebase Database Recyclerview Feed of all the user articles
  */
 
 public class ArticlesMainFragment extends Fragment {
@@ -37,7 +36,7 @@ public class ArticlesMainFragment extends Fragment {
     public static final String ARTICLE_MODEL = "article_model";
 
     private FirebaseUser mUser;
-    private DatabaseReference mArticlesDBref;
+    private DatabaseReference mUserArticles;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mArticleRecyclerView;
 
@@ -63,8 +62,8 @@ public class ArticlesMainFragment extends Fragment {
         } else {
             //grab an instance of the database and point it to the logged in user's articles
             FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-            mArticlesDBref.addChildEventListener(new ChildEventListener() {
+            mUserArticles = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
+            mUserArticles.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Article article = dataSnapshot.getValue(Article.class);
@@ -103,7 +102,7 @@ public class ArticlesMainFragment extends Fragment {
     private void setFirebaseAdapter() {
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
-                ArticleViewHolder.class, mArticlesDBref) {
+                ArticleViewHolder.class, mUserArticles) {
 
             @Override
             protected void populateViewHolder(ArticleViewHolder viewHolder, final Article model, final int position) {

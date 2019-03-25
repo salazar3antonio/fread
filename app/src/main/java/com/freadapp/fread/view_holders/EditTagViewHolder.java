@@ -43,7 +43,7 @@ public class EditTagViewHolder extends RecyclerView.ViewHolder implements View.O
      *
      * @param tag Tag model to be bound to the List Item Views
      */
-    public void bindToTag(final Context context, final Tag tag) {
+    public void bindToTag(Context context, Tag tag) {
 
         mContext = context;
         mTag = tag;
