@@ -1,9 +1,6 @@
 package com.freadapp.fread.data.database;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -53,7 +50,6 @@ public class FirebaseUtils {
 
     /**
      * Get the authorized user's id. Returns null if no user logged in.
-     *
      */
     private static String getAuthUserId() {
         FirebaseUser currentUser = sFirebaseAuth.getCurrentUser();
@@ -197,8 +193,6 @@ public class FirebaseUtils {
         userArticles.updateChildren(writeMap);
 
         Log.i(TAG, "SAVED Article >> " + article.getKeyId() + " from User Articles");
-
-
     }
 
     /**
@@ -216,6 +210,15 @@ public class FirebaseUtils {
 
         Log.i(TAG, "Tag >> " + tag.getTagName() + " UPDATED To >> " + updateTagName);
 
+    }
+
+    /**
+     * Check to see if there is a Firebase User logged in
+     *
+     */
+    public static boolean isFirebaseUserSignedIn() {
+        FirebaseUser firebaseUser = sFirebaseAuth.getCurrentUser();
+        return firebaseUser != null;
     }
 
 }

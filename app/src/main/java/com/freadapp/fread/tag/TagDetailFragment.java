@@ -70,19 +70,19 @@ public class TagDetailFragment extends Fragment {
                 ArticleViewHolder.class, query) {
 
             @Override
-            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article model, final int position) {
+            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article article, final int position) {
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
                         Intent intent = new Intent(getContext(), ArticleDetailActivity.class);
-                        intent.putExtra(ARTICLE_MODEL, model);
+                        intent.putExtra(ARTICLE_MODEL, article);
                         startActivity(intent);
                     }
                 });
 
-                viewHolder.bindToArticle(model, getContext());
+                viewHolder.bindToArticle(getContext(), article);
 
             }
         };

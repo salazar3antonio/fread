@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
@@ -26,21 +27,12 @@ public class TagsMainFragment extends Fragment {
     public static final String TAG_DETAIL_FRAGMENT_TAG = "tag_detail_fragment_tag";
 
 
-    private DatabaseReference mUserTagsRef;
+    private DatabaseReference mUserTags;
+    private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mRecyclerView;
 
     public static TagsMainFragment newInstance() {
         return new TagsMainFragment();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mUserTagsRef = FirebaseUtils.getUserTags();
-
-        setHasOptionsMenu(true);
-
     }
 
     @Nullable
@@ -50,7 +42,12 @@ public class TagsMainFragment extends Fragment {
         View view = inflater.inflate(R.layout.main_tags_fragment, container, false);
         mRecyclerView = view.findViewById(R.id.rv_tags_main_list);
 
-        setMainTagsAdapter();
+        if (FirebaseUtils.isFirebaseUserSignedIn()) {
+            mUserTags = FirebaseUtils.getUserTags();
+            setMainTagsAdapter();
+        } else {
+            Toast.makeText(getContext(), "No user logged in.", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
 
@@ -58,23 +55,15 @@ public class TagsMainFragment extends Fragment {
 
     private void setMainTagsAdapter() {
 
-        Query allTagsByName = mUserTagsRef.orderByChild(FirebaseUtils.FB_TAG_NAME);
+        Query allTagsByName = mUserTags.orderByChild(FirebaseUtils.FB_TAG_NAME);
 
         FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_main_list_item,
                 TagViewHolder.class, allTagsByName) {
 
             @Override
-            public TagViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-                View view = LayoutInflater.from(getContext()).inflate(R.layout.tag_main_list_item, parent, false);
-
-                return new TagViewHolder(getContext(), view, R.id.tv_tag_main_name);
-            }
-
-            @Override
             protected void populateViewHolder(TagViewHolder viewHolder, final Tag tag, int position) {
 
-                viewHolder.bindToTag(tag);
+                viewHolder.bindToTag(getContext(), tag);
 
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -92,6 +81,14 @@ public class TagsMainFragment extends Fragment {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mRecyclerView.setAdapter(firebaseRecyclerAdapter);
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mFirebaseAdapter != null) {
+            mFirebaseAdapter.cleanup();
+        }
     }
 
     private void commitTagDetailFragment(Tag tag) {

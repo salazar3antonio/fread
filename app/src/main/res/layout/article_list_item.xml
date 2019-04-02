@@ -9,31 +9,17 @@
         android:id="@+id/url_list_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
         android:layout_marginStart="8dp"
         android:maxLines="1"
-        android:paddingBottom="5dp"
         android:paddingLeft="5dp"
-        android:paddingRight="5dp"
         android:paddingTop="2dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-        app:layout_constraintBottom_toTopOf="@+id/article_tag_list_recycleView"
         app:layout_constraintEnd_toStartOf="@+id/image_list_item"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_list_item"
         tools:text="URL" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/article_tag_list_recycleView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:paddingRight="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/image_list_item"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/url_list_item" />
 
     <TextView
         android:id="@+id/title_list_item"
