@@ -1,21 +1,25 @@
 package com.freadapp.fread.widget;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.Toast;
 
 import com.freadapp.fread.R;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -34,9 +38,7 @@ class ArticleWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     //this class will bind data to one Article widget view. StackView is the container for each Recipe Widget Views
     private Context mContext;
     private FirebaseUser mUser;
-    private DatabaseReference mArticlesDBref;
     private ArrayList<Article> mArticles = new ArrayList<>();
-    private Article mArticle;
 
     public ArticleWidgetRemoteViewsFactory(Context context, Intent intent) {
         this.mContext = context;
@@ -50,89 +52,19 @@ class ArticleWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         mUser = firebaseAuth.getCurrentUser();
 
-        if (mUser == null) {
-            Toast.makeText(mContext, "No user logged in.", Toast.LENGTH_SHORT).show();
-        } else {
-            //grab an instance of the database and point it to the logged in user's articles
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-            mArticlesDBref.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    fetchArticles(dataSnapshot);
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    fetchArticles(dataSnapshot);
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
+        initArticles();
     }
 
     @Override
     public void onDataSetChanged() {
-
-        if (mUser == null) {
-            Toast.makeText(mContext, "No user logged in.", Toast.LENGTH_SHORT).show();
-        } else {
-            //grab an instance of the database and point it to the logged in user's articles
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            mArticlesDBref = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("articles");
-            mArticlesDBref.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    fetchArticles(dataSnapshot);
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    fetchArticles(dataSnapshot);
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
     }
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy: ");
     }
 
     @Override
     public int getCount() {
-        Log.i(TAG, "getCount: ");
         if (mArticles.size() == 0) return 0;
         return mArticles.size();
     }
@@ -144,7 +76,7 @@ class ArticleWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
         if (mArticles == null || mArticles.size() == 0) return null;
 
-        mArticle = mArticles.get(position);
+        Article mArticle = mArticles.get(position);
 
         RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_article);
 
@@ -175,13 +107,39 @@ class ArticleWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         return false;
     }
 
-    private void fetchArticles(DataSnapshot dataSnapshot) {
+    private void initArticles() {
 
-        Article article = dataSnapshot.getValue(Article.class);
-        Log.i(TAG, "Titles: " + article.getTitle());
-        mArticles.add(article);
+        if (mUser == null) {
+            Toast.makeText(mContext, "No user logged in.", Toast.LENGTH_LONG).show();
+        } else {
+            DatabaseReference userArticles = FirebaseUtils.getUserArticles();
+            userArticles.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Article article = child.getValue(Article.class);
+                        mArticles.add(article);
+                    }
+
+                    updateWidgetArticles();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
+    private void updateWidgetArticles() {
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(mContext, ArticleWidgetProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.gv_article_widget);
+
+    }
 
 }
