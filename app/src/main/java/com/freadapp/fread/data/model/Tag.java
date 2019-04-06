@@ -1,9 +1,5 @@
 package com.freadapp.fread.data.model;
 
-import android.content.Context;
-import android.widget.EditText;
-
-import java.util.List;
 import java.util.Map;
 
 /**

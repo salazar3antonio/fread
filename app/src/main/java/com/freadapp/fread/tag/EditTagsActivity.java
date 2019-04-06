@@ -17,7 +17,7 @@ public class EditTagsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tags_edit_fragment_container);
+        setContentView(R.layout.tags_edit_container);
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -31,7 +31,7 @@ public class EditTagsActivity extends AppCompatActivity {
         if (fragmentManager.getFragments().size() > 0) {
             Log.i(TAG, "Fragment already attached.");
         } else {
-            fragmentManager.beginTransaction().add(R.id.edit_tags_container, editTagsFragment).commit();
+            fragmentManager.beginTransaction().add(R.id.fl_edit_tags_container, editTagsFragment).commit();
         }
 
     }

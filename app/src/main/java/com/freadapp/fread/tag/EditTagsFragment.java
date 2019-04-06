@@ -16,7 +16,6 @@ import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.EditTagViewHolder;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 

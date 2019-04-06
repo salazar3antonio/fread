@@ -13,8 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.freadapp.fread.article.ArticlesMainFragment;
 import com.freadapp.fread.signin.SignInActivity;
 import com.freadapp.fread.signin.SignInFragment;

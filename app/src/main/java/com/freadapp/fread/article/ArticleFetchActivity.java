@@ -50,7 +50,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.article_fragment_container);
+        setContentView(R.layout.article_container);
 
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
@@ -58,7 +58,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().hide();
 
-        if (findViewById(R.id.article_container) != null) {
+        if (findViewById(R.id.fl_article_container) != null) {
             showLoadingFragment();
         }
 
@@ -179,12 +179,12 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
     private void showLoadingFragment() {
         //placing in the loading screen for when quiz api is being called
         LoadingFragment loadingFragment = LoadingFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.article_container, loadingFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_article_container, loadingFragment).commit();
     }
 
     private void showSignInFragment() {
         SignInFragment signInFragment = SignInFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.article_container, signInFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_article_container, signInFragment).commit();
     }
 
     public boolean isArticleIsSaved() {

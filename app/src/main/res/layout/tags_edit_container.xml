@@ -6,7 +6,7 @@
     <include layout="@layout/main_activity_toolbar" />
 
     <FrameLayout
-        android:id="@+id/edit_tags_container"
+        android:id="@+id/fl_edit_tags_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize" />

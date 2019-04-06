@@ -14,10 +14,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.freadapp.fread.R;
-import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.tag.AddTagsDialogFragment;
-import com.google.firebase.database.DatabaseReference;
 
 import static com.freadapp.fread.article.ArticleDetailFragment.ARTICLE_DETAIL_FRAGMENT_TAG;
 import static com.freadapp.fread.article.DeleteArticleDialogFragment.DELETE_ARTICLE_DIALOG_FRAGMENT_TAG;
@@ -37,7 +35,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.article_fragment_container);
+        setContentView(R.layout.article_container);
 
         Toolbar toolbar = findViewById(R.id.article_toolbar);
         setSupportActionBar(toolbar);
@@ -116,7 +114,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         articleDetailFragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.article_container, articleDetailFragment, ARTICLE_DETAIL_FRAGMENT_TAG);
+        fragmentTransaction.replace(R.id.fl_article_container, articleDetailFragment, ARTICLE_DETAIL_FRAGMENT_TAG);
         fragmentTransaction.commit();
 
     }
