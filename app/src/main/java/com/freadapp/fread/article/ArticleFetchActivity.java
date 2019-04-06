@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,9 @@ import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.helpers.LoadingFragment;
+import com.freadapp.fread.signin.SignInFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import retrofit2.Call;
@@ -26,10 +30,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * This class wil handle the fetching of the Article information via Retrofit API
- * The user is able to save the Article to the Firebase Database and then add Tags via a Snackbar action.
+ * The user is able to save the Article to the Firebase Database and then add Tags via a SnackBar action.
  */
 
-public class ArticleFetchActivity extends ArticleDetailActivity {
+public class ArticleFetchActivity extends ArticleDetailActivity implements SignInFragment.OnSignInSuccessListener {
 
     public static final String TAG = ArticleFetchActivity.class.getName();
 
@@ -37,9 +41,10 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
 
     private String mUrlIntentExtra;
     private Article mArticle;
-    private DatabaseReference mUserArticles = FirebaseUtils.getUserArticles();
-    private Snackbar mSavedSnackBar;
+    private DatabaseReference mUserArticles;
+    private Snackbar mArticleSavedSnackBar;
     private boolean mArticleIsSaved;
+    private FirebaseUser mUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +62,8 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
             showLoadingFragment();
         }
 
-        mSavedSnackBar = Snackbar.make(findViewById(R.id.main_content), R.string.snackbar_article_saved, Snackbar.LENGTH_LONG);
+        mArticleSavedSnackBar = Snackbar.make(findViewById(R.id.main_content), R.string.snackbar_article_saved, Snackbar.LENGTH_LONG);
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (savedInstanceState != null) {
             mArticle = savedInstanceState.getParcelable(ArticleDetailActivity.ARTICLE_BUNDLE);
@@ -71,46 +77,22 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
             mUrlIntentExtra = intentExtras.getString(Intent.EXTRA_TEXT);
         }
 
-        if (mArticle == null) {
-            //building up the Retrofit object to begin calling the API
-            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(Constants.AYLIEN_API_ENDPOINT_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+        if (mUser != null) {
 
-            //passing in the ArticleAPI interface class into the retrofit Object
-            FetchArticleAPI fetchArticleAPI = retrofit.create(FetchArticleAPI.class);
+            mUserArticles = FirebaseUtils.getUserArticles();
 
-            //using the articleAPI object to call the GET method of the API. Passes in the URL received from the Intent.
-            Call<Article> call = fetchArticleAPI.getArticle(mUrlIntentExtra, true);
-            call.enqueue(new Callback<Article>() {
-                @Override
-                public void onResponse(Call<Article> call, Response<Article> response) {
+            if (mArticle == null) {
 
-                    if (response.isSuccessful()) {
-                        //Assign mArticle to the API Response Body (JSON object).
-                        mArticle = response.body();
-                        loadToolbarArticleImage(mArticle);
-                        showArticleDetailFragment(mArticle);
-                        getSupportActionBar().show();
+                fetchArticle();
 
-                    } else {
-                        Log.e(TAG, "API Response Failed: " + response.message());
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<Article> call, Throwable t) {
-                    //on failure, Toast error code
-                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "API Failed: " + t.getMessage());
-                }
-            });
+            } else {
+                loadToolbarArticleImage(mArticle);
+                showArticleDetailFragment(mArticle);
+                getSupportActionBar().show();
+            }
         } else {
-            loadToolbarArticleImage(mArticle);
-            showArticleDetailFragment(mArticle);
-            getSupportActionBar().show();
+            Toast.makeText(this, "Must be signed in.", Toast.LENGTH_SHORT).show();
+            showSignInFragment();
         }
 
     }
@@ -146,8 +128,8 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
                     item.setChecked(false);
                     setArticleIsSaved(false);
 
-                    if (mSavedSnackBar.isShown()) {
-                        mSavedSnackBar.dismiss();
+                    if (mArticleSavedSnackBar.isShown()) {
+                        mArticleSavedSnackBar.dismiss();
                     }
 
                 } else {
@@ -158,13 +140,13 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
                     item.setChecked(true);
                     setArticleIsSaved(true);
 
-                    mSavedSnackBar.setAction(R.string.snackbar_add_tags, new View.OnClickListener() {
+                    mArticleSavedSnackBar.setAction(R.string.snackbar_add_tags, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             showAddTagsDialogFragment(mArticle);
                         }
                     });
-                    mSavedSnackBar.show();
+                    mArticleSavedSnackBar.show();
                 }
 
                 return true;
@@ -173,6 +155,14 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof SignInFragment) {
+            SignInFragment signInFragment = (SignInFragment) fragment;
+            signInFragment.setOnSignInSuccessListener(this);
+        }
     }
 
     @Override
@@ -189,7 +179,12 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
     private void showLoadingFragment() {
         //placing in the loading screen for when quiz api is being called
         LoadingFragment loadingFragment = LoadingFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().add(R.id.article_container, loadingFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.article_container, loadingFragment).commit();
+    }
+
+    private void showSignInFragment() {
+        SignInFragment signInFragment = SignInFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.article_container, signInFragment).commit();
     }
 
     public boolean isArticleIsSaved() {
@@ -197,7 +192,56 @@ public class ArticleFetchActivity extends ArticleDetailActivity {
     }
 
     public void setArticleIsSaved(boolean isSaved) {
-
         this.mArticleIsSaved = isSaved;
+    }
+
+    @Override
+    public void onSignInSuccess(boolean signInSuccess) {
+        if (signInSuccess) {
+            showLoadingFragment();
+            fetchArticle();
+            mUser = FirebaseAuth.getInstance().getCurrentUser();
+            mUserArticles = FirebaseUtils.getUserArticles();
+        }
+    }
+
+    private void fetchArticle() {
+
+        //building up the Retrofit object to begin calling the API
+        retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                .baseUrl(Constants.AYLIEN_API_ENDPOINT_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        //passing in the ArticleAPI interface class into the retrofit Object
+        FetchArticleAPI fetchArticleAPI = retrofit.create(FetchArticleAPI.class);
+
+        //using the articleAPI object to call the GET method of the API. Passes in the URL received from the Intent.
+        Call<Article> call = fetchArticleAPI.getArticle(mUrlIntentExtra, true);
+        call.enqueue(new Callback<Article>() {
+            @Override
+            public void onResponse(Call<Article> call, Response<Article> response) {
+
+                if (response.isSuccessful()) {
+                    //Assign mArticle to the API Response Body (JSON object).
+                    mArticle = response.body();
+                    loadToolbarArticleImage(mArticle);
+                    showArticleDetailFragment(mArticle);
+                    getSupportActionBar().show();
+
+                } else {
+                    Log.e(TAG, "API Response Failed: " + response.message());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Article> call, Throwable t) {
+                //on failure, Toast error code
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "API Failed: " + t.getMessage());
+            }
+        });
+
     }
 }

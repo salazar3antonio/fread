@@ -21,7 +21,7 @@ import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
 import com.freadapp.fread.tag.TagsMainFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnSignInSuccessListener {
 
     public static final String TAG = MainActivity.class.getName();
 
@@ -95,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof SignInFragment) {
+            SignInFragment signInFragment = (SignInFragment) fragment;
+            signInFragment.setOnSignInSuccessListener(this);
+        }
+    }
+
     private void selectFragment(MenuItem item) {
 
         item.setChecked(true);
@@ -129,4 +137,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSignInSuccess(boolean signInSuccess) {
+
+    }
 }

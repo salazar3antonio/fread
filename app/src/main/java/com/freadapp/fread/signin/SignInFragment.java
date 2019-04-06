@@ -50,9 +50,19 @@ public class SignInFragment extends Fragment {
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager = CallbackManager.Factory.create();
     private FirebaseAuth mFirebaseAuth;
+    private OnSignInSuccessListener mSignInSuccessCallback;
+
 
     public static SignInFragment newInstance() {
         return new SignInFragment();
+    }
+
+    public void setOnSignInSuccessListener(OnSignInSuccessListener callback) {
+        this.mSignInSuccessCallback = callback;
+    }
+
+    public interface OnSignInSuccessListener {
+        void onSignInSuccess(boolean signInSuccess);
     }
 
     @Override
@@ -69,7 +79,7 @@ public class SignInFragment extends Fragment {
                 .build();
 
         // Build a GoogleSignInClient with the options specified by gso.
-       mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
     }
 
     @Nullable
@@ -87,13 +97,6 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 googleSignIn();
-            }
-        });
-
-        mSignOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signOut();
             }
         });
 
@@ -117,6 +120,13 @@ public class SignInFragment extends Fragment {
             }
         });
 
+        mSignOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOutFirebaseUser();
+            }
+        });
+
         return view;
     }
 
@@ -125,20 +135,11 @@ public class SignInFragment extends Fragment {
         startActivityForResult(signInIntent, GOOGLE_SIGIN_REQ_CODE);
     }
 
-    private void signOut() {
+    private void signOutFirebaseUser() {
 
         FirebaseAuth.getInstance().signOut();
 
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // do something once the user is logged out
-                    }
-                });
-
-        Toast.makeText(getContext(),  "User Signed Out", Toast.LENGTH_SHORT).show();
-
+        toastSignOut();
     }
 
     @Override
@@ -155,7 +156,6 @@ public class SignInFragment extends Fragment {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
 
-                Toast.makeText(getContext(), account.getEmail() + " has signed in", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Google sign in success");
 
             } catch (ApiException e) {
@@ -168,23 +168,21 @@ public class SignInFragment extends Fragment {
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
+                            mSignInSuccessCallback.onSignInSuccess(true);
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "Firebase user athentication success");
-                            Snackbar.make(getView(), "Authentication Success.", Snackbar.LENGTH_SHORT).show();
+                            Log.d(TAG, "Firebase user authentication success");
+                            toastLoginSuccess();
 
                         } else {
 
                             // if sign in fails, log and snackbar failure
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(getView(), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-
+                            toastLoginFailure();
                         }
                     }
                 });
@@ -192,7 +190,6 @@ public class SignInFragment extends Fragment {
     }
 
     private void firebaseAuthWithFacebook(AccessToken token) {
-        Log.d(TAG, "firebaseAuthWithFacebook:" + token);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mFirebaseAuth.signInWithCredential(credential)
@@ -200,16 +197,28 @@ public class SignInFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            mSignInSuccessCallback.onSignInSuccess(true);
                             Log.d(TAG, "signInWithCredential:success");
+                            toastLoginSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            toastLoginFailure();
                         }
                     }
                 });
     }
 
+    public void toastLoginSuccess() {
+        Toast.makeText(getContext(), "Sign In Success", Toast.LENGTH_SHORT).show();
+    }
+
+    public void toastLoginFailure() {
+        Toast.makeText(getContext(), "Sign In Failed", Toast.LENGTH_SHORT).show();
+    }
+
+    public void toastSignOut() {
+        Toast.makeText(getContext(), "Signed Out", Toast.LENGTH_SHORT).show();
+    }
 
 }
