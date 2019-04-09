@@ -2,6 +2,7 @@ package com.freadapp.fread.signin;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -47,13 +48,11 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
-
     private void showSignInFragment() {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         SignInFragment signInFragment = SignInFragment.newInstance();
         fragmentManager.beginTransaction().replace(R.id.fl_sign_in_container, signInFragment).commit();
-
 
     }
 

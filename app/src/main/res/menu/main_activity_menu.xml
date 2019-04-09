@@ -2,15 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <item
-        android:id="@+id/sign_in_item"
-        android:title="Sign In"
+        android:id="@+id/edit_tags_item"
+        android:title="@string/edit_tags_text"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/edit_tags_item"
-        android:title="Edit Tags"
+        android:id="@+id/sign_out_item"
+        android:title="@string/sign_out_menu_text"
         app:showAsAction="never" />
 
 </menu>

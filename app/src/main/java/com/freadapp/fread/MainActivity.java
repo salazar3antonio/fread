@@ -12,12 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.freadapp.fread.article.ArticlesMainFragment;
-import com.freadapp.fread.signin.SignInActivity;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
 import com.freadapp.fread.tag.TagsMainFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements SignInFragment.OnSignInSuccessListener {
 
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     public static final String MENU_ITEM_ID = "menu_item_id";
 
     private BottomNavigationView mBottomNavView;
+    private Menu mBottomNaveMenu;
+    private boolean mFirebaseUserSignedIn = FirebaseUtils.isFirebaseUserSignedIn();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,17 +40,17 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         setSupportActionBar(toolbar);
 
         mBottomNavView = findViewById(R.id.bottom_nav);
-        Menu bottomNavMenu = mBottomNavView.getMenu();
+        mBottomNaveMenu = mBottomNavView.getMenu();
 
         if (savedInstanceState != null) {
 
-            MenuItem menuItem = bottomNavMenu.findItem(savedInstanceState.getInt(MENU_ITEM_ID));
+            MenuItem menuItem = mBottomNaveMenu.findItem(savedInstanceState.getInt(MENU_ITEM_ID));
             //pass in last saved menu item id and create the fragment
             selectFragment(menuItem);
 
         } else {
             //initial loading of the first fragment
-            selectFragment(bottomNavMenu.getItem(0));
+            selectFragment(mBottomNaveMenu.getItem(0));
         }
 
         mBottomNavView.setOnNavigationItemSelectedListener(
@@ -57,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                         return false;
                     }
                 });
-
 
     }
 
@@ -71,14 +74,19 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.sign_in_item:
-                Intent signInIntent = new Intent(getApplicationContext(), SignInActivity.class);
-                startActivity(signInIntent);
-                return true;
             case R.id.edit_tags_item:
-                Intent editTagsIntent = new Intent(getApplicationContext(), EditTagsActivity.class);
-                startActivity(editTagsIntent);
-                return true;
+                if (mFirebaseUserSignedIn){
+                    Intent editTagsIntent = new Intent(getApplicationContext(), EditTagsActivity.class);
+                    startActivity(editTagsIntent);
+                    return true;
+                } else {
+                    Toast.makeText(this, "Sign in to edit tags.", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            case R.id.sign_out_item:
+                FirebaseAuth.getInstance().signOut();
+                selectFragment(mBottomNaveMenu.getItem(0));
+                Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show();
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -94,6 +102,15 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mFirebaseUserSignedIn) {
+            selectFragment(mBottomNaveMenu.findItem(mBottomNavView.getSelectedItemId()));
+        }
+
+    }
+
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof SignInFragment) {
             SignInFragment signInFragment = (SignInFragment) fragment;
@@ -103,14 +120,24 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
     private void selectFragment(MenuItem item) {
 
+        boolean userLoggedIn = FirebaseUtils.isFirebaseUserSignedIn();
+
         item.setChecked(true);
 
         switch (item.getItemId()) {
             case R.id.main_nav_articles:
-                pushFragment(ArticlesMainFragment.newInstance());
+                if (userLoggedIn) {
+                    pushFragment(ArticlesMainFragment.newInstance());
+                } else {
+                    pushFragment(SignInFragment.newInstance());
+                }
                 break;
             case R.id.main_nav_tags:
-                pushFragment(TagsMainFragment.newInstance());
+                if (userLoggedIn) {
+                    pushFragment(TagsMainFragment.newInstance());
+                } else {
+                    pushFragment(SignInFragment.newInstance());
+                }
                 break;
             case R.id.main_nav_profile:
                 pushFragment(SignInFragment.newInstance());
@@ -137,6 +164,13 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
     @Override
     public void onSignInSuccess(boolean signInSuccess) {
+
+        if (signInSuccess) {
+            Toast.makeText(getApplicationContext(), "Sign In Success", Toast.LENGTH_SHORT).show();
+            selectFragment(mBottomNaveMenu.getItem(0));
+        } else {
+            Toast.makeText(getApplicationContext(), "Sign In Failed", Toast.LENGTH_SHORT).show();
+        }
 
     }
 }

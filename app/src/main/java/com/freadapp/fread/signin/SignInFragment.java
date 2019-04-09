@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -41,16 +41,19 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class SignInFragment extends Fragment {
 
     public static final String TAG = SignInFragment.class.getName();
-    public static final int GOOGLE_SIGIN_REQ_CODE = 1;
 
-    private Button mSignOutButton;
+    public static final int GOOGLE_SIGN_IN_REQ_CODE = 1;
+    public static final String SIGN_IN_TYPE_CODE = "sign_in_type_code";
+
+    private Button mCreateAccountButton;
+    private Button mSignInWithEmailButton;
     private SignInButton mGoogleSignInButton;
     private LoginButton mFacebookSignInButton;
+    private FragmentManager mFragmentManager;
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager = CallbackManager.Factory.create();
-    private FirebaseAuth mFirebaseAuth;
-    private OnSignInSuccessListener mSignInSuccessCallback;
-
+    public FirebaseAuth mFirebaseAuth;
+    public OnSignInSuccessListener mSignInSuccessCallback;
 
     public static SignInFragment newInstance() {
         return new SignInFragment();
@@ -69,6 +72,7 @@ public class SignInFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFragmentManager = getActivity().getSupportFragmentManager();
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -87,10 +91,10 @@ public class SignInFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.sign_in_fragment, container, false);
 
-        mSignOutButton = view.findViewById(R.id.signout_button);
-        mGoogleSignInButton = view.findViewById(R.id.google_signin_button);
-        mSignOutButton = view.findViewById(R.id.signout_button);
-        mFacebookSignInButton = view.findViewById(R.id.facebook_signin_button);
+        mCreateAccountButton = view.findViewById(R.id.bt_create_new_account);
+        mSignInWithEmailButton = view.findViewById(R.id.bt_sign_in_with_email);
+        mGoogleSignInButton = view.findViewById(R.id.bt_google_sign_in);
+        mFacebookSignInButton = view.findViewById(R.id.bt_facebook_sign_in);
 
         mGoogleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,10 +123,32 @@ public class SignInFragment extends Fragment {
             }
         });
 
-        mSignOutButton.setOnClickListener(new View.OnClickListener() {
+        mSignInWithEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                signOutFirebaseUser();
+            public void onClick(View v) {
+
+                EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
+
+                Bundle bundle = new Bundle();
+                bundle.putInt(SIGN_IN_TYPE_CODE, 1);
+                emailPasswordFragment.setArguments(bundle);
+
+                mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+            }
+        });
+
+        mCreateAccountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
+
+                Bundle bundle = new Bundle();
+                bundle.putInt(SIGN_IN_TYPE_CODE, 2);
+                emailPasswordFragment.setArguments(bundle);
+
+                mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+
             }
         });
 
@@ -131,14 +157,7 @@ public class SignInFragment extends Fragment {
 
     private void googleSignIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, GOOGLE_SIGIN_REQ_CODE);
-    }
-
-    private void signOutFirebaseUser() {
-
-        FirebaseAuth.getInstance().signOut();
-
-        toastSignOut();
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQ_CODE);
     }
 
     @Override
@@ -148,7 +167,7 @@ public class SignInFragment extends Fragment {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == GOOGLE_SIGIN_REQ_CODE) {
+        if (requestCode == GOOGLE_SIGN_IN_REQ_CODE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -175,13 +194,10 @@ public class SignInFragment extends Fragment {
                             mSignInSuccessCallback.onSignInSuccess(true);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Firebase user authentication success");
-                            toastLoginSuccess();
-
                         } else {
 
                             // if sign in fails, log and snackbar failure
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            toastLoginFailure();
                         }
                     }
                 });
@@ -198,26 +214,12 @@ public class SignInFragment extends Fragment {
                         if (task.isSuccessful()) {
                             mSignInSuccessCallback.onSignInSuccess(true);
                             Log.d(TAG, "signInWithCredential:success");
-                            toastLoginSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            toastLoginFailure();
                         }
                     }
                 });
-    }
-
-    public void toastLoginSuccess() {
-        Toast.makeText(getContext(), "Sign In Success", Toast.LENGTH_SHORT).show();
-    }
-
-    public void toastLoginFailure() {
-        Toast.makeText(getContext(), "Sign In Failed", Toast.LENGTH_SHORT).show();
-    }
-
-    public void toastSignOut() {
-        Toast.makeText(getContext(), "Signed Out", Toast.LENGTH_SHORT).show();
     }
 
 }
