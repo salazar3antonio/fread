@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.freadapp.fread.article.ArticlesMainFragment;
 import com.freadapp.fread.data.database.FirebaseUtils;
+import com.freadapp.fread.dictionary.DictionaryMainFragment;
 import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
 import com.freadapp.fread.tag.TagsMainFragment;
@@ -135,6 +136,13 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
             case R.id.main_nav_tags:
                 if (userLoggedIn) {
                     pushFragment(TagsMainFragment.newInstance());
+                } else {
+                    pushFragment(SignInFragment.newInstance());
+                }
+                break;
+            case R.id.main_nav_dictionary:
+                if (userLoggedIn) {
+                    pushFragment(DictionaryMainFragment.newInstance());
                 } else {
                     pushFragment(SignInFragment.newInstance());
                 }

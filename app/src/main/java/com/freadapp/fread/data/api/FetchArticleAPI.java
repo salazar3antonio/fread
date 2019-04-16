@@ -17,8 +17,8 @@ public interface FetchArticleAPI {
 
     //These are the headers for the api. Holds app key and id.
     @Headers({
-            "X-AYLIEN-TextAPI-Application-Key: " + Constants.API_APP_KEY,
-            "X-AYLIEN-TextAPI-Application-ID: " + Constants.API_APP_ID,
+            "X-AYLIEN-TextAPI-Application-Key: " + Constants.AYLIEN_API_APP_KEY,
+            "X-AYLIEN-TextAPI-Application-ID: " + Constants.AYLIEN_API_APP_ID,
             "accept-encoding: gzip, deflate"
     })
 

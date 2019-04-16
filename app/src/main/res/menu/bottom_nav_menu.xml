@@ -12,6 +12,11 @@
         android:title="@string/menu_text_tags" />
 
     <item
+        android:id="@+id/main_nav_dictionary"
+        android:icon="@drawable/ic_school_black_24dp"
+        android:title="@string/menu_text_dictionary" />
+
+    <item
         android:id="@+id/main_nav_profile"
         android:icon="@drawable/ic_person_black_24dp"
         android:title="@string/title_profile" />

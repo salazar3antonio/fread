@@ -64,8 +64,8 @@ public class AddTagsDialogFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.tags_add_dialog_fragment, container, false);
 
-        mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
-        mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
+        mCreateNewTagButton = view.findViewById(R.id.ib_create_new_tag);
+        mCreateNewTagEditText = view.findViewById(R.id.et_create_new_tag);
         mRecyclerView = view.findViewById(R.id.add_tag_list_dialog_recycleView);
 
         mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {

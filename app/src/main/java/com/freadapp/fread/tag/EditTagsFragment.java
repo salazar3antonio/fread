@@ -37,8 +37,8 @@ public class EditTagsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.tags_edit_fragment, container, false);
-        mCreateNewTagButton = view.findViewById(R.id.create_new_tag_button);
-        mCreateNewTagEditText = view.findViewById(R.id.create_new_tag_edittext);
+        mCreateNewTagButton = view.findViewById(R.id.ib_create_new_tag);
+        mCreateNewTagEditText = view.findViewById(R.id.et_create_new_tag);
         mRecyclerView = view.findViewById(R.id.rv_tags_main_list);
 
         mCreateNewTagButton.setOnClickListener(new View.OnClickListener() {
