@@ -30,8 +30,6 @@ public class AddTagsDialogFragment extends DialogFragment {
     public static final String ADD_TAGS_DIALOG_FRAGMENT_TAG = "add_tags_dialog_fragment_tag";
 
     private DatabaseReference mUserTags;
-    private String mUserUid;
-    private FirebaseUser mUser;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private Query mAllTagQuery;
     private RecyclerView mRecyclerView;
@@ -94,7 +92,7 @@ public class AddTagsDialogFragment extends DialogFragment {
             protected void populateViewHolder(AddTagDialogViewHolder viewHolder, Tag tag, int position) {
 
                 //create bindToTag method
-                viewHolder.bindToTag(tag, mUserUid, mArticle);
+                viewHolder.bindToTag(tag, mArticle);
 
             }
 

@@ -40,7 +40,7 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
      *
      * @param tag Tag model to be bound to the List Item Views
      */
-    public void bindToTag(Tag tag, String userId, Article article) {
+    public void bindToTag(Tag tag, Article article) {
 
         mArticle = article;
         mTag = tag;

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -20,6 +21,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.R;
+import com.freadapp.fread.helpers.NetworkUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -99,7 +101,12 @@ public class SignInFragment extends Fragment {
         mGoogleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                googleSignIn();
+                if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
+                    googleSignIn();
+                } else {
+                    Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -127,13 +134,19 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
+                if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
 
-                Bundle bundle = new Bundle();
-                bundle.putInt(SIGN_IN_TYPE_CODE, 1);
-                emailPasswordFragment.setArguments(bundle);
+                    EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
 
-                mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(SIGN_IN_TYPE_CODE, 1);
+                    emailPasswordFragment.setArguments(bundle);
+
+                    mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+
+                } else {
+                    Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -141,13 +154,19 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
+                if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
 
-                Bundle bundle = new Bundle();
-                bundle.putInt(SIGN_IN_TYPE_CODE, 2);
-                emailPasswordFragment.setArguments(bundle);
+                    EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
 
-                mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(SIGN_IN_TYPE_CODE, 2);
+                    emailPasswordFragment.setArguments(bundle);
+
+                    mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+
+                } else {
+                    Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -192,11 +211,8 @@ public class SignInFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             mSignInSuccessCallback.onSignInSuccess(true);
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Firebase user authentication success");
                         } else {
-
-                            // if sign in fails, log and snackbar failure
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                         }
                     }

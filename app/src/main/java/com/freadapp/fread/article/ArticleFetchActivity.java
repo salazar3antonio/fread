@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,7 +18,8 @@ import com.freadapp.fread.data.api.FetchArticleAPI;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.helpers.Constants;
-import com.freadapp.fread.helpers.LoadingFragment;
+import com.freadapp.fread.helpers.LoadingDialogFragment;
+import com.freadapp.fread.helpers.NetworkUtils;
 import com.freadapp.fread.signin.SignInFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,7 +61,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
         getSupportActionBar().hide();
 
         if (findViewById(R.id.fl_article_container) != null) {
-            showLoadingFragment();
+            LoadingDialogFragment.showLoadingFragment(true, getSupportFragmentManager());
         }
 
         mArticleSavedSnackBar = Snackbar.make(findViewById(R.id.main_content), R.string.snackbar_article_saved, Snackbar.LENGTH_LONG);
@@ -176,12 +178,6 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
         }
     }
 
-    private void showLoadingFragment() {
-        //placing in the loading screen for when quiz api is being called
-        LoadingFragment loadingFragment = LoadingFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_article_container, loadingFragment).commit();
-    }
-
     private void showSignInFragment() {
         SignInFragment signInFragment = SignInFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_article_container, signInFragment).commit();
@@ -198,7 +194,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
     @Override
     public void onSignInSuccess(boolean signInSuccess) {
         if (signInSuccess) {
-            showLoadingFragment();
+            LoadingDialogFragment.showLoadingFragment(true, getSupportFragmentManager());
             fetchArticle();
             mUser = FirebaseAuth.getInstance().getCurrentUser();
             mUserArticles = FirebaseUtils.getUserArticles();
@@ -207,41 +203,47 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
 
     private void fetchArticle() {
 
-        //building up the Retrofit object to begin calling the API
-        retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                .baseUrl(Constants.AYLIEN_API_ENDPOINT_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        if (NetworkUtils.isNetworkAvailableAndConnected(getApplicationContext())) {
+            //building up the Retrofit object to begin calling the API
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(Constants.AYLIEN_API_ENDPOINT_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        //passing in the ArticleAPI interface class into the retrofit Object
-        FetchArticleAPI fetchArticleAPI = retrofit.create(FetchArticleAPI.class);
+            //passing in the ArticleAPI interface class into the retrofit Object
+            FetchArticleAPI fetchArticleAPI = retrofit.create(FetchArticleAPI.class);
 
-        //using the articleAPI object to call the GET method of the API. Passes in the URL received from the Intent.
-        Call<Article> call = fetchArticleAPI.getArticle(mUrlIntentExtra, true);
-        call.enqueue(new Callback<Article>() {
-            @Override
-            public void onResponse(Call<Article> call, Response<Article> response) {
+            //using the articleAPI object to call the GET method of the API. Passes in the URL received from the Intent.
+            Call<Article> call = fetchArticleAPI.getArticle(mUrlIntentExtra, true);
+            call.enqueue(new Callback<Article>() {
+                @Override
+                public void onResponse(Call<Article> call, Response<Article> response) {
 
-                if (response.isSuccessful()) {
-                    //Assign mArticle to the API Response Body (JSON object).
-                    mArticle = response.body();
-                    loadToolbarArticleImage(mArticle);
-                    showArticleDetailFragment(mArticle);
-                    getSupportActionBar().show();
+                    if (response.isSuccessful()) {
+                        LoadingDialogFragment.showLoadingFragment(false, getSupportFragmentManager());
+                        //Assign mArticle to the API Response Body (JSON object).
+                        mArticle = response.body();
+                        loadToolbarArticleImage(mArticle);
+                        showArticleDetailFragment(mArticle);
+                        getSupportActionBar().show();
 
-                } else {
-                    Log.e(TAG, "API Response Failed: " + response.message());
+                    } else {
+                        Log.e(TAG, "API Response Failed: " + response.message());
+                    }
+
                 }
 
-            }
-
-            @Override
-            public void onFailure(Call<Article> call, Throwable t) {
-                //on failure, Toast error code
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "API Failed: " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<Article> call, Throwable t) {
+                    //on failure, Toast error code
+                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "API Failed: " + t.getMessage());
+                }
+            });
+        } else {
+            finish();
+            Toast.makeText(this, "Connect to the internet and try again.", Toast.LENGTH_LONG).show();
+        }
 
     }
 }

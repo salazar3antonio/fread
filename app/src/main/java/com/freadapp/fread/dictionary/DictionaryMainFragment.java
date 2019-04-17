@@ -17,6 +17,8 @@ import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Word;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.helpers.JsonUtils;
+import com.freadapp.fread.helpers.LoadingDialogFragment;
+import com.freadapp.fread.helpers.NetworkUtils;
 
 import org.json.JSONException;
 
@@ -59,7 +61,9 @@ public class DictionaryMainFragment extends Fragment {
 
                 String wordToSearch = mWordToSearch.getText().toString();
                 if (!wordToSearch.isEmpty()) {
-                    String urlAsString = buildWordSearchURL(wordToSearch);
+                    LoadingDialogFragment.showLoadingFragment(true, getActivity().getSupportFragmentManager());
+                    mWordToSearch.setText(null);
+                    String urlAsString = NetworkUtils.buildWordSearchURL(wordToSearch);
                     DictionaryTask dictionaryTask = new DictionaryTask();
                     dictionaryTask.execute(urlAsString);
                 } else {
@@ -72,13 +76,6 @@ public class DictionaryMainFragment extends Fragment {
         return view;
 
     }
-
-    private String buildWordSearchURL(String wordToSearch) {
-
-        return Constants.OXFORD_API_ENDPOINT_URL + LANGUAGE_PARAM + "/" + wordToSearch;
-
-    }
-
 
     private class DictionaryTask extends AsyncTask<String, Integer, String> {
 
@@ -121,7 +118,14 @@ public class DictionaryMainFragment extends Fragment {
 
             if (result != null) {
                 try {
+                    LoadingDialogFragment.showLoadingFragment(false, getActivity().getSupportFragmentManager());
+
                     Word word = JsonUtils.getWordFromJSON(result);
+
+                    DefinitionDialogFragment definitionDialogFragment = DefinitionDialogFragment.newInstance(word);
+                    definitionDialogFragment.show(getActivity().getSupportFragmentManager(),
+                            DefinitionDialogFragment.DEFINITION_DIALOG_FRAGMENT_TAG);
+
                     String wordName = word.getWord();
                     Log.i(TAG, "onPostExecute: " + wordName);
                     Log.i(TAG, "onPostExecute: " + word.getLexicalCategories());
@@ -135,6 +139,5 @@ public class DictionaryMainFragment extends Fragment {
             }
         }
     }
-
 
 }
