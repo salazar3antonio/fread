@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.freadapp.fread.R;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -95,6 +96,7 @@ public class EmailPasswordFragment extends SignInFragment {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 mSignInSuccessCallback.onSignInSuccess(true);
+                                FirebaseUtils.initFirebaseUser();
                                 Log.d(TAG, "signInWithEmail:success");
                             } else {
                                 // If sign in fails, display a message to the user.
@@ -115,6 +117,7 @@ public class EmailPasswordFragment extends SignInFragment {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
+                                FirebaseUtils.initFirebaseUser();
                                 mSignInSuccessCallback.onSignInSuccess(true);
                                 Log.d(TAG, "signInWithEmail:success");
                             } else {

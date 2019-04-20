@@ -21,6 +21,7 @@ import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
 import com.freadapp.fread.tag.TagsMainFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements SignInFragment.OnSignInSuccessListener {
 
@@ -76,14 +77,10 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.edit_tags_item:
-                if (mFirebaseUserSignedIn){
-                    Intent editTagsIntent = new Intent(getApplicationContext(), EditTagsActivity.class);
-                    startActivity(editTagsIntent);
-                    return true;
-                } else {
-                    Toast.makeText(this, "Sign in to edit tags.", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
+                Intent editTagsIntent = new Intent(getApplicationContext(), EditTagsActivity.class);
+                startActivity(editTagsIntent);
+                return true;
+
             case R.id.sign_out_item:
                 FirebaseAuth.getInstance().signOut();
                 selectFragment(mBottomNaveMenu.getItem(0));

@@ -30,6 +30,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.freadapp.fread.helpers.LoadingDialogFragment.*;
+
 /**
  * This class wil handle the fetching of the Article information via Retrofit API
  * The user is able to save the Article to the Firebase Database and then add Tags via a SnackBar action.
@@ -60,10 +62,6 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().hide();
 
-        if (findViewById(R.id.fl_article_container) != null) {
-            LoadingDialogFragment.showLoadingFragment(true, getSupportFragmentManager());
-        }
-
         mArticleSavedSnackBar = Snackbar.make(findViewById(R.id.main_content), R.string.snackbar_article_saved, Snackbar.LENGTH_LONG);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -84,10 +82,11 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
             mUserArticles = FirebaseUtils.getUserArticles();
 
             if (mArticle == null) {
-
+                showLoadingFragment(true, getSupportFragmentManager());
                 fetchArticle();
 
             } else {
+                showLoadingFragment(false, getSupportFragmentManager());
                 loadToolbarArticleImage(mArticle);
                 showArticleDetailFragment(mArticle);
                 getSupportActionBar().show();
@@ -194,7 +193,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
     @Override
     public void onSignInSuccess(boolean signInSuccess) {
         if (signInSuccess) {
-            LoadingDialogFragment.showLoadingFragment(true, getSupportFragmentManager());
+            showLoadingFragment(true, getSupportFragmentManager());
             fetchArticle();
             mUser = FirebaseAuth.getInstance().getCurrentUser();
             mUserArticles = FirebaseUtils.getUserArticles();
@@ -220,7 +219,7 @@ public class ArticleFetchActivity extends ArticleDetailActivity implements SignI
                 public void onResponse(Call<Article> call, Response<Article> response) {
 
                     if (response.isSuccessful()) {
-                        LoadingDialogFragment.showLoadingFragment(false, getSupportFragmentManager());
+                        showLoadingFragment(false, getSupportFragmentManager());
                         //Assign mArticle to the API Response Body (JSON object).
                         mArticle = response.body();
                         loadToolbarArticleImage(mArticle);

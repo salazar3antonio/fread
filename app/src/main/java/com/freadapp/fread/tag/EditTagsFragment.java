@@ -10,12 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.EditTagViewHolder;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -23,13 +25,21 @@ public class EditTagsFragment extends Fragment {
 
     public static final String TAG = EditTagsFragment.class.getName();
 
-    private DatabaseReference mUserTags  = FirebaseUtils.getUserTags();
+    private DatabaseReference mUserTags;
     private EditText mCreateNewTagEditText;
     private ImageButton mCreateNewTagButton;
     private RecyclerView mRecyclerView;
 
     public static EditTagsFragment newInstance() {
         return new EditTagsFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mUserTags = FirebaseUtils.getUserTags();
+
     }
 
     @Nullable

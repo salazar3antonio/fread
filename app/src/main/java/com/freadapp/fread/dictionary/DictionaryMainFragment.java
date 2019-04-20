@@ -60,14 +60,18 @@ public class DictionaryMainFragment extends Fragment {
             public void onClick(View v) {
 
                 String wordToSearch = mWordToSearch.getText().toString();
-                if (!wordToSearch.isEmpty()) {
-                    LoadingDialogFragment.showLoadingFragment(true, getActivity().getSupportFragmentManager());
-                    mWordToSearch.setText(null);
-                    String urlAsString = NetworkUtils.buildWordSearchURL(wordToSearch);
-                    DictionaryTask dictionaryTask = new DictionaryTask();
-                    dictionaryTask.execute(urlAsString);
+                if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
+                    if (!wordToSearch.isEmpty()) {
+                        LoadingDialogFragment.showLoadingFragment(true, getActivity().getSupportFragmentManager());
+                        mWordToSearch.setText(null);
+                        String urlAsString = NetworkUtils.buildWordSearchURL(wordToSearch);
+                        DictionaryTask dictionaryTask = new DictionaryTask();
+                        dictionaryTask.execute(urlAsString);
+                    } else {
+                        Toast.makeText(getContext(), "Enter a word to define.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(getContext(), "Enter a word to define.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -125,11 +129,6 @@ public class DictionaryMainFragment extends Fragment {
                     DefinitionDialogFragment definitionDialogFragment = DefinitionDialogFragment.newInstance(word);
                     definitionDialogFragment.show(getActivity().getSupportFragmentManager(),
                             DefinitionDialogFragment.DEFINITION_DIALOG_FRAGMENT_TAG);
-
-                    String wordName = word.getWord();
-                    Log.i(TAG, "onPostExecute: " + wordName);
-                    Log.i(TAG, "onPostExecute: " + word.getLexicalCategories());
-                    Log.i(TAG, "onPostExecute: " + word.getDefinitions());
 
                 } catch (JSONException e) {
                     Log.e(TAG, "onPostExecute: " + e.getMessage(), e.getCause());

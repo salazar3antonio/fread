@@ -5,10 +5,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.freadapp.fread.R;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.data.model.Tag;
+import com.freadapp.fread.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +40,15 @@ public class FirebaseUtils {
      */
     public static DatabaseReference getUserArticles() {
 
-        return sFirebaseDatabase.getReference().child(FB_USERS).child(getAuthUserId()).child(FB_ARTICLES);
+        String authUserId = getAuthUserId();
+
+        if (authUserId != null) {
+            return sFirebaseDatabase.getReference().child(FB_ARTICLES).child(getAuthUserId());
+        } else {
+            Log.e(TAG, "Could not get UserArticles");
+            return null;
+        }
+
     }
 
     /**
@@ -45,20 +56,48 @@ public class FirebaseUtils {
      */
     public static DatabaseReference getUserTags() {
 
-        return sFirebaseDatabase.getReference().child(FB_USERS).child(getAuthUserId()).child(FB_TAGS);
+        String authUserId = getAuthUserId();
+
+        if (authUserId != null) {
+            return sFirebaseDatabase.getReference().child(FB_TAGS).child(authUserId);
+        } else {
+            Log.e(TAG, "Could not get UserTags");
+            return null;
+        }
+
     }
 
     /**
      * Get the authorized user's id. Returns null if no user logged in.
      */
     private static String getAuthUserId() {
+
         FirebaseUser currentUser = sFirebaseAuth.getCurrentUser();
+
         if (currentUser != null) {
             return currentUser.getUid();
         } else {
             Log.e(TAG, "No user logged in");
             return null;
         }
+    }
+
+    /**
+     * Initializes the FirebaseUser once they authenticate successfully.
+     */
+    public static void initFirebaseUser() {
+
+        User user = new User();
+
+        FirebaseUser firebaseUser = sFirebaseAuth.getCurrentUser();
+        String email = firebaseUser.getEmail();
+        String displayName = firebaseUser.getDisplayName();
+
+        user.setEmail(email);
+        user.setDisplayName(displayName);
+
+        sFirebaseDatabase.getReference().child(FB_USERS).child(firebaseUser.getUid()).setValue(user);
+
     }
 
     /**
@@ -99,7 +138,7 @@ public class FirebaseUtils {
 
     public static void removeTagKeyFromArticle(DatabaseReference articles, Tag tag) {
 
-        articles.child(FB_TAGS).child(tag.getKeyId()).removeValue();
+        articles.child(FB_ARTICLE_TAGS).child(tag.getKeyId()).removeValue();
 
     }
 
@@ -214,7 +253,6 @@ public class FirebaseUtils {
 
     /**
      * Check to see if there is a Firebase User logged in
-     *
      */
     public static boolean isFirebaseUserSignedIn() {
         FirebaseUser firebaseUser = sFirebaseAuth.getCurrentUser();

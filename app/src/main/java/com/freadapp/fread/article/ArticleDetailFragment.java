@@ -24,7 +24,7 @@ public class ArticleDetailFragment extends Fragment {
     private TextView mTitleView;
     private TextView mAuthorView;
     private TextView mArticleView;
-    private TextView mPUBdateView;
+    private TextView mPubDateView;
     private Article mArticle;
 
     //public constructor
@@ -55,7 +55,7 @@ public class ArticleDetailFragment extends Fragment {
         mTitleView = view.findViewById(R.id.title_view);
         mAuthorView = view.findViewById(R.id.author_view);
         mArticleView = view.findViewById(R.id.article_view);
-        mPUBdateView = view.findViewById(R.id.pubdate_view);
+        mPubDateView = view.findViewById(R.id.pubdate_view);
 
         setTextViews();
 
@@ -75,7 +75,7 @@ public class ArticleDetailFragment extends Fragment {
         mTitleView.setText(mArticle.getTitle());
         mAuthorView.setText(mArticle.getAuthor());
         mArticleView.setText(mArticle.getArticle());
-        mPUBdateView.setText(mArticle.getPublishDate());
+        mPubDateView.setText(mArticle.getPublishDate());
 
     }
 

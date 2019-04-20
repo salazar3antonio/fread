@@ -24,7 +24,6 @@ public class Article implements Parcelable {
     private String publishDate;
     private String url;
     private String keyid;
-    private boolean saved = false;
     private List<Object> videos = null;
 
 
@@ -35,7 +34,7 @@ public class Article implements Parcelable {
                    String image, String article,
                    Map<String, Object> articleTags, String title,
                    String publishDate, String url,
-                   String keyid, boolean saved,
+                   String keyid,
                    List<Object> videos) {
         this.author = author;
         this.uid = uid;
@@ -46,7 +45,6 @@ public class Article implements Parcelable {
         this.publishDate = publishDate;
         this.url = url;
         this.keyid = keyid;
-        this.saved = saved;
         this.videos = videos;
     }
 
@@ -120,14 +118,6 @@ public class Article implements Parcelable {
         this.keyid = keyid;
     }
 
-    public boolean isSaved() {
-        return saved;
-    }
-
-    public void setSaved(boolean saved) {
-        this.saved = saved;
-    }
-
     public List<Object> getVideos() {
         return videos;
     }
@@ -156,7 +146,6 @@ public class Article implements Parcelable {
         publishDate = in.readString();
         url = in.readString();
         keyid = in.readString();
-        saved = in.readByte() !=0;
         videos = new ArrayList<>();
         in.readList(videos, null);
     }
@@ -177,7 +166,6 @@ public class Article implements Parcelable {
         parcel.writeString(publishDate);
         parcel.writeString(url);
         parcel.writeString(keyid);
-        parcel.writeByte((byte) (saved ? 1 : 0));
         parcel.writeList(videos);
     }
 

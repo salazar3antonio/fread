@@ -19,6 +19,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.freadapp.fread.data.database.FirebaseUtils;
+import com.freadapp.fread.data.model.User;
 import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.R;
 import com.freadapp.fread.helpers.NetworkUtils;
@@ -34,6 +36,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 /**
@@ -211,6 +214,7 @@ public class SignInFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             mSignInSuccessCallback.onSignInSuccess(true);
+                            FirebaseUtils.initFirebaseUser();
                             Log.d(TAG, "Firebase user authentication success");
                         } else {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -229,6 +233,7 @@ public class SignInFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             mSignInSuccessCallback.onSignInSuccess(true);
+                            FirebaseUtils.initFirebaseUser();
                             Log.d(TAG, "signInWithCredential:success");
                         } else {
                             // If sign in fails, display a message to the user.
