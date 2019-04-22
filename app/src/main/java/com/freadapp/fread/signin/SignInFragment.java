@@ -64,14 +64,9 @@ public class SignInFragment extends Fragment {
         return new SignInFragment();
     }
 
-    public void setOnSignInSuccessListener(OnSignInSuccessListener callback) {
-        this.mSignInSuccessCallback = callback;
-    }
-
     public interface OnSignInSuccessListener {
         void onSignInSuccess(boolean signInSuccess);
     }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,11 +172,6 @@ public class SignInFragment extends Fragment {
         return view;
     }
 
-    private void googleSignIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQ_CODE);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -203,6 +193,11 @@ public class SignInFragment extends Fragment {
             }
         }
 
+    }
+
+    private void googleSignIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQ_CODE);
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -241,6 +236,10 @@ public class SignInFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    public void setOnSignInSuccessListener(OnSignInSuccessListener callback) {
+        this.mSignInSuccessCallback = callback;
     }
 
 }

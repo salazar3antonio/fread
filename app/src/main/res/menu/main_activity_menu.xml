@@ -7,9 +7,4 @@
         android:title="@string/edit_tags_text"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/sign_out_item"
-        android:title="@string/sign_out_menu_text"
-        app:showAsAction="never" />
-
 </menu>

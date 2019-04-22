@@ -109,10 +109,8 @@ public class ArticlesMainFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     mEmptyArticlesView.setVisibility(View.GONE);
-                    Log.i(TAG, "onDataChange: dataSnapshot does exits");
                 } else {
                     mEmptyArticlesView.setVisibility(View.VISIBLE);
-                    Log.i(TAG, "onDataChange: dataSnapshot does not exits");
                 }
             }
 

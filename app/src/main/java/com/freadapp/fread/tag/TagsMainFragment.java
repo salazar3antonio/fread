@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -17,8 +18,11 @@ import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Tag;
 import com.freadapp.fread.view_holders.TagViewHolder;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class TagsMainFragment extends Fragment {
 
@@ -30,6 +34,7 @@ public class TagsMainFragment extends Fragment {
     private DatabaseReference mUserTags;
     private FirebaseRecyclerAdapter mFirebaseAdapter;
     private RecyclerView mRecyclerView;
+    private TextView mEmptyTagsView;
 
     public static TagsMainFragment newInstance() {
         return new TagsMainFragment();
@@ -40,6 +45,8 @@ public class TagsMainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.main_tags_fragment, container, false);
+
+        mEmptyTagsView = view.findViewById(R.id.tv_empty_tags);
         mRecyclerView = view.findViewById(R.id.rv_tags_main_list);
 
         if (FirebaseUtils.isFirebaseUserSignedIn()) {
@@ -57,7 +64,7 @@ public class TagsMainFragment extends Fragment {
 
         Query allTagsByName = mUserTags.orderByChild(FirebaseUtils.FB_TAG_NAME);
 
-        FirebaseRecyclerAdapter firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_main_list_item,
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<Tag, TagViewHolder>(Tag.class, R.layout.tag_main_list_item,
                 TagViewHolder.class, allTagsByName) {
 
             @Override
@@ -78,8 +85,10 @@ public class TagsMainFragment extends Fragment {
 
         };
 
+        checkForTagsArticles(mUserTags);
+
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        mRecyclerView.setAdapter(firebaseRecyclerAdapter);
+        mRecyclerView.setAdapter(mFirebaseAdapter);
 
     }
 
@@ -102,6 +111,26 @@ public class TagsMainFragment extends Fragment {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_content_frame, tagsMainFragment, TAG_DETAIL_FRAGMENT_TAG);
         fragmentTransaction.commit();
+
+    }
+
+    private void checkForTagsArticles(DatabaseReference articles) {
+
+        articles.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    mEmptyTagsView.setVisibility(View.GONE);
+                } else {
+                    mEmptyTagsView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

@@ -17,13 +17,13 @@ import android.widget.Toast;
 import com.freadapp.fread.article.ArticlesMainFragment;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.dictionary.DictionaryMainFragment;
+import com.freadapp.fread.profile.ProfileMainFragment;
 import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
 import com.freadapp.fread.tag.TagsMainFragment;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnSignInSuccessListener {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnSignInSuccessListener, ProfileMainFragment.OnSignOutSuccessListener {
 
     public static final String TAG = MainActivity.class.getName();
 
@@ -75,20 +75,12 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.edit_tags_item:
-                Intent editTagsIntent = new Intent(getApplicationContext(), EditTagsActivity.class);
-                startActivity(editTagsIntent);
-                return true;
-
-            case R.id.sign_out_item:
-                FirebaseAuth.getInstance().signOut();
-                selectFragment(mBottomNaveMenu.getItem(0));
-                Toast.makeText(this, "Signed Out", Toast.LENGTH_SHORT).show();
-            default:
-                return super.onOptionsItemSelected(item);
-
+        if (item.getItemId() == R.id.edit_tags_item) {
+            Intent editTagsIntent = new Intent(getApplicationContext(), EditTagsActivity.class);
+            startActivity(editTagsIntent);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -113,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         if (fragment instanceof SignInFragment) {
             SignInFragment signInFragment = (SignInFragment) fragment;
             signInFragment.setOnSignInSuccessListener(this);
+        } else if (fragment instanceof ProfileMainFragment) {
+            ProfileMainFragment profileMainFragment = (ProfileMainFragment) fragment;
+            profileMainFragment.setOnSignOutSuccessListener(this);
         }
     }
 
@@ -145,7 +140,11 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                 }
                 break;
             case R.id.main_nav_profile:
-                pushFragment(SignInFragment.newInstance());
+                if (userLoggedIn) {
+                    pushFragment(ProfileMainFragment.newInstance());
+                } else {
+                    pushFragment(SignInFragment.newInstance());
+                }
                 break;
         }
     }
@@ -178,4 +177,12 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         }
 
     }
+
+    @Override
+    public void onSignOutSuccess(boolean signOutSuccess) {
+        if (signOutSuccess) {
+            selectFragment(mBottomNaveMenu.getItem(0));
+        }
+    }
+
 }

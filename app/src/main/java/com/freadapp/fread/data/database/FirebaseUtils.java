@@ -35,6 +35,9 @@ public class FirebaseUtils {
     private static final FirebaseDatabase sFirebaseDatabase = FirebaseDatabase.getInstance();
     private static final FirebaseAuth sFirebaseAuth = FirebaseAuth.getInstance();
 
+    private String userDisplayName;
+    private String userEmailAddress;
+
     /**
      * Get a reference of the User's Articles from the Firebase Database
      */
@@ -97,6 +100,28 @@ public class FirebaseUtils {
         user.setDisplayName(displayName);
 
         sFirebaseDatabase.getReference().child(FB_USERS).child(firebaseUser.getUid()).setValue(user);
+
+    }
+
+    public static String getUserDisplayName() {
+
+        FirebaseUser firebaseUser = sFirebaseAuth.getCurrentUser();
+        if (firebaseUser != null) {
+            return firebaseUser.getDisplayName();
+        } else {
+            return null;
+        }
+
+    }
+
+    public static String getUserEmailAddress() {
+
+        FirebaseUser firebaseUser = sFirebaseAuth.getCurrentUser();
+        if (firebaseUser != null) {
+            return firebaseUser.getEmail();
+        } else {
+            return null;
+        }
 
     }
 
