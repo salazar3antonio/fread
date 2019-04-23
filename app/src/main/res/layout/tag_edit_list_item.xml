@@ -20,7 +20,9 @@
         app:layout_constraintStart_toEndOf="@+id/edit_tag_checkbox"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.526"
-        tools:text="Name Of Tag To Edit" />
+        tools:text="Name Of Tag To Edit"
+        android:hint="@string/hint_edit_tag_name"
+        />
 
     <CheckBox
         android:id="@+id/edit_tag_checkbox"
@@ -44,6 +46,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_delete_black_24dp" />
+        app:srcCompat="@drawable/ic_delete_black_24dp"
+        android:contentDescription="@string/con_desc_delete_tag_button" />
 
 </android.support.constraint.ConstraintLayout>

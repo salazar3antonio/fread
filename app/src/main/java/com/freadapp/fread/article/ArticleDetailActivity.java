@@ -66,8 +66,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
             case R.id.share_menu_item:
@@ -151,7 +150,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         }
     }
 
-    public void shareArticle(Article article) {
+    private void shareArticle(Article article) {
 
         Intent shareUrlIntent = new Intent();
         shareUrlIntent.setAction(Intent.ACTION_SEND);
@@ -161,7 +160,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     }
 
-    public void openArticleWebView(Article article) {
+    private void openArticleWebView(Article article) {
         Uri webUrl = Uri.parse(article.getUrl());
         Intent intent = new Intent(Intent.ACTION_VIEW, webUrl);
         this.startActivity(intent);
