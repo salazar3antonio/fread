@@ -56,7 +56,7 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
 
     private void setTagCheckBox() {
 
-        mUserArticleRef.child(FirebaseUtils.FB_ARTICLE_TAGS).child(mTag.getKeyId()).addValueEventListener(new ValueEventListener() {
+        mUserArticleRef.child(FirebaseUtils.FB_ARTICLE_TAGS).child(mTag.getKeyId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object value = dataSnapshot.getValue();
@@ -85,8 +85,8 @@ public class AddTagDialogViewHolder extends RecyclerView.ViewHolder {
                     FirebaseUtils.addTagKeyToArticle(mUserArticleRef, mTag);
                     FirebaseUtils.addArticleKeyToTag(mUserTagRef, mArticle, mTag);
                 } else {
-                    FirebaseUtils.removeArticleKeyFromTag(mUserTagRef, mArticle, mTag);
                     FirebaseUtils.removeTagKeyFromArticle(mUserArticleRef, mTag);
+                    FirebaseUtils.removeArticleKeyFromTag(mUserTagRef, mArticle, mTag);
                 }
 
             }
