@@ -21,3 +21,4 @@ It creates a clean reading environment for those who love reading articles but h
 - For the dictionary functionality I used the Oxford API. An AsynTask was invoked, the JSON was parsed and then displayed on the UI thread. 
 
 ## Screen Shots
+https://imgur.com/a/4PDc3bQ
