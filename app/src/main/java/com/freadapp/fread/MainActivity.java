@@ -21,7 +21,6 @@ import com.freadapp.fread.profile.ProfileMainFragment;
 import com.freadapp.fread.signin.SignInFragment;
 import com.freadapp.fread.tag.EditTagsActivity;
 import com.freadapp.fread.tag.TagsMainFragment;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements SignInFragment.OnSignInSuccessListener, ProfileMainFragment.OnSignOutSuccessListener {
 

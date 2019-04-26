@@ -1,6 +1,8 @@
 package com.freadapp.fread.tag;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.freadapp.fread.R;
 import com.freadapp.fread.article.ArticleDetailActivity;
 import com.freadapp.fread.data.database.FirebaseUtils;
@@ -27,12 +30,14 @@ public class TagDetailFragment extends Fragment {
     public static final String TAG = TagDetailFragment.class.getName();
 
     public static final String ARTICLE_MODEL = "article_model";
+    public static final String TAG_DETAIL_SCROLL_POSITION_KEY = "tag_detail_scroll_position_key";
 
-    private DatabaseReference mUserArticles = FirebaseUtils.getUserArticles();
-    private FirebaseRecyclerAdapter mFirebaseAdapter;
+    private DatabaseReference mUserArticles;
     private RecyclerView mArticleRecyclerView;
     private String mTagKeyId;
-
+    private LinearLayoutManager mLinearLayoutManger;
+    private Query mArticlesWithTags;
+    private SharedPreferences mSharedPreferences;
 
     public static TagDetailFragment newInstance() {
         return new TagDetailFragment();
@@ -46,6 +51,10 @@ public class TagDetailFragment extends Fragment {
             mTagKeyId = getArguments().getString(TAG_KEY_ID);
         }
 
+        mUserArticles = FirebaseUtils.getUserArticles();
+        mArticlesWithTags = mUserArticles.orderByChild(FirebaseUtils.FB_ARTICLE_TAGS + "/" + mTagKeyId).equalTo(true);
+        mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
     }
 
     @Nullable
@@ -55,24 +64,45 @@ public class TagDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.main_articles_fragment, container, false);
 
         mArticleRecyclerView = view.findViewById(R.id.rv_articles_main_list);
+        mLinearLayoutManger = new LinearLayoutManager(getContext());
+        mArticleRecyclerView.setLayoutManager(mLinearLayoutManger);
 
-        setArticlesByTagAdapter();
+        attachRecyclerViewAdapter();
 
         return view;
     }
 
-    private void setArticlesByTagAdapter() {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        //query only Articles that contain the passed in TagKeyId
-        Query query = mUserArticles.orderByChild(FirebaseUtils.FB_ARTICLE_TAGS + "/" + mTagKeyId).equalTo(true);
+        int firstCompletelyVisibleItemPosition = mLinearLayoutManger.findFirstCompletelyVisibleItemPosition();
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
-                ArticleViewHolder.class, query) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(TAG_DETAIL_SCROLL_POSITION_KEY, firstCompletelyVisibleItemPosition);
+        editor.apply();
+
+    }
+
+    @NonNull
+    protected RecyclerView.Adapter newAdapter() {
+        FirebaseRecyclerOptions<Article> options =
+                new FirebaseRecyclerOptions.Builder<Article>()
+                        .setQuery(mArticlesWithTags, Article.class)
+                        .setLifecycleOwner(this)
+                        .build();
+
+        return new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(options) {
+            @Override
+            public ArticleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return new ArticleViewHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.article_list_item, parent, false));
+            }
 
             @Override
-            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article article, final int position) {
+            protected void onBindViewHolder(@NonNull ArticleViewHolder holder, int position, @NonNull final Article article) {
 
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
@@ -82,14 +112,25 @@ public class TagDetailFragment extends Fragment {
                     }
                 });
 
-                viewHolder.bindToArticle(getContext(), article);
+                holder.bindToArticle(getContext(), article);
 
-            }
+            };
+
         };
+    }
 
-        mArticleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mArticleRecyclerView.setAdapter(mFirebaseAdapter);
+    private void attachRecyclerViewAdapter() {
+        final RecyclerView.Adapter adapter = newAdapter();
 
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                int scrollPosition = mSharedPreferences.getInt(TAG_DETAIL_SCROLL_POSITION_KEY, 0);
+                mLinearLayoutManger.scrollToPosition(scrollPosition);
+            }
+        });
+
+        mArticleRecyclerView.setAdapter(adapter);
     }
 
 }

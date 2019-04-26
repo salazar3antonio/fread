@@ -1,13 +1,14 @@
 package com.freadapp.fread.article;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.freadapp.fread.R;
 import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.data.model.Article;
 import com.freadapp.fread.view_holders.ArticleViewHolder;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -33,14 +32,24 @@ public class ArticlesMainFragment extends Fragment {
 
     public static final String TAG = ArticlesMainFragment.class.getName();
     public static final String ARTICLE_MODEL = "article_model";
+    public static final String ARTICLE_MAIN_SCROLL_POSITION_KEY = "article_scroll_position_key";
 
     private DatabaseReference mUserArticles;
     private RecyclerView mArticleRecyclerView;
-    private FirebaseRecyclerAdapter mFirebaseAdapter;
     private TextView mEmptyArticlesView;
+    private LinearLayoutManager mLinearLayoutManger;
+    private SharedPreferences mSharedPreferences;
 
     public static ArticlesMainFragment newInstance() {
         return new ArticlesMainFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
     }
 
     @Nullable
@@ -52,11 +61,14 @@ public class ArticlesMainFragment extends Fragment {
 
         mArticleRecyclerView = view.findViewById(R.id.rv_articles_main_list);
         mEmptyArticlesView = view.findViewById(R.id.tv_empty_articles);
+        mLinearLayoutManger = new LinearLayoutManager(getContext());
+        mArticleRecyclerView.setLayoutManager(mLinearLayoutManger);
 
         //check to see if user is logged in.
         if (FirebaseUtils.isFirebaseUserSignedIn()) {
             mUserArticles = FirebaseUtils.getUserArticles();
-            setMainArticlesAdapter();
+            attachRecyclerViewAdapter();
+
         } else {
             Toast.makeText(getContext(), "No user logged in.", Toast.LENGTH_SHORT).show();
         }
@@ -64,17 +76,39 @@ public class ArticlesMainFragment extends Fragment {
         return view;
     }
 
-    private void setMainArticlesAdapter() {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(Article.class, R.layout.article_list_item,
-                ArticleViewHolder.class, mUserArticles) {
+        int firstCompletelyVisibleItemPosition = mLinearLayoutManger.findFirstCompletelyVisibleItemPosition();
+
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(ARTICLE_MAIN_SCROLL_POSITION_KEY, firstCompletelyVisibleItemPosition);
+        editor.apply();
+
+    }
+
+    @NonNull
+    protected RecyclerView.Adapter newAdapter() {
+        FirebaseRecyclerOptions<Article> options =
+                new FirebaseRecyclerOptions.Builder<Article>()
+                        .setQuery(mUserArticles, Article.class)
+                        .setLifecycleOwner(this)
+                        .build();
+
+        return new FirebaseRecyclerAdapter<Article, ArticleViewHolder>(options) {
+            @Override
+            public ArticleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return new ArticleViewHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.article_list_item, parent, false));
+            }
 
             @Override
-            protected void populateViewHolder(ArticleViewHolder viewHolder, final Article article, final int position) {
+            protected void onBindViewHolder(@NonNull ArticleViewHolder holder, int position, @NonNull final Article article) {
 
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View v) {
                         //launch a new detailed article activity passing the article at the clicked position through an intent
                         Intent intent = new Intent(getContext(), ArticleDetailActivity.class);
                         intent.putExtra(ARTICLE_MODEL, article);
@@ -82,44 +116,29 @@ public class ArticlesMainFragment extends Fragment {
                     }
                 });
 
-                viewHolder.bindToArticle(getContext(), article);
+                holder.bindToArticle(getContext(), article);
 
+            }
+
+            @Override
+            public void onDataChanged() {
+                mEmptyArticlesView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
             }
         };
-
-        checkForEmptyArticles(mUserArticles);
-
-        mArticleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mArticleRecyclerView.setAdapter(mFirebaseAdapter);
-
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mFirebaseAdapter != null) {
-            mFirebaseAdapter.cleanup();
-        }
-    }
+    private void attachRecyclerViewAdapter() {
+        final RecyclerView.Adapter adapter = newAdapter();
 
-    private void checkForEmptyArticles(DatabaseReference articles) {
-
-        articles.addValueEventListener(new ValueEventListener() {
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    mEmptyArticlesView.setVisibility(View.GONE);
-                } else {
-                    mEmptyArticlesView.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                int scrollPosition = mSharedPreferences.getInt(ARTICLE_MAIN_SCROLL_POSITION_KEY, 0);
+                mLinearLayoutManger.scrollToPosition(scrollPosition);
             }
         });
 
+        mArticleRecyclerView.setAdapter(adapter);
     }
 
 }
