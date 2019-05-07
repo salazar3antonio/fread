@@ -19,15 +19,10 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.freadapp.fread.data.database.FirebaseUtils;
-import com.freadapp.fread.data.model.User;
-import com.freadapp.fread.helpers.Constants;
 import com.freadapp.fread.R;
+import com.freadapp.fread.data.database.FirebaseUtils;
 import com.freadapp.fread.helpers.NetworkUtils;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,8 +31,9 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import static com.freadapp.fread.signin.GoogleSignInAuth.GOOGLE_SIGN_IN_REQ_CODE;
 
 /**
  * Created by salaz on 2/13/2018.
@@ -47,7 +43,6 @@ public class SignInFragment extends Fragment {
 
     public static final String TAG = SignInFragment.class.getName();
 
-    public static final int GOOGLE_SIGN_IN_REQ_CODE = 1;
     public static final String SIGN_IN_TYPE_CODE = "sign_in_type_code";
 
     private Button mCreateAccountButton;
@@ -55,10 +50,10 @@ public class SignInFragment extends Fragment {
     private SignInButton mGoogleSignInButton;
     private LoginButton mFacebookSignInButton;
     private FragmentManager mFragmentManager;
-    private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager = CallbackManager.Factory.create();
     public FirebaseAuth mFirebaseAuth;
     public OnSignInSuccessListener mSignInSuccessCallback;
+    private GoogleSignInAuth mGoogleSignInAuth;
 
     public static SignInFragment newInstance() {
         return new SignInFragment();
@@ -67,22 +62,15 @@ public class SignInFragment extends Fragment {
     public interface OnSignInSuccessListener {
         void onSignInSuccess(boolean signInSuccess);
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFragmentManager = getActivity().getSupportFragmentManager();
+        mGoogleSignInAuth = new GoogleSignInAuth(getContext());
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(Constants.OAUTH_2_ID)
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
     }
 
     @Nullable
@@ -100,7 +88,8 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
-                    googleSignIn();
+                    Intent signInIntent = mGoogleSignInAuth.getGoogleSignInClient().getSignInIntent();
+                    startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQ_CODE);
                 } else {
                     Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
                 }
@@ -134,13 +123,7 @@ public class SignInFragment extends Fragment {
 
                 if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
 
-                    EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(SIGN_IN_TYPE_CODE, 1);
-                    emailPasswordFragment.setArguments(bundle);
-
-                    mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+                    commitEmailPasswordFragment(1, mFragmentManager);
 
                 } else {
                     Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
@@ -154,13 +137,7 @@ public class SignInFragment extends Fragment {
 
                 if (NetworkUtils.isNetworkAvailableAndConnected(getContext())) {
 
-                    EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(SIGN_IN_TYPE_CODE, 2);
-                    emailPasswordFragment.setArguments(bundle);
-
-                    mFragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
+                    commitEmailPasswordFragment(2, mFragmentManager);
 
                 } else {
                     Toast.makeText(getContext(), "Please connect to the internet.", Toast.LENGTH_SHORT).show();
@@ -178,26 +155,13 @@ public class SignInFragment extends Fragment {
 
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == GOOGLE_SIGN_IN_REQ_CODE) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-
-                Log.d(TAG, "Google sign in success");
-
-            } catch (ApiException e) {
-                Log.w(TAG, "Google sign in failed", e);
-            }
+        try {
+            GoogleSignInAccount googleSignInAccount = mGoogleSignInAuth.onGoogleSignInResult(requestCode, data);
+            firebaseAuthWithGoogle(googleSignInAccount);
+        } catch (ApiException e) {
+            Log.w(TAG, "Google sign in failed", e);
         }
 
-    }
-
-    private void googleSignIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, GOOGLE_SIGN_IN_REQ_CODE);
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -240,6 +204,17 @@ public class SignInFragment extends Fragment {
 
     public void setOnSignInSuccessListener(OnSignInSuccessListener callback) {
         this.mSignInSuccessCallback = callback;
+    }
+
+    private void commitEmailPasswordFragment(int signInTypeCode, FragmentManager fragmentManager) {
+
+        EmailPasswordFragment emailPasswordFragment = EmailPasswordFragment.newInstance();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(SIGN_IN_TYPE_CODE, signInTypeCode);
+        emailPasswordFragment.setArguments(bundle);
+
+        fragmentManager.beginTransaction().replace(getId(), emailPasswordFragment).commit();
     }
 
 }
