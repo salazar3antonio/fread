@@ -1,6 +1,6 @@
 # fRead
 fRead is an Android app that aims to improve the reading experince on mobile. 
-It creates a clean reading environment for those who love reading articles but hate all the clutter. 
+It creates a clean reading environment for those who love reading web articles but hate all the clutter. 
 
 ## Video Demo
 - https://youtu.be/kyvVIaDHxsI
@@ -16,7 +16,7 @@ It creates a clean reading environment for those who love reading articles but h
 - fRead does it de-cluttering magic by using Aylien's Text Analysis API. More here; https://aylien.com/text-api/
 - The Retrofit library was used to connect the Aylien API to the Java classes for a type-safe environment. 
 - For data persistence I connected fRead to Google's Firebase Suite to utilize the Realtime Firebase Database
-- Users can authenticate through a Google, Facebook or Email account. This was implemented for easier onboarding. 
+- Users can authenticate through a Google, Facebook or an Email account. This was implemented for easy user onboarding. 
 - Primary data models are Articles, Tags, and Users. These were reflected in the Realtime Database Rules set. 
 - For the dictionary functionality I used the Oxford API. An AsynTask was invoked, the JSON was parsed and then displayed on the UI thread. 
 
