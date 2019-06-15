@@ -21,6 +21,7 @@ public class JsonUtils {
     private static final String ENTRIES = "entries";
     private static final String SENSES = "senses";
     private static final String DEFINITIONS = "definitions";
+    private static final String ID = "id";
 
     public static Word getWordFromJSON(String responseString) throws JSONException {
 
@@ -39,9 +40,10 @@ public class JsonUtils {
             for (int i = 0; i < lexicalEntriesArray.length(); i++) {
 
                 JSONObject lexicalEntry = lexicalEntriesArray.getJSONObject(i);
+                JSONObject lexicalCategory = lexicalEntry.getJSONObject(LEXICAL_CATEGORY);
 
-                String lexicalCategory = lexicalEntry.optString(LEXICAL_CATEGORY);
-                lexicalCategoriesArrayList.add(lexicalCategory);
+                String lexicalId = lexicalCategory.optString(ID);
+                lexicalCategoriesArrayList.add(lexicalId);
 
                 JSONArray entriesArray = lexicalEntry.getJSONArray(ENTRIES);
 
