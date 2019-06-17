@@ -3,6 +3,7 @@ package com.freadapp.fread.signin;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,7 @@ public class EmailPasswordFragment extends SignInFragment {
 
     private Button mSignInButton;
     private EditText mEmailText;
-    private EditText mPasswordText;
+    private TextInputEditText mPasswordText;
     private int mSignInTypeCode;
 
     public static EmailPasswordFragment newInstance() {
