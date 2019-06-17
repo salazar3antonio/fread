@@ -25,16 +25,4 @@
         app:layout_constraintVertical_bias="0.0"
         tools:text="Tag Name" />
 
-    <TextView
-        android:id="@+id/tv_articles_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="@string/number_of_articles"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toTopOf="@+id/tv_tag_main_name"
-        app:layout_constraintStart_toEndOf="@+id/tv_tag_main_name"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tag_main_name"
-        tools:text="# of Articles" />
-
 </android.support.constraint.ConstraintLayout>

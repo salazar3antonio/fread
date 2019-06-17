@@ -17,21 +17,11 @@ public class TagViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         mTagNameTextView = itemView.findViewById(R.id.tv_tag_main_name);
-        mNumberOfArticles = itemView.findViewById(R.id.tv_articles_number);
-
     }
 
     public void bindToTag(Context context, Tag tag) {
 
         mTagNameTextView.setText(tag.getTagName());
-
-        if (tag.getArticlesTagged() != null) {
-            int articlesTaggedSize = tag.getArticlesTagged().size();
-            String formattedString = getFormattedString(context, articlesTaggedSize);
-            mNumberOfArticles.setText(formattedString);
-        } else {
-            mNumberOfArticles.setText(R.string.empty_number_of_articles);
-        }
 
     }
 
