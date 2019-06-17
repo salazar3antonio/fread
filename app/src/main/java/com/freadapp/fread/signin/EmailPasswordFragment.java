@@ -1,5 +1,6 @@
 package com.freadapp.fread.signin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.freadapp.fread.R;
@@ -26,6 +28,7 @@ public class EmailPasswordFragment extends SignInFragment {
     private EditText mEmailText;
     private TextInputEditText mPasswordText;
     private int mSignInTypeCode;
+    private TextView mForgotPasswordButton;
 
     public static EmailPasswordFragment newInstance() {
 
@@ -57,9 +60,11 @@ public class EmailPasswordFragment extends SignInFragment {
         mSignInButton = view.findViewById(R.id.bt_sign_in);
         mEmailText = view.findViewById(R.id.et_user_email);
         mPasswordText = view.findViewById(R.id.et_user_password);
+        mForgotPasswordButton = view.findViewById(R.id.bt_forgot_password);
 
         if (mSignInTypeCode == 2) {
             mSignInButton.setText(R.string.sign_up_new_user);
+            mForgotPasswordButton.setVisibility(View.GONE);
         }
 
         mSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +75,7 @@ public class EmailPasswordFragment extends SignInFragment {
                 String password = mPasswordText.getText().toString();
 
                 if (password.length() < 6) {
-                    Toast.makeText(getContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.toast_password_length, Toast.LENGTH_LONG).show();
                 } else {
                     switch (mSignInTypeCode) {
                         case 1:
@@ -83,13 +88,21 @@ public class EmailPasswordFragment extends SignInFragment {
             }
         });
 
+        mForgotPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ResetPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return view;
 
     }
 
     public void firebaseAuthWithEmail(String email, String password) {
 
-        if (!email.isEmpty() || !password.isEmpty()) {
+        if (!email.isEmpty() && !password.isEmpty()) {
             mFirebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
@@ -106,6 +119,8 @@ public class EmailPasswordFragment extends SignInFragment {
                             }
                         }
                     });
+        } else {
+            Toast.makeText(getContext(), R.string.toast_enter_email_password, Toast.LENGTH_LONG).show();
         }
     }
 

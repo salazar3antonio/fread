@@ -72,6 +72,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity android:name=".signin.ResetPasswordActivity" />
 
         <service
             android:name=".widget.ArticleWidgetService"
