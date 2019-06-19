@@ -2,6 +2,8 @@
 fRead is an Android app that aims to improve the reading experince on mobile. 
 It creates a clean reading environment for those who love reading web articles but hate all the clutter. 
 
+https://play.google.com/store/apps/details?id=com.freadapp.fread
+
 ## Video Demo
 - https://youtu.be/kyvVIaDHxsI
 
