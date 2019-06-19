@@ -154,10 +154,11 @@ public class SignInFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
         try {
             GoogleSignInAccount googleSignInAccount = mGoogleSignInAuth.onGoogleSignInResult(requestCode, data);
-            firebaseAuthWithGoogle(googleSignInAccount);
+            if (googleSignInAccount != null) {
+                firebaseAuthWithGoogle(googleSignInAccount);
+            }
         } catch (ApiException e) {
             Log.w(TAG, "Google sign in failed", e);
         }
